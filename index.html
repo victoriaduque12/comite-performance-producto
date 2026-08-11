@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Comité de Performance · OCASA</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--teal:#009CA3;--teal2:#1DB4C2;--black:#231F20;--gray:#B1B1B1;--green:#97BF0D;--orange:#F29400;--white:#fff;--surface:#F0F7F7;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Barlow',sans-serif;background:var(--surface);color:var(--black);display:flex;flex-direction:column;}
+header{height:64px;background:var(--teal);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,100,105,.3);}
+.hl{display:flex;align-items:center;gap:14px;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;letter-spacing:5px;color:#fff;text-transform:uppercase;}
+.hdiv{width:1px;height:28px;background:rgba(255,255,255,.3);}
+.htitle{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;color:#fff;letter-spacing:1.3px;text-transform:uppercase;line-height:1.2;}
+.hsub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px;}
+.hr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.hlbl{font-size:10px;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.7px;}
+.hsel{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Barlow',sans-serif;font-size:12px;padding:5px 10px;border-radius:5px;cursor:pointer;outline:none;}
+.hsel::placeholder{color:rgba(255,255,255,.6);}
+.hsel option{background:var(--teal);}
+.live{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;}
+.pdot{width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+.live-t{font-size:11px;font-weight:700;color:#fff;}
+.btn-ref{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:5px;cursor:pointer;text-transform:uppercase;}
+.btn-ref:hover{background:rgba(255,255,255,.3);}
+.cli-wrap{position:relative;display:inline-block;}
+.cli-arrow{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.7);font-size:10px;pointer-events:none;}
+.cli-drop{display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:230px;background:#fff;border:1.5px solid var(--teal);border-radius:7px;max-height:220px;overflow-y:auto;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.cli-drop.open{display:block;}
+.cli-item{padding:8px 12px;font-size:12px;color:var(--black);cursor:pointer;border-bottom:1px solid rgba(0,0,0,.05);}
+.cli-item:last-child{border-bottom:none;}
+.cli-item:hover,.cli-item.sel{background:#E6F6F7;color:var(--teal);}
+.cli-item.all{font-weight:700;color:var(--teal);border-bottom:2px solid rgba(0,156,163,.2);}
+.wrap{display:flex;flex:1;overflow:hidden;}
+aside{width:262px;background:#fff;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;overflow-x:hidden;border-right:2px solid var(--teal);}
+aside::-webkit-scrollbar{width:3px;}
+aside::-webkit-scrollbar-thumb{background:var(--teal);border-radius:2px;}
+.ssec{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--teal);text-transform:uppercase;padding:15px 18px 6px;}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;border-left:3px solid transparent;transition:background .15s,border-color .15s;}
+.ni:hover{background:rgba(0,156,163,.06);border-left-color:rgba(0,156,163,.35);}
+.ni.on{background:#E6F6F7;border-left-color:var(--teal);}
+.nico{width:28px;height:28px;border-radius:6px;background:rgba(0,156,163,.1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ni.on .nico{background:rgba(0,156,163,.22);}
+.nt{flex:1;min-width:0;}
+.nn{font-size:12px;font-weight:600;color:rgba(35,31,32,.75);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ni.on .nn{color:var(--teal);font-weight:700;}
+.nu{font-size:9.5px;color:#999;margin-top:1px;}
+.nb{font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;white-space:nowrap;flex-shrink:0;}
+.nbw{background:rgba(0,156,163,.15);color:var(--teal);}
+.pill{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:1px 5px;border-radius:3px;margin-top:1px;}
+.pum{background:rgba(0,156,163,.12);color:#007980;}
+.psc{background:rgba(151,191,13,.12);color:#4D7200;}
+.pcd{background:rgba(242,148,0,.12);color:#A06800;}
+.sdiv{height:1px;background:var(--teal);opacity:.18;margin:5px 14px;}
+main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.gload{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.gload.hide{display:none;}
+.spin{width:48px;height:48px;border:3px solid rgba(0,156,163,.15);border-top-color:var(--teal);border-radius:50%;animation:sp .75s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.spin-t{font-size:13px;color:var(--gray);}
+.ov{flex:1;overflow-y:auto;padding:18px 20px;display:none;}
+.ov.vis{display:block;}
+.ostats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
+.osc{background:#fff;border:1px solid rgba(0,156,163,.2);border-top:3px solid var(--teal);border-radius:10px;padding:14px;}
+.osc-l{font-size:9.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.osc-v{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;}
+.osc-s{font-size:10px;color:var(--gray);margin-top:2px;}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;}
+.ocard{background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid var(--teal);border-radius:10px;padding:14px;cursor:pointer;transition:box-shadow .18s,transform .18s;}
+.ocard:hover{box-shadow:0 5px 18px rgba(0,156,163,.15);transform:translateY(-2px);}
+.oc-num{font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.7px;text-transform:uppercase;margin-bottom:2px;}
+.oc-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--black);margin:3px 0 1px;}
+.oc-owner{font-size:10px;color:var(--gray);margin-bottom:8px;}
+.oc-v{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--black);}
+/* PRODUCT PANEL */
+.pp{flex:1;display:none;flex-direction:column;overflow:hidden;}
+.pp.vis{display:flex;}
+.ptop{background:#fff;border-bottom:1px solid rgba(0,0,0,.07);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;}
+.pi{display:flex;align-items:center;gap:11px;}
+.pnum{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:700;opacity:.55;line-height:1;}
+.pname{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--black);}
+.pdesc{font-size:11px;color:var(--gray);margin-top:2px;max-width:400px;}
+.pmeta{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.mi{text-align:right;}
+.mv{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--black);}
+.ml{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;}
+.ms{width:1px;height:30px;background:rgba(0,0,0,.08);}
+.kstrip{background:#fff;border-bottom:1px solid rgba(0,0,0,.06);padding:5px 20px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex-shrink:0;}
+.kl{font-size:9.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin-right:3px;}
+.kc{display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid rgba(0,0,0,.07);border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:500;}
+.kd{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+/* TABS */
+.tabs-bar{display:flex;background:#fff;border-bottom:2px solid rgba(0,156,163,.12);padding:0 20px;flex-shrink:0;overflow-x:auto;}
+.tabs-bar::-webkit-scrollbar{height:0;}
+.tab-btn{padding:9px 15px;font-size:11.5px;font-weight:600;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s,border-color .15s;user-select:none;}
+.tab-btn:hover{color:var(--teal);}
+.tab-btn.on{color:var(--teal);border-bottom-color:var(--teal);}
+.ts{font-size:10px;color:var(--gray);padding:3px 20px 4px;text-align:right;flex-shrink:0;}
+.ts span{color:var(--teal);font-weight:600;}
+.pcont{flex:1;overflow:hidden;position:relative;}
+.tab-panel{display:none;height:100%;overflow-y:auto;flex-direction:column;gap:12px;padding:14px 18px 20px;}
+.tab-panel.on{display:flex;}
+.tab-full{display:none;position:absolute;inset:0;overflow:hidden;}
+.tab-full.on{display:flex;flex-direction:column;}
+/* CARDS */
+.mrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.mc{background:#fff;border:1px solid rgba(0,156,163,.18);border-top:3px solid var(--teal);border-radius:9px;padding:12px 14px;}
+.mc-l{font-size:9.5px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+.mc-v{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--black);}
+.mc-s{font-size:10px;color:var(--gray);margin-top:2px;}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.cb{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
+.cb-t{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:2px;}
+.cb-s{font-size:10px;color:var(--gray);margin-bottom:8px;}
+.cw{position:relative;height:180px;}
+.ctb{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
+.ctb h3{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:10px;}
+.ct{width:100%;border-collapse:collapse;font-size:12px;}
+.ct th{text-align:left;font-size:9.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;padding:4px 8px;border-bottom:1px solid rgba(0,0,0,.07);}
+.ct td{padding:6px 8px;border-bottom:1px solid rgba(0,0,0,.04);}
+.ct tr:last-child td{border-bottom:none;}
+.ct tr:hover td{background:var(--surface);}
+/* INDICADORES */
+.ind-section{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;overflow:hidden;}
+.ind-sec-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.06);}
+.ind-sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:2px 8px;border-radius:4px;}
+.ind-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.ind-table th{background:var(--surface);text-align:left;font-size:9px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;padding:7px 12px;border-bottom:1px solid rgba(0,0,0,.07);}
+.ind-table td{padding:8px 12px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top;line-height:1.4;}
+.ind-table tr:last-child td{border-bottom:none;}
+.ind-table tr:hover td{background:#fafefe;}
+.estado-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.est-ok{background:rgba(151,191,13,.15);color:#4D7200;}
+.est-wip{background:rgba(242,148,0,.15);color:#A06800;}
+.est-pend{background:rgba(177,177,177,.15);color:#666;}
+/* SLA PANEL */
+.sla-kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.sla-k{background:var(--surface);border:1px solid rgba(0,156,163,.18);border-radius:8px;padding:10px 14px;min-width:110px;}
+.sla-kl{font-size:9px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;}
+.sla-kv{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;margin-top:2px;}
+.sla-kt{font-size:9px;color:var(--gray);margin-top:1px;}
+.chart-box{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
+.chart-box-t{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.chart-box-s{font-size:10px;color:var(--gray);margin-bottom:10px;}
+.chwrap{position:relative;height:175px;}
+/* PBI */
+.pbi-full{flex:1;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+.pbi-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(0,156,163,.15);flex-shrink:0;background:#fff;}
+.pbi-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--black);display:flex;align-items:center;gap:8px;}
+.pbi-actions{display:flex;gap:8px;}
+.pbi-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--teal);color:var(--teal);background:#fff;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer;text-transform:uppercase;text-decoration:none;transition:background .15s;}
+.pbi-btn:hover,.pbi-btn.prim{background:var(--teal);color:#fff;}
+.pbi-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px 16px 28px;background:var(--surface);}
+.pbi-card{background:#fff;border:1px solid rgba(0,156,163,.2);border-radius:14px;padding:24px 28px;max-width:540px;width:100%;text-align:center;box-shadow:0 2px 12px rgba(0,156,163,.08);}
+.pbi-icon{font-size:40px;margin-bottom:10px;}
+.pbi-card-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--black);margin-bottom:6px;}
+.pbi-card-sub{font-size:12px;color:var(--gray);line-height:1.7;margin-bottom:18px;text-align:left;}
+.pbi-open-btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;padding:11px 24px;border-radius:8px;cursor:pointer;text-decoration:none;border:none;text-transform:uppercase;letter-spacing:.5px;transition:background .15s;}
+.pbi-open-btn:hover{background:#007980;}
+.pbi-note{font-size:10px;color:var(--gray);margin-top:10px;}
+.pbi-meta{display:flex;gap:16px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+.pbi-meta-item{text-align:center;}
+.pbi-meta-v{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--teal);}
+.pbi-meta-l{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;}
+/* COMPARATIVA / RANKING */
+.comp-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.comp-card{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
+.comp-card h4{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.comp-sub{font-size:10px;color:var(--gray);margin-bottom:9px;}
+.rank-box{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
+.rank-box h4{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.rank-sub{font-size:10px;color:var(--gray);margin-bottom:10px;}
+.rank-item{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04);}
+.rank-item:last-child{border-bottom:none;}
+.rank-pos{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--teal);width:22px;flex-shrink:0;opacity:.5;}
+.rank-name{flex:1;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-bar-wrap{width:90px;height:6px;background:rgba(0,156,163,.12);border-radius:3px;flex-shrink:0;}
+.rank-bar{height:6px;border-radius:3px;background:var(--teal);}
+.rank-val{font-size:11px;font-weight:700;color:var(--black);width:70px;text-align:right;flex-shrink:0;}
+.src-badge{background:#fff;border:1.5px solid rgba(0,156,163,.3);border-radius:10px;padding:9px 14px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--gray);}
+.src-badge strong{color:var(--teal);}
+.nodatabadge{background:rgba(177,177,177,.08);border:1px dashed #ccc;border-radius:8px;padding:14px;font-size:11px;color:var(--gray);text-align:center;}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:768px){
+  /* BODY / LAYOUT */
+  html,body{overflow:hidden;}
+  body{display:flex;flex-direction:column;}
+  .wrap{flex-direction:column;overflow:hidden;}
+
+  /* HEADER */
+  header{height:auto;padding:8px 12px;flex-wrap:wrap;gap:6px;position:relative;z-index:100;}
+  .hl{gap:8px;flex:1;min-width:0;}
+  .logo{font-size:20px;letter-spacing:3px;}
+  .htitle{font-size:12px;letter-spacing:.8px;}
+  .hsub{font-size:9px;}
+  .hdiv{display:none;}
+  .hr{gap:6px;width:100%;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;}
+  .hr::-webkit-scrollbar{height:0;}
+  .hlbl{display:none;}
+  .hsel{font-size:11px;padding:4px 7px;max-width:90px;}
+  .live{padding:3px 8px;}
+  .live-t{font-size:10px;}
+  .btn-ref{padding:5px 10px;font-size:10px;}
+  .cli-wrap input.hsel{max-width:110px !important;}
+  .cli-drop{min-width:200px;left:0;}
+
+  /* SIDEBAR → OVERLAY DRAWER desde abajo */
+  aside{
+    position:fixed;
+    bottom:48px;
+    left:0;
+    right:0;
+    width:100%;
+    max-height:70vh;
+    overflow-y:auto;
+    border-right:none;
+    border-top:3px solid var(--teal);
+    border-radius:16px 16px 0 0;
+    background:#fff;
+    box-shadow:0 -6px 30px rgba(0,100,105,.25);
+    z-index:200;
+    transform:translateY(110%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+  }
+  aside.mob-open{
+    transform:translateY(0);
+  }
+  /* Backdrop para cerrar el drawer */
+  #mob-backdrop{
+    display:none;
+    position:fixed;
+    inset:0;
+    bottom:48px;
+    background:rgba(0,0,0,.35);
+    z-index:199;
+  }
+  #mob-backdrop.open{display:block;}
+  .ssec{padding:10px 14px 4px;font-size:8px;}
+  .ni{padding:8px 14px;}
+  .sdiv{margin:3px 12px;}
+
+  /* BOTTOM NAV BAR */
+  #mob-nav{
+    display:flex;
+    height:48px;
+    background:var(--teal);
+    flex-shrink:0;
+    align-items:stretch;
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index:300;
+    box-shadow:0 -2px 10px rgba(0,0,0,.15);
+  }
+  .mob-nav-btn{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    font-size:9px;
+    font-weight:700;
+    color:rgba(255,255,255,.7);
+    cursor:pointer;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    border:none;
+    background:none;
+    font-family:'Barlow',sans-serif;
+    padding:0;
+    transition:color .15s,background .15s;
+    border-left:1px solid rgba(255,255,255,.15);
+  }
+  .mob-nav-btn:first-child{border-left:none;}
+  .mob-nav-btn.active,.mob-nav-btn:active{color:#fff;background:rgba(255,255,255,.15);}
+  .mob-nav-btn svg,.mob-nav-btn .nav-ico{font-size:16px;line-height:1;}
+
+  /* MAIN CONTENT */
+  main{
+    flex:1;
+    overflow:hidden;
+    padding-bottom:48px; /* bottom nav height */
+  }
+
+  /* OVERVIEW */
+  .ov{padding:10px 10px;padding-bottom:60px;}
+  .ostats{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+  .osc{padding:10px 12px;}
+  .osc-v{font-size:20px;}
+  .ogrid{grid-template-columns:1fr 1fr;gap:8px;}
+  .ocard{padding:10px 12px;}
+  .oc-name{font-size:13px;}
+  .oc-v{font-size:17px;}
+
+  /* PRODUCT PANEL TOP */
+  .ptop{padding:8px 12px;flex-direction:column;align-items:flex-start;gap:6px;}
+  .pnum{font-size:28px;}
+  .pname{font-size:17px;}
+  .pdesc{font-size:10px;max-width:100%;}
+  .pmeta{width:100%;justify-content:flex-start;gap:10px;}
+  .mi{text-align:left;}
+  .mv{font-size:14px;}
+  .ml{font-size:8px;}
+  .ms{display:none;}
+
+  /* KSTRIP */
+  .kstrip{padding:4px 10px;gap:4px;overflow-x:auto;}
+  .kstrip::-webkit-scrollbar{height:0;}
+  .kc{font-size:9.5px;white-space:nowrap;}
+
+  /* TABS */
+  .tabs-bar{padding:0 10px;overflow-x:auto;}
+  .tabs-bar::-webkit-scrollbar{height:0;}
+  .tab-btn{padding:7px 10px;font-size:10.5px;}
+
+  /* TAB PANELS */
+  .tab-panel{padding:10px 10px 16px;gap:10px;}
+
+  /* METRIC CARDS ROW */
+  .mrow{grid-template-columns:1fr 1fr;gap:8px;}
+  .mc{padding:10px 12px;}
+  .mc-v{font-size:19px;}
+
+  /* CHART GRIDS */
+  .cgrid{grid-template-columns:1fr;gap:10px;}
+  .cw{height:160px;}
+  .chwrap{height:155px;}
+
+  /* SLA */
+  .sla-kpis{gap:7px;}
+  .sla-k{padding:8px 10px;min-width:80px;}
+  .sla-kv{font-size:20px;}
+
+  /* INDICADORES TABLE */
+  .ind-table{font-size:10.5px;}
+  .ind-table th,.ind-table td{padding:6px 8px;}
+  /* hide less-important columns on mobile */
+  .col-fuente,.col-frec,.col-resp{display:none;}
+  /* fix table layout when columns hidden */
+  table[style*="table-layout:fixed"]{table-layout:auto !important;}
+
+  /* COMPARATIVA / RANKING */
+  .comp-row{grid-template-columns:1fr;gap:8px;}
+  .rank-bar-wrap{width:55px;}
+  .rank-val{width:58px;font-size:10px;}
+  .rank-name{font-size:11px;}
+
+  /* CHART BOXES */
+  .chart-box{padding:10px 12px;}
+  .cb{padding:10px 12px;}
+
+  /* PBI BODY */
+  .pbi-body{padding:14px;gap:14px;}
+  .pbi-card{padding:20px 18px;}
+  .pbi-icon{font-size:36px;}
+  .pbi-card-title{font-size:18px;}
+}
+
+/* Extra small phones */
+@media(max-width:380px){
+  .ogrid{grid-template-columns:1fr;}
+  .ostats{grid-template-columns:1fr 1fr;}
+  .mrow{grid-template-columns:1fr 1fr;}
+  .hsel{font-size:10px;padding:3px 5px;max-width:75px;}
+  .cli-wrap input.hsel{max-width:90px !important;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hl">
+    <div class="logo">OCASA</div>
+    <div class="hdiv"></div>
+    <div>
+      <div class="htitle">Comité de Performance de Producto</div>
+      <div class="hsub" id="hperiodo">Dashboard Ejecutivo · Cargando…</div>
+    </div>
+  </div>
+  <div class="hr">
+
+    <span class="hlbl">Año</span>
+    <select class="hsel" id="fAnio" onchange="filterAndRender()">
+      <option value="">Todos</option>
+      <option value="2025">2025</option>
+      <option value="2026" selected>2026</option>
+    </select>
+    <span class="hlbl">Mes</span>
+    <select class="hsel" id="fMes" onchange="filterAndRender()">
+      <option value="">Todos</option>
+      <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
+      <option value="MARZO">Marzo</option><option value="ABRIL">Abril</option>
+      <option value="MAYO">Mayo</option><option value="JUNIO">Junio</option>
+      <option value="JULIO">Julio</option><option value="AGOSTO">Agosto</option>
+      <option value="SEPTIEMBRE">Septiembre</option><option value="OCTUBRE">Octubre</option>
+      <option value="NOVIEMBRE">Noviembre</option><option value="DICIEMBRE">Diciembre</option>
+    </select>
+    <span class="hlbl">Producto</span>
+    <div class="cli-wrap">
+      <input class="hsel" id="fProdInput" placeholder="Buscar…" autocomplete="off"
+        style="max-width:170px;padding-right:22px;" oninput="onProdInput()">
+      <span class="cli-arrow">▾</span>
+      <div class="cli-drop" id="prodDrop"></div>
+    </div>
+    <span class="hlbl">Cliente</span>
+    <div class="cli-wrap">
+      <input class="hsel" id="fCliInput" placeholder="Buscar…" autocomplete="off"
+        style="max-width:170px;padding-right:22px;" oninput="onCliInput()">
+      <span class="cli-arrow">▾</span>
+      <div class="cli-drop" id="cliDrop"></div>
+    </div>
+
+    <button class="btn-ref" onclick="reloadAll()">
+      <svg id="refIco" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Actualizar
+    </button>
+  </div>
+</header>
+<div class="wrap">
+  <aside id="sb">
+    <div class="ssec">General</div>
+    <div class="ni on" data-id="overview" onclick="go('overview',this)">
+      <div class="nico">⬡</div>
+      <div class="nt"><div class="nn">Vista General</div><div class="nu">Todos los productos</div></div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="ssec">Productos</div>
+    <div id="sb-products"></div>
+    <div style="padding:8px 18px 16px;font-size:10.5px;color:#666;line-height:1.9;">
+      🔗 Ventas: Google Drive<br>
+      📈 SLA/Efec: Google Drive<br>
+      ⚡ BI: Power BI Online
+    </div>
+  </aside>
+  <main>
+    <div class="gload" id="gload"><div class="spin"></div><div class="spin-t" id="gload-t">Conectando a Google Drive…</div></div>
+    <div class="ov" id="pov">
+      <div id="ov-banner"></div>
+      <div class="ostats" id="ovStats"></div>
+      <div class="ogrid" id="og"></div>
+    </div>
+    <div class="pp" id="pp">
+      <div class="ptop">
+        <div class="pi">
+          <div class="pnum" id="pn">01</div>
+          <div><div class="pname" id="pname">—</div><div class="pdesc" id="pdesc">—</div></div>
+        </div>
+        <div class="pmeta" id="pmeta"></div>
+      </div>
+      <div class="kstrip" id="ks"></div>
+      <div class="tabs-bar">
+        <div class="tab-btn on"  data-tab="resumen"     onclick="switchTab('resumen',this)">📊 Resumen</div>
+        <div class="tab-btn"     data-tab="indicadores" onclick="switchTab('indicadores',this)">📋 Indicadores</div>
+        <div class="tab-btn"     data-tab="slaefec"     onclick="switchTab('slaefec',this)">📈 SLA & Efectividad</div>
+        <div class="tab-btn"     data-tab="comparativa" onclick="switchTab('comparativa',this)">📆 Comparativa</div>
+        <div class="tab-btn"     data-tab="ranking"     onclick="switchTab('ranking',this)">🏆 Ranking</div>
+        <div class="tab-btn"     data-tab="pbi"         onclick="switchTab('pbi',this)">💰 Margen Bruto BI</div>
+        <div class="tab-btn" data-tab="cxbi" onclick="switchTab('cxbi',this)">🎯 Experiencia del Cliente BI</div>
+      </div>
+      <div class="ts">Última actualización: <span id="tsv">—</span></div>
+      <div class="pcont">
+        <div class="tab-panel on" id="tab-resumen"></div>
+        <div class="tab-panel"    id="tab-indicadores"></div>
+        <div class="tab-panel"    id="tab-slaefec"></div>
+        <div class="tab-panel"    id="tab-comparativa"></div>
+        <div class="tab-panel"    id="tab-ranking"></div>
+        <div class="tab-full"     id="tab-pbi"><div class="pbi-full" id="pbi-content"></div></div>
+        <div class="tab-full"     id="tab-cxbi"><div class="pbi-full" id="cxbi-content"></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div id="mob-backdrop" onclick="closeSidebar()"></div>
+<div id="mob-nav" style="display:none;">
+  <button class="mob-nav-btn active" id="mnb-home" onclick="mobNav('home')">
+    <span class="nav-ico">⬡</span>
+    <span>Inicio</span>
+  </button>
+  <button class="mob-nav-btn" id="mnb-menu" onclick="mobNav('menu')">
+    <span class="nav-ico">☰</span>
+    <span>Productos</span>
+  </button>
+  <button class="mob-nav-btn" id="mnb-refresh" onclick="reloadAll()">
+    <span class="nav-ico">↻</span>
+    <span>Actualizar</span>
+  </button>
+</div>
+
+<script>
+// ── MOBILE NAV ──
+function isMobile(){return window.innerWidth<=768;}
+function initMobNav(){
+  const nav=document.getElementById('mob-nav');
+  if(isMobile()){nav.style.display='flex';}
+  else{nav.style.display='none';closeSidebar();}
+}
+function closeSidebar(){
+  document.getElementById('sb').classList.remove('mob-open');
+  document.getElementById('mob-backdrop').classList.remove('open');
+  document.getElementById('mnb-menu').classList.remove('active');
+  document.getElementById('mnb-home').classList.add('active');
+}
+function openSidebar(){
+  document.getElementById('sb').classList.add('mob-open');
+  document.getElementById('mob-backdrop').classList.add('open');
+  document.getElementById('mnb-menu').classList.add('active');
+  document.getElementById('mnb-home').classList.remove('active');
+}
+function mobNav(btn){
+  if(btn==='menu'){
+    const isOpen=document.getElementById('sb').classList.contains('mob-open');
+    isOpen ? closeSidebar() : openSidebar();
+  } else if(btn==='home'){
+    closeSidebar();
+    go('overview',document.querySelector('.ni[data-id="overview"]'));
+  }
+}
+// cerrar sidebar cuando se selecciona un producto
+document.addEventListener('click',function(e){
+  const ni=e.target.closest('.ni');
+  if(ni && isMobile()) closeSidebar();
+});
+window.addEventListener('resize',initMobNav);
+initMobNav();
+
+// ── CONFIG ──
+const ID_VENTAS='1QL_ywDFzzUyaHmgg5sqUz9_YULlcsAF-Y9sIOKRRU3Y';
+const ID_MATERIALES='18DvuTpU8aY0PzAu0jIBQAf1IKzqep_7Q0SkMKHrqp-o';
+const ID_SLA='14oWS4N8_r8tYWi93nnsQ6HwD2LfM0yb7-O25kjMaUKc';
+const ID_KPIS='1xjh0quAo6y7ZCjWL5-qI1N2mgE7yq2lwGYT6iBhPnvI';
+const ID_MOTIVOS='1-VccjQJTRR16fL_JqlIiyRoBIQw9LmZlizFCLp-Qqu0';
+const ID_PICKIT_VOL='16TWKmyh55EeyPIBxNWI0TGNFytRKgS1kHFu6gVJ-to4';
+const ID_PICKIT_FAC='1L25cfqlFXdVKTIrcVguAJuYyaYEoiTbIz5uHMTkXUOo';
+const PBI_REPORT_URL='https://app.powerbi.com/groups/me/reports/2ea1b575-1feb-4464-8a24-dac0ac0387e1/d050495042d3d060d741?ctid=91a5b5c8-673e-4a80-871c-5ed3412dd451&experience=power-bi';
+const PBI_MARGEN_URL='https://app.powerbi.com/reportEmbed?reportId=14350c8e-8242-4d38-91b6-738e082417de&autoAuth=true&ctid=91a5b5c8-673e-4a80-871c-5ed3412dd451';
+const MO=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+const MS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const ML={ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio',AGOSTO:'Agosto',SEPTIEMBRE:'Septiembre',OCTUBRE:'Octubre',NOVIEMBRE:'Noviembre',DICIEMBRE:'Diciembre'};
+const T='#009CA3',G='#97BF0D',O='#F29400';
+
+// ── INDICADORES (definición completa por producto) ──
+// fuente, formula, frecuencia, responsable, estado: ok/wip/pend
+const INDICADORES={
+  'Cross Docking':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma de venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Volumen',formula:'Suma de unidades procesadas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Margen Bruto',formula:'Facturación − Costo directo operativo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'Costo por operación',formula:'Costo total / Volumen total de operaciones',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'Nuevos clientes',formula:'Clientes con primera facturación en el mes',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Churn (bajas)',formula:'Clientes activos mes anterior sin facturación en mes actual',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+    ]},
+    {cat:'Operación',color:'#F29400',items:[
+      {nombre:'SLA',formula:'Operaciones entregadas en plazo / Total operaciones × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Backlog operativo',formula:'Operaciones pendientes al cierre del período',fuente:'Sistema operativo',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Tasa de errores operativos',formula:'Operaciones con error / Total operaciones × 100',fuente:'Sistema operativo',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+    ]},
+    {cat:'Comercial / Cliente',color:'#009CA3',items:[
+      {nombre:'NPS',formula:'% Promotores − % Detractores (encuesta)',fuente:'Encuesta NPS',frec:'Trimestral',resp:'German Gallarini',est:'pend'},
+      {nombre:'Penalidades',formula:'Monto total de penalidades aplicadas en el período',fuente:'Sistema contable',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes activos inicio de período × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'Tickets / 100 operaciones',formula:'Total tickets / Total operaciones × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días desde apertura hasta cierre de ticket',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+    ]},
+  ],
+  'Paqueteria E-Commerce B2C':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma de venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Volumen',formula:'Suma de envíos del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Margen Bruto',formula:'Facturación − Costo directo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+      {nombre:'Costo por envío',formula:'Costo total / Total envíos del período',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+      {nombre:'Nuevos clientes',formula:'Clientes con primera facturación en el mes',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+    ]},
+    {cat:'Colecta',color:'#F29400',items:[
+      {nombre:'Tasa colectas fallidas',formula:'Colectas donde no se retiró mercadería / Total colectas × 100',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tiempo solicitud→colecta',formula:'Promedio de horas entre solicitud de colecta y ejecución',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+    {cat:'Última Milla',color:'#009CA3',items:[
+      {nombre:'SLA',formula:'Envíos entregados en plazo / Total envíos × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Efectividad',formula:'Envíos entregados exitosamente / Total envíos × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Causas de no entrega',formula:'Distribución % de motivos de fallo de entrega',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+    {cat:'Performance del Punto',color:'#C0392B',items:[
+      {nombre:'Tasa paquetes vencidos',formula:'Paquetes sin retirar > plazo máximo / Total en punto × 100',fuente:'Sistema operativo Pick It',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Incidentes en punto',formula:'Cantidad de incidentes reportados en puntos de entrega',fuente:'Sistema operativo Pick It',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+      {nombre:'NPS',formula:'% Promotores − % Detractores (encuesta)',fuente:'Encuesta NPS',frec:'Trimestral',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tasa de retiro efectivo',formula:'Paquetes retirados / Total paquetes disponibles en punto × 100',fuente:'Sistema operativo Pick It',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre de ticket',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+  ],
+  'Warehousing':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Volumen (m² o pallets)',formula:'Unidades almacenadas / movidas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Margen Bruto',formula:'Facturación − Costo operativo directo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'ARPU',formula:'Facturación total / Cantidad de clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+    ]},
+    {cat:'Operación',color:'#F29400',items:[
+      {nombre:'SLA',formula:'Órdenes procesadas en plazo / Total órdenes × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Exactitud de inventario',formula:'Ítems sin discrepancia / Total ítems auditados × 100',fuente:'Sistema WMS',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Productividad operativa',formula:'Unidades procesadas / Horas hombre trabajadas',fuente:'Sistema WMS / RRHH',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+    ]},
+    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+      {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio período × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'Tickets',formula:'Total tickets abiertos en el período',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+    ]},
+  ],
+  'Distribución de Tarjetas Valoradas':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Volumen',formula:'Tarjetas distribuidas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+    ]},
+    {cat:'Última Milla',color:'#009CA3',items:[
+      {nombre:'SLA',formula:'Entregas en plazo / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Efectividad',formula:'Entregas exitosas / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+      {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+    ]},
+  ],
+  'Postal':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Volumen',formula:'Piezas postales distribuidas',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+    ]},
+    {cat:'Última Milla',color:'#009CA3',items:[
+      {nombre:'SLA',formula:'Entregas en plazo / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Efectividad',formula:'Entregas exitosas / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+      {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+    ]},
+  ],
+  'Salud Warehousing':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Volumen almacenado',formula:'m² o pallets ocupados en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Margen Bruto',formula:'Facturación − Costo operativo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+    ]},
+    {cat:'Operación',color:'#F29400',items:[
+      {nombre:'SLA',formula:'Órdenes en plazo / Total órdenes × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Exactitud de inventario',formula:'Ítems sin discrepancia / Total auditados × 100',fuente:'WMS',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Cumplimiento cadena de frío',formula:'Registros en rango de temperatura / Total registros × 100',fuente:'Sistema monitoreo IoT',frec:'Diario',resp:'German Gallarini',est:'pend'},
+    ]},
+    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+      {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+      {nombre:'Tickets',formula:'Total tickets abiertos en el período',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+    ]},
+  ],
+  'Salud Distribucion':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Volumen',formula:'Envíos de medicamentos/material sanitario',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+    ]},
+    {cat:'Última Milla',color:'#009CA3',items:[
+      {nombre:'SLA',formula:'Entregas en plazo / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Efectividad',formula:'Entregas exitosas / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
+      {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+    ]},
+    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+      {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
+      {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
+    ]},
+  ],
+  'Carta Documento Digital':[
+    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+      {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Volumen',formula:'Cartas documento emitidas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Margen Bruto',formula:'Facturación − Costo (impresión + distribución)',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+      {nombre:'Costo por envío',formula:'Costo total / Cartas emitidas',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+      {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
+    ]},
+    {cat:'Operación',color:'#F29400',items:[
+      {nombre:'Tasa de error operativo',formula:'Cartas con problema de impresión / Total cartas × 100',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tiempo de imposición (AWP→HFD)',formula:'Promedio de horas desde ingreso en AWP hasta pase a HFD',fuente:'Sistema AWP / HFD',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tiempo digitalización acuses (addoc)',formula:'Promedio de horas entre entrega y digitalización del acuse',fuente:'Sistema addoc',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+    {cat:'Última Milla',color:'#009CA3',items:[
+      {nombre:'Efectividad 1ra vuelta',formula:'Entregas en 1ra visita / Total cartas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Efectividad general',formula:'Total entregas exitosas (todas las vueltas) / Total cartas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'SLA',formula:'Cartas entregadas en plazo contractual / Total × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
+      {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+      {nombre:'Tickets / 100 cartas',formula:'Total tickets / Total cartas emitidas × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tickets por cliente',formula:'Tickets del período agrupados por cliente',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Principales motivos de tickets',formula:'Top motivos por frecuencia (Pareto)',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+      {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
+    ]},
+  ],
+};
+
+const DESCS={
+  'Cross Docking':'Clasificación y consolidación de mercadería.',
+  'Paqueteria E-Commerce B2C':'Distribución de paquetes a consumidor final, red logística capilar.',
+  'Warehousing':'Almacenamiento y gestión integral de inventario.',
+  'Distribución de Tarjetas Valoradas':'Distribución de tarjetas y documentación personal.',
+  'Postal':'Distribución de piezas postales y correspondencia.',
+  'Salud Warehousing':'Almacenamiento especializado para logística sanitaria.',
+  'Salud Distribucion':'Transporte y distribución de medicamentos.',
+  'Carta Documento Digital':'Cartas documento digitales emitidas y distribuidas físicamente.',
+  'Entrega en Punto Pickit':'Entrega en puntos Pick It para paquetería B2C (Adidas).',
+  'Paqueteria E-Commerce B2C':'Distribución B2C con colecta propia y plataforma digital.',
+  'Distribucion Consumo Masivo y Palletizado':'Distribución a comercios y cadenas. Clientes: Molinos, Mercedes, Renault.',
+};
+const OWNERS={
+  'Cross Docking':'Matias Bosch','Paqueteria E-Commerce B2C':'Victoria Duque',
+  'Warehousing':'Victoria Duque','Distribución de Tarjetas Valoradas':'Victoria Duque',
+  'Postal':'Victoria Duque','Salud Warehousing':'German Gallarini',
+  'Salud Distribucion':'German Gallarini','Carta Documento Digital':'Victoria Duque',
+  'Logística a Punto Pickit (cliente Pickit)':'Victoria Duque','Entrega en Punto Pickit':'Victoria Duque','Paqueteria E-Commerce B2C':'Victoria Duque',
+  'Distribucion Consumo Masivo y Palletizado':'German Gallarini',
+};
+let META_NUMS={
+  'Bonded Warehouse – Deposito Fiscal':'01',
+  'Bonded Warehouse - Deposito Fiscal':'01',
+  'Bonded Warehouse – Depósito Fiscal':'01',
+  'Bonded Warehouse - Depósito Fiscal':'01',
+  'Courier Personas (Customs Clearance)':'02',
+  'Courier Personas':'02',
+  'Courier Comercial':'03',
+  'Courier':'03',
+  'Impo aérea':'04',
+  'Impo Aérea':'04',
+  'Impo aerea':'04',
+  'Impo Aerea':'04',
+  'Importación Aérea':'04',
+  'Importacion Aerea':'04',
+  'Impo maritima':'05',
+  'Impo Maritima':'05',
+  'Impo Marítima':'05',
+  'Importación Marítima':'05',
+  'Importacion Maritima':'05',
+  'Importación Terrestre':'06',
+  'Importacion Terrestre':'06',
+  'Exportación Aérea':'07',
+  'Exportacion Aerea':'07',
+  'Exportación Marítima':'08',
+  'Exportación Maritima':'08',
+  'Exportacion Maritima':'08',
+  'Exportacion Marítima':'08',
+  'Exportación Terrestre':'09',
+  'Exportacion Terrestre':'09',
+  'Distribucion Consumo Masivo y Palletizado':'10',
+  'Distribución Consumo Masivo y Paletizado':'10',
+  'Distribucion Consumo Masivo y Paletizado':'10',
+  'Distribución Consumo Masivo y Palletizado':'10',
+  'Salud Distribucion':'11',
+  'Salud Distribución':'11',
+  'Distribución Salud':'11',
+  'Distribucion Salud':'11',
+  'Salud Warehousing':'12',
+  'Warehousing Salud':'12',
+  'Servicio de destrucción':'13',
+  'Servicio de Destruccion':'13',
+  'Servicio de Destrucción':'13',
+  'Transporte en vehículo exclusivo':'14',
+  'Transporte en Vehiculo Exclusivo':'14',
+  'Transporte en Vehículo Exclusivo':'14',
+  'Warehousing':'15',
+  'Distribución Automotriz':'16',
+  'Distribucion Automotriz':'16',
+  'Carga Peligrosa':'17',
+  'WHS y Transporte Minería':'17',
+  'WHS y Transporte Mineria':'17',
+  'Warehousing y Transporte Mineria':'17',
+  'Warehousing y Transporte Minería':'17',
+  'WHS Oil and Gas':'18',
+  'Warehousing Oil and Gas':'18',
+  'Carta Documento Digital':'19',
+  'Checkmail':'20',
+  'Check Mail':'20',
+  'Checkmail SE':'20',
+  'Distribución Biggers B2C':'21',
+  'Distribucion Biggers B2C':'21',
+  'Distribucion de Biggers':'21',
+  'Distribución de Biggers':'21',
+  'Distribucion de Biggers B2C':'21',
+  'Distribución de Biggers B2C':'21',
+  'Biggers B2C':'21',
+  'Distribución de Bolsines':'22',
+  'Distribucion de Bolsines':'22',
+  'Fulfillment':'23',
+  'Mailroom':'24',
+  'Mail Room':'24',
+  'Paqueteria E-Commerce B2C':'25',
+  'Paquetería E-Commerce B2C':'25',
+  'Paquetería ecommerce B2C':'25',
+  'Paqueteria ecommerce B2C':'25',
+  'Paqueteria y Mobiliario Corporativo':'26',
+  'Paquetería y Mobiliario Corporativo':'26',
+  'Paquetería y Mobiliario corporativo':'26',
+  'Postal':'27',
+  'Postal Simple':'27',
+  'Servicio electoral':'28',
+  'Servicio Electoral':'28',
+  'Distribución de Tarjetas Valoradas':'29',
+  'Distribucion de Tarjetas Valoradas':'29',
+  'Colecta en Punto Drop off (cliente Pickit)':'30',
+  'Colecta en Punto Drop off':'30',
+  'Colecta en Punto Drop Off':'30',
+  'Logística a Punto Pickit (cliente Pickit)':'31',
+  'Entrega en Punto Pickit':'25.1',
+  'Entrega en un Punto':'31',
+  'Entrega en Un Punto':'31',
+  'Cross Docking':'32',
+  'Crossdocking':'32',
+};
+
+// ── STATE ──
+let allVentas=[], allSlaEfec=[], allKpisAd=[], allMotivos=[], allPickitVol=[], allPickitFac=[], cur='overview', prodActual='', allProductos=[], cliActual='', allClientes=[];
+
+// Normaliza: minúsculas, sin tildes, espacios colapsados, trim
+function norm(s){
+  return (s||'').toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\s+/g,' ').trim();
+}
+const META_NUMS_NORM={};
+Object.entries(META_NUMS).forEach(([k,v])=>{META_NUMS_NORM[norm(k)]=v;});
+function getNum(prod){
+  return META_NUMS[prod]||META_NUMS_NORM[norm(prod)]||'—';
+}
+
+// ── CHART HELPERS ──
+Chart.defaults.font.family="'Barlow',sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color='#888';
+const CI={};
+function dc(id){if(CI[id]){try{CI[id].destroy();}catch(e){}delete CI[id];}}
+function mkChart(id,type,labels,datasets,opts){
+  dc(id);
+  const el=document.getElementById(id);
+  if(!el)return;
+  CI[id]=new Chart(el.getContext('2d'),{
+    type,data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:opts&&opts.leg||false},tooltip:{mode:'index',intersect:false}},
+      scales:type!=='doughnut'?{
+        x:{grid:{display:false},ticks:{font:{size:9},maxRotation:45}},
+        y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{callback:opts&&opts.yf||null,font:{size:10}}}
+      }:{},
+      ...(opts&&opts.ex||{})
+    }
+  });
+}
+
+function fmtARS(v){
+  const a=Math.abs(v);
+  if(a>=1e9)return '$'+(v/1e9).toFixed(1)+'MM';
+  if(a>=1e6)return '$'+(v/1e6).toFixed(1)+'M';
+  if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';
+  return '$'+Math.round(v).toLocaleString();
+}
+function colorAnio(a){return a>=2026?G:O;}
+function slaColor(v){
+  if(v===null||v===undefined)return '#ccc';
+  return v>=95?'#4D7200':v>=80?'#A06800':'#C0392B';
+}
+
+// ── GOOGLE SHEETS JSONP FETCH (sin CORS) ──
+let _jsonpIdx=0;
+function sheetFetch(sheetId,name){
+  return new Promise((resolve,reject)=>{
+    const cb='_gviz'+(_jsonpIdx++);
+    const timeout=setTimeout(()=>{
+      delete window[cb];
+      if(s.parentNode)s.parentNode.removeChild(s);
+      reject(new Error('Timeout ('+name+')'));
+    },30000);
+    window[cb]=function(resp){
+      clearTimeout(timeout);
+      delete window[cb];
+      if(s.parentNode)s.parentNode.removeChild(s);
+      try{
+        const cols=resp.table.cols.map(c=>c.label||c.id);
+        const rows=resp.table.rows.map(r=>{
+          const obj={};
+          cols.forEach((col,i)=>{
+            const cell=r.c&&r.c[i];
+            const v=cell?cell.v:null;
+            obj[col]=(v===null||v===undefined)?null:v;
+          });
+          return obj;
+        }).filter(r=>Object.values(r).some(v=>v!==null&&v!==''));
+        resolve(rows);
+      }catch(e){reject(new Error('Parse error ('+name+'): '+e.message));}
+    };
+    const s=document.createElement('script');
+    s.onerror=()=>{
+      clearTimeout(timeout);
+      delete window[cb];
+      reject(new Error('Error de red ('+name+'): archivo no público o ID incorrecto'));
+    };
+    s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb+'&tq=select+*';
+    document.head.appendChild(s);
+  });
+}
+
+
+// ── BUILD SIDEBAR DINÁMICO DESDE material_producto ──
+function buildSidebar(mats){
+  const EXCLUIR=['Otros'];
+  const UN_PILL={'Ultima Milla':'pum','Supply Chain':'psc','Cross Dock':'pcd',
+    'Cross Border Transactions':'pcd','Global Forwarding':'pcd','Otros':'pum'};
+  const UN_LABEL={'Ultima Milla':'Última Milla','Supply Chain':'Supply Chain',
+    'Cross Dock':'Cross Dock','Cross Border Transactions':'Cross Border',
+    'Global Forwarding':'Global Forwarding','Otros':'Otros'};
+  const ICONOS={
+    'Cross Docking':'📦','Paqueteria E-Commerce B2C':'🛍️','Warehousing':'🏭',
+    'Distribución de Tarjetas Valoradas':'💳','Postal':'✉️',
+    'Salud Warehousing':'🏥','Salud Distribucion':'💊',
+    'Carta Documento Digital':'📄','Logística a Punto Pickit (cliente Pickit)':'📦','Entrega en Punto Pickit':'📍',
+    'Distribucion Consumo Masivo y Palletizado':'🏗️','Fulfillment':'📫',
+    'Courier':'🚚','Check Mail':'📬','Mail Room':'🗂️',
+    'Colecta en Punto Drop off (cliente Pickit)':'📥','Distribucion de Biggers':'📦',
+    'Distribucion de Bolsines':'📮','Paqueteria y Mobiliario Corporativo':'🪑',
+    'Servicio Electoral':'🗳️','Servicio de Destruccion':'🔒',
+    'Transporte Aereo':'✈️','Transporte Marítimo':'🚢',
+    'Transporte Terrestre':'🚛','Transporte en Vehiculo Exclusivo':'🚐',
+  };
+
+  // Agrupar por unidad de negocio, excluir 'Otros'
+  const grupos={};
+  mats.filter(m=>!EXCLUIR.includes(m.producto)).forEach(m=>{
+    const un=m.unidad_negocio||'Otros';
+    if(!grupos[un]) grupos[un]=[];
+    if(!grupos[un].find(x=>x.producto===m.producto)){
+      grupos[un].push(m);
+    }
+  });
+
+  const cont=document.getElementById('sb-products');
+  cont.innerHTML='';
+
+  // Orden de UNs
+  const UN_ORDER=['Ultima Milla','Supply Chain','Cross Dock',
+    'Cross Border Transactions','Global Forwarding','Otros'];
+
+  // Agrupar por producto y tomar la unidad_negocio más frecuente
+  const prodMap={};
+  mats.filter(m=>m.producto&&m.producto!=='Otros').forEach(m=>{
+    if(!prodMap[m.producto]) prodMap[m.producto]={counts:{},first:m};
+    const un=m.unidad_negocio||'Otros';
+    prodMap[m.producto].counts[un]=(prodMap[m.producto].counts[un]||0)+1;
+  });
+  const unicos=Object.entries(prodMap).map(([prod,info])=>{
+    // tomar la unidad_negocio con más cod_material asignados
+    const unModa=Object.entries(info.counts).sort((a,b)=>b[1]-a[1])[0][0];
+    return {...info.first,producto:prod,unidad_negocio:unModa};
+  });
+  // Ordenar por facturación interanual (último mes 2026 + mismo mes 2025)
+  const MO_SB=Object.fromEntries(MO.map((m,i)=>[m,i]));
+  const meses26sb=[...new Set((allVentas||[]).filter(x=>x.anio===2026).map(x=>x.mes))]
+    .sort((a,b)=>(MO_SB[a]||0)-(MO_SB[b]||0));
+  const ultMsb=meses26sb[meses26sb.length-1]||null;
+  function facInterSB(prod){
+    if(prod==='Entrega en Punto Pickit') return allPickitFac.reduce((a,b)=>a+b.monto,0);
+    if(!allVentas) return 0;
+    return (allVentas||[]).filter(x=>x.producto===prod&&(!x.anio||x.anio>=2025))
+      .reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
+  }
+  unicos.sort((a,b)=>facInterSB(b.producto)-facInterSB(a.producto));
+
+  unicos.forEach(m=>{
+    const un=m.unidad_negocio||'';
+    const div=document.createElement('div');
+    div.className='ni';
+    div.setAttribute('data-id',m.producto);
+    div.onclick=function(){go(m.producto,this);};
+    const pill=UN_PILL[un]||'pum';
+    const ico=ICONOS[m.producto]||'📋';
+    const unLbl=UN_LABEL[un]||un||'Otros';
+    div.innerHTML=
+      '<div class="nico">'+ico+'</div>'+
+      '<div class="nt">'+
+        '<div class="nn">'+m.producto+'</div>'+
+        '<div class="nu"><span class="pill '+pill+'">'+unLbl+'</span></div>'+
+      '</div>';
+    cont.appendChild(div);
+  });
+}
+
+// ── LOAD ALL ──
+async function loadAll(){
+  const gl=document.getElementById('gload');
+  const gt=document.getElementById('gload-t');
+  gl.classList.remove('hide');
+  gt.style.color='';
+  gt.textContent='Conectando a Google Drive…';
+  document.getElementById('pov').classList.remove('vis');
+  document.getElementById('pp').classList.remove('vis');
+  document.getElementById('pp').style.display='none';
+  try{
+    gt.textContent='Descargando ventas…';
+    const ventasTodas=await sheetFetch(ID_VENTAS,'ventas');
+    // Solo escenario Actual
+    const ventas=ventasTodas.filter(v=>v.escenario==='Actual');
+
+    gt.textContent='Descargando materiales…';
+    const mats=await sheetFetch(ID_MATERIALES,'material_producto');
+
+    gt.textContent='Descargando SLA & Efectividad…';
+    let slaData=[];
+    try{
+      slaData=await sheetFetch(ID_SLA,'sla_efectividad');
+      // Normalizar nombres de columna con espacios/mayúsculas → snake_case
+      slaData=slaData.map(r=>{
+        const n={};
+        Object.keys(r).forEach(k=>{n[k.toLowerCase().replace(/ /g,'_')]=r[k];});
+        return n;
+      });
+      console.log('sla_efectividad cargada: '+slaData.length+' filas');
+    }
+    catch(e){ console.warn('sla_efectividad error:',e.message); }
+
+    let kpisData=[];
+    try{
+      kpisData=await sheetFetch(ID_KPIS,'kpis_adicionales');
+      console.log('kpis_adicionales cargado: '+kpisData.length+' filas');
+    }
+    catch(e){ console.warn('kpis_adicionales error:',e.message); }
+
+    let motivosData=[];
+    try{
+      motivosData=await sheetFetch(ID_MOTIVOS,'motivos_noentrega');
+      console.log('motivos_noentrega cargado: '+motivosData.length+' filas');
+    }
+    catch(e){ console.warn('motivos_noentrega error:',e.message); }
+
+    let pickitVolData=[];
+    try{
+      pickitVolData=await sheetFetch(ID_PICKIT_VOL,'pickit_volumen');
+      console.log('pickit_volumen cargado: '+pickitVolData.length+' filas');
+    }
+    catch(e){ console.warn('pickit_volumen error:',e.message); }
+
+    let pickitFacData=[];
+    try{
+      pickitFacData=await sheetFetch(ID_PICKIT_FAC,'pickit_facturacion');
+      // Normalizar: buscar columnas por nombre flexible, parsear monto string o número
+      pickitFacData=pickitFacData.map(r=>{
+        const keys=Object.keys(r);
+        const kMes=keys.find(k=>k.toLowerCase().trim()==='mes')||keys[0]||'';
+        const kMonto=keys.find(k=>k.toLowerCase().trim()==='monto')||keys[1]||'';
+        const rawMes=String(r[kMes]||'').trim().toLowerCase();
+        const rawMonto=r[kMonto];
+        let monto=0;
+        if(typeof rawMonto==='number'){monto=rawMonto;}
+        else{const s=String(rawMonto||'').replace(/\$\s*/,'').trim();
+          monto=parseFloat(s.replace(/\./g,'').replace(',','.'))||0;}
+        return {mes:rawMes, monto};
+      }).filter(r=>r.mes&&r.mes!=='total general'&&r.monto>0);
+      console.log('pickit_facturacion cargado: '+pickitFacData.length+' filas',pickitFacData);
+      if(pickitFacData.length===0) console.warn('pickit_facturacion: hoja vacía o columnas no reconocidas. Verificar que la hoja esté pública y que tenga columnas "Mes" y "Monto".');
+    }
+    catch(e){ console.warn('pickit_facturacion error:',e.message,'– Verificar que ID_PICKIT_FAC esté compartido públicamente'); }
+
+    const PROD_ALIAS={
+      'Entrega en un Punto':'Logística a Punto Pickit (cliente Pickit)',
+      'Entrega en Un Punto':'Logística a Punto Pickit (cliente Pickit)',
+      'entrega en un punto':'Logística a Punto Pickit (cliente Pickit)',
+      'Entrega en Punto Pickit':'Logística a Punto Pickit (cliente Pickit)',
+      'Distribucion Consumo Masivo y Paletizado':'Distribucion Consumo Masivo y Palletizado',
+      'Distribucion Salud':'Salud Distribucion',
+      'Distribucion Salud ':'Salud Distribucion',
+      'Warehousing Salud':'Salud Warehousing',
+      'Postal Simple':'Postal',
+      'Checkmail':'Check Mail',
+      'Distribucion de Biggers B2C':'Distribucion de Biggers',
+      'Courier Personas':'Courier Personas (Customs Clearance)',
+      'Colecta en Punto Drop off':'Colecta en Punto Drop off (cliente Pickit)',
+      'Colecta en Punto Drop Off':'Colecta en Punto Drop off (cliente Pickit)',
+      'WHS y Transporte Minería':'Carga Peligrosa',
+      'WHS y Transporte Mineria':'Carga Peligrosa',
+      'Warehousing y Transporte Mineria':'Carga Peligrosa',
+      'Warehousing y Transporte Minería':'Carga Peligrosa',
+    };
+    // Normalizar nombres en materiales (afecta sidebar + matMap)
+    mats.forEach(m=>{ m.producto=PROD_ALIAS[m.producto]||m.producto; });
+    // Inyectar "Entrega en Punto Pickit" como producto virtual (usa sheets propios, no ventas)
+    if(!mats.find(m=>m.producto==='Entrega en Punto Pickit')){
+      mats.push({cod_material:'virtual_pickit',producto:'Entrega en Punto Pickit',owner:'Victoria Duque',unidad_negocio:'Ultima Milla'});
+    }
+    const matMap={};
+    mats.forEach(m=>{matMap[m.cod_material]={producto:m.producto,owner:m.owner,unidad_negocio:m.unidad_negocio};});
+    ventas.forEach(v=>{
+      const m=matMap[v.cod_material]||{};
+      v.producto=m.producto||'Otros';
+      v.owner=m.owner||'—';
+    });
+
+    allVentas=ventas;
+    allSlaEfec=slaData;
+    allKpisAd=kpisData;
+    allMotivos=motivosData;
+    allPickitVol=pickitVolData;
+    allPickitFac=pickitFacData;
+    allProductos=[...new Set(ventas.map(v=>v.producto).filter(p=>p&&p!=='Otros'))].sort();
+    allClientes=[...new Set(ventas.map(v=>v.cliente).filter(Boolean))].sort();
+    buildSidebar(mats);
+    buildProdDrop('');
+    gl.classList.add('hide');
+    if(cur==='overview') buildOverview();
+    else{ showPP(); render(cur); }
+    setTs(); updateHeader();
+  }catch(e){
+    gt.style.color='#E05A5A';
+    gt.style.fontSize='13px';
+    gt.style.maxWidth='600px';
+    gt.style.textAlign='center';
+    gt.textContent='Error al cargar: '+e.message;
+    console.error(e);
+    // Mostrar botón de reintentar
+    const btn=document.createElement('button');
+    btn.textContent='🔄 Reintentar';
+    btn.style.cssText='margin-top:12px;padding:8px 20px;background:var(--teal);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:Barlow,sans-serif;font-size:13px;font-weight:700;';
+    btn.onclick=loadAll;
+    document.getElementById('gload').appendChild(btn);
+  }
+}
+
+// ── FILTER AND RENDER (sin re-fetch) ──
+function filterAndRender(){
+  updateHeader();
+  if(cur==='overview'){
+    buildOverview();
+  } else {
+    // Detectar tab activo antes de limpiar
+    const activeBtn=document.querySelector('.tab-btn.on');
+    const activeTab=activeBtn?activeBtn.getAttribute('data-tab'):'resumen';
+    // Limpiar todos los panels
+    document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('.tab-panel').forEach(p=>{p.classList.remove('on');p.innerHTML='';});
+    document.querySelectorAll('.tab-full').forEach(p=>p.classList.remove('on'));
+    // Restaurar tab activo
+    const targetBtn=document.querySelector('.tab-btn[data-tab="'+activeTab+'"]');
+    const targetPanel=document.getElementById('tab-'+activeTab);
+    if(targetBtn) targetBtn.classList.add('on');
+    if(targetPanel) targetPanel.classList.add('on');
+    // Re-renderizar según tab activo
+    if(activeTab==='resumen') render(cur);
+    else if(activeTab==='indicadores') renderIndicadores(cur);
+    else if(activeTab==='slaefec') renderSlaEfec(cur);
+    else if(activeTab==='comparativa') renderComparativa(cur);
+    else if(activeTab==='ranking') renderRanking(cur);
+    else if(activeTab==='pbi') renderPBI(cur);
+    else if(activeTab==='cxbi') renderCXBI(cur);
+    else render(cur);
+  }
+}
+
+// ── PRODUCTO DROPDOWN ──
+function buildProdDrop(q){
+  const drop=document.getElementById('prodDrop');
+  const lista=q?allProductos.filter(p=>p.toLowerCase().includes(q.toLowerCase())):allProductos;
+  drop.innerHTML='<div class="cli-item all" onclick="setProd(\'\')">Todos ('+allProductos.length+')</div>';
+  lista.slice(0,100).forEach(p=>{
+    const d=document.createElement('div');
+    d.className='cli-item'+(p===prodActual?' sel':'');
+    const num=getNum(p);
+    d.textContent=num+' · '+p;
+    d.onclick=()=>setProd(p);
+    drop.appendChild(d);
+  });
+}
+function setProd(val){
+  prodActual=val;document.getElementById('fProdInput').value=val;closeProdDrop();
+  if(val){
+    cur=val;
+    document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+    const el=document.querySelector(`.ni[data-id="${val}"]`);
+    if(el)el.classList.add('on');
+    showPP();
+    document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('.tab-panel').forEach(p=>{p.classList.remove('on');p.innerHTML='';});
+    document.querySelectorAll('.tab-full').forEach(p=>p.classList.remove('on'));
+    document.querySelector('.tab-btn[data-tab="resumen"]').classList.add('on');
+    document.getElementById('tab-resumen').classList.add('on');
+    render(val);
+    updateHeader();
+  } else {
+    filterAndRender();
+  }
+}
+function onProdInput(){buildProdDrop(document.getElementById('fProdInput').value);openProdDrop();}
+function openProdDrop(){document.getElementById('prodDrop').classList.add('open');}
+function closeProdDrop(){document.getElementById('prodDrop').classList.remove('open');}
+document.getElementById('fProdInput').addEventListener('focus',()=>{if(allProductos.length)openProdDrop();});
+
+function buildCliDrop(q){
+  const drop=document.getElementById('cliDrop');
+  const lista=q?allClientes.filter(c=>c.toLowerCase().includes(q.toLowerCase())):allClientes;
+  drop.innerHTML='<div class="cli-item all" onclick="setCli(\'\')">Todos ('+allClientes.length+')</div>';
+  lista.slice(0,80).forEach(c=>{
+    const d=document.createElement('div');
+    d.textContent=c;d.className='cli-item'+(c===cliActual?' sel':'');
+    d.onclick=()=>setCli(c);drop.appendChild(d);
+  });
+}
+function setCli(val){cliActual=val;document.getElementById('fCliInput').value=val;closeCliDrop();filterAndRender();}
+function onCliInput(){buildCliDrop(document.getElementById('fCliInput').value);openCliDrop();}
+function openCliDrop(){document.getElementById('cliDrop').classList.add('open');}
+function closeCliDrop(){document.getElementById('cliDrop').classList.remove('open');}
+document.getElementById('fCliInput').addEventListener('focus',()=>{if(allClientes.length){buildCliDrop('');openCliDrop();}});
+
+document.addEventListener('click',e=>{if(!e.target.closest('.cli-wrap')){closeProdDrop();closeCliDrop();}});
+
+function gv(){
+  const mes=(document.getElementById('fMes')?.value||'').toUpperCase();
+  const anio=document.getElementById('fAnio')?.value||'';
+  return allVentas.filter(v=>
+    (!prodActual||v.producto===prodActual)&&
+    (!cliActual||v.cliente===cliActual)&&
+    (!mes||v.mes===mes)&&
+    (!anio||String(v.anio)===String(anio))
+  );
+}
+
+function updateHeader(){
+  const v=gv();
+  const years=[...new Set(v.map(x=>x.anio))].sort();
+  const mes=document.getElementById('fMes').value;
+  const anio=document.getElementById('fAnio').value;
+  const parts=[anio||years.join('–'),mes?ML[mes]||mes:'',v.length.toLocaleString()+' reg'].filter(Boolean);
+  document.getElementById('hperiodo').textContent='Dashboard · '+parts.join(' · ');
+}
+
+function ultimoMes(){
+  const reales=allVentas.filter(v=>v.escenario==='Actual');
+  if(!reales.length)return null;
+  const sumas={};
+  reales.forEach(v=>{const k=v.anio+'|'+(v.mes||'').toUpperCase();sumas[k]=(sumas[k]||0)+Math.abs(Number(v.venta_norm)||0);});
+  const con=Object.entries(sumas).filter(([,s])=>s>500000000).map(([k])=>({anio:parseInt(k),mes:k.split('|')[1]})).filter(x=>MO.includes(x.mes)).sort((a,b)=>a.anio!==b.anio?a.anio-b.anio:MO.indexOf(a.mes)-MO.indexOf(b.mes));
+  return con.length?con[con.length-1]:null;
+}
+
+// ── HELPERS PANEL ──
+function showOV(){
+  document.getElementById('pp').classList.remove('vis');document.getElementById('pp').style.display='none';
+  document.getElementById('pov').classList.add('vis');document.getElementById('pov').style.display='';
+}
+function showPP(){
+  document.getElementById('pov').classList.remove('vis');document.getElementById('pov').style.display='none';
+  document.getElementById('pp').classList.add('vis');document.getElementById('pp').style.display='';
+}
+
+// ── OVERVIEW ──
+function buildOverview(){
+  showOV();
+  const v=gv();
+  const ult=ultimoMes();
+  const mes=document.getElementById('fMes').value?.toUpperCase();
+  const banner=document.getElementById('ov-banner');
+  if(ult){
+    const ml=ML[ult.mes]||ult.mes;
+    const iU=MO.indexOf(ult.mes),iF=mes?MO.indexOf(mes):-1;
+    if(mes&&iF>iU){
+      banner.style.cssText='display:flex;align-items:center;gap:10px;background:#FFF0F0;border:1.5px solid #E05A5A;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;';
+      banner.innerHTML='<span>⚠️</span><span>Datos de <strong>'+(ML[mes]||mes)+' '+ult.anio+'</strong> no cargados aún.</span>';
+    } else {
+      banner.style.cssText='display:flex;align-items:center;gap:10px;background:#F0FAF0;border:1.5px solid '+colorAnio(ult.anio)+';border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;';
+      banner.innerHTML='<span>✅</span><span>Datos hasta <strong>'+ml+' '+ult.anio+'</strong>.</span>';
+    }
+  } else { banner.style.display='none'; }
+
+  const byUN={};
+  v.filter(x=>x.producto!=='Entrega en Punto Pickit').forEach(x=>{byUN[x.unidad_negocio||'Otros']=(byUN[x.unidad_negocio||'Otros']||0)+(Number(x.venta_norm)||0);});
+  // Agregar facturación Pickit a Última Milla
+  const MES_MAP_OV={ene:'ENERO',feb:'FEBRERO',mar:'MARZO',abr:'ABRIL',may:'MAYO',jun:'JUNIO',jul:'JULIO',ago:'AGOSTO',sep:'SEPTIEMBRE',oct:'OCTUBRE',nov:'NOVIEMBRE',dic:'DICIEMBRE'};
+  const fMesOV=(document.getElementById('fMes')?.value||'').toUpperCase();
+  const pickitFacFilt=allPickitFac.filter(r=>!fMesOV||(MES_MAP_OV[r.mes]||r.mes.toUpperCase())===fMesOV);
+  const pickitFacTotal=pickitFacFilt.length?pickitFacFilt.reduce((a,b)=>a+b.monto,0):allPickitFac.reduce((a,b)=>a+b.monto,0);
+  byUN['Ultima Milla']=(byUN['Ultima Milla']||0)+pickitFacTotal;
+  const statsEl=document.getElementById('ovStats');
+  statsEl.innerHTML='';
+  let total=0; Object.values(byUN).forEach(x=>total+=x);
+  [['Ultima Milla',T],['Supply Chain',G],['Cross Dock',O]].forEach(([u,c])=>{
+    statsEl.innerHTML+=`<div class="osc"><div class="osc-l">${u}</div><div class="osc-v" style="color:${c}">${fmtARS(byUN[u]||0)}</div><div class="osc-s">Venta normalizada</div></div>`;
+  });
+  statsEl.innerHTML+=`<div class="osc"><div class="osc-l">Total</div><div class="osc-v">${fmtARS(total)}</div><div class="osc-s">${Object.keys(META_NUMS).length} productos</div></div>`;
+
+  // Para ordenar por facturación: usar solo 2025+2026 para comparar en igualdad con Pickit
+  let vTodos=allVentas.filter(x=>!x.anio||x.anio>=2025);
+  if(prodActual) vTodos=vTodos.filter(x=>x.producto===prodActual);
+  const byP={};
+  vTodos.forEach(x=>{
+    const p=x.producto;if(!byP[p])byP[p]={fac:0,vol:0,cli:new Set(),anio:x.anio||2025};
+    byP[p].fac+=Number(x.venta_norm)||0;byP[p].vol+=Number(x.cantidad)||0;
+    if(x.cliente)byP[p].cli.add(x.cliente);
+    if((x.anio||0)>byP[p].anio)byP[p].anio=x.anio;
+  });
+
+  // Calcular facturación interanual: último mes 2026 + mismo mes 2025
+  const MO_I2=Object.fromEntries(MO.map((m,i)=>[m,i]));
+  const meses26ov=[...new Set(vTodos.filter(x=>x.anio===2026).map(x=>x.mes))]
+    .sort((a,b)=>(MO_I2[a]||0)-(MO_I2[b]||0));
+  const ultMes26ov=meses26ov[meses26ov.length-1]||null;
+  function facInteranual(prod){
+    // Suma total del período: todos los meses 2025 + 2026
+    return byP[prod]?.fac||0;
+  }
+
+  const grid=document.getElementById('og');grid.innerHTML='';
+  // Agregar Entrega en Punto Pickit a byP con su facturación propia para ordenar junto a todos
+  const pickitFacOrden=allPickitFac.reduce((a,b)=>a+b.monto,0);
+  // Si allPickitFac no cargó, usar el top de byP como referencia para no quedarse al fondo
+  const facParaOrden=pickitFacOrden>0?pickitFacOrden:(Object.values(byP).map(d=>d.fac).sort((a,b)=>b-a)[0]||1e9);
+  byP['Entrega en Punto Pickit']={fac:facParaOrden,vol:0,cli:new Set(['Adidas que entrega en punto']),anio:2026};
+
+  const allSorted=Object.keys(byP)
+    .filter(prod=>(byP[prod].fac>0||prod==='Entrega en Punto Pickit')&&(!prodActual||prod===prodActual))
+    .sort((a,b)=>byP[b].fac-byP[a].fac);
+
+  allSorted.forEach(prod=>{
+    const num=getNum(prod);
+    const d=byP[prod];
+    const bc=colorAnio(d.anio);
+    const fac=prod==='Entrega en Punto Pickit'?pickitFacTotal:d.fac;
+    const slaRows=allSlaEfec.filter(r=>(r.producto||'').trim()===prod.trim()&&r.sla_pct!=null&&r.sla_pct!=='');
+    const lastSla=slaRows.length?Number(slaRows[slaRows.length-1].sla_pct):null;
+    const slaBadge=lastSla!==null?`<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:6px;background:${slaColor(lastSla)}22;color:${slaColor(lastSla)}">SLA ${lastSla.toFixed(1)}%</span>`:'';
+    const card=document.createElement('div');card.className='ocard';card.style.borderTopColor=bc;
+    const subLine=prod==='Entrega en Punto Pickit'?'Adidas que entrega en punto':`${Math.round(d.vol).toLocaleString()} unid. · ${d.cli.size} clientes`;
+    card.innerHTML=`<div class="oc-num">${num} <span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:6px;background:${bc}22;color:${bc}">${d.anio}</span> ${slaBadge}</div>
+<div class="oc-name">${prod}</div>
+<div class="oc-owner">👤 ${OWNERS[prod]||'—'}</div>
+<div><span class="oc-v">${fmtARS(fac)}</span></div>
+<div style="font-size:10px;color:var(--gray);margin-top:2px">${subLine}</div>`;
+    card.onclick=()=>go(prod,document.querySelector(`.ni[data-id="${prod}"]`));
+    grid.appendChild(card);
+  });
+  updateHeader();
+}
+
+// ── NAVIGATE ──
+function go(id,el){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  if(el)el.classList.add('on');
+  cur=id;
+  if(id==='overview'){buildOverview();return;}
+  if(prodActual&&prodActual!==id){prodActual='';document.getElementById('fProdInput').value='';buildProdDrop('');}
+  // Actualizar dropdown de clientes con los del producto seleccionado
+  allClientes=[...new Set(allVentas.filter(x=>x.producto===id).map(v=>v.cliente).filter(Boolean))].sort();
+  cliActual='';document.getElementById('fCliInput').value='';buildCliDrop('');
+  showPP();
+  // reset tabs
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p=>{p.classList.remove('on');p.innerHTML='';});
+  document.querySelectorAll('.tab-full').forEach(p=>p.classList.remove('on'));
+  document.querySelector('.tab-btn[data-tab="resumen"]').classList.add('on');
+  document.getElementById('tab-resumen').classList.add('on');
+  render(id);
+}
+
+// ── SWITCH TAB ──
+function switchTab(tab,el){
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab-full').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  if(tab==='pbi'){
+    document.getElementById('tab-pbi').classList.add('on');
+    renderPBI(cur);
+  } else if(tab==='cxbi'){
+    document.getElementById('tab-cxbi').classList.add('on');
+    renderCXBI(cur);
+  } else {
+    const panel=document.getElementById('tab-'+tab);
+    if(panel){ panel.classList.add('on'); }
+    if(tab==='indicadores'&&document.getElementById('tab-indicadores').innerHTML==='') renderIndicadores(cur);
+    if(tab==='slaefec'&&document.getElementById('tab-slaefec').innerHTML==='') renderSlaEfec(cur);
+    if(tab==='comparativa'&&document.getElementById('tab-comparativa').innerHTML==='') renderComparativa(cur);
+    if(tab==='ranking'&&document.getElementById('tab-ranking').innerHTML==='') renderRanking(cur);
+  }
+}
+
+// ── RENDER PRODUCT ──
+function render(prod){
+  const num=getNum(prod);
+  const v=gv().filter(x=>x.producto===prod);
+  const isPickitVirtual=prod==='Entrega en Punto Pickit';
+  const fac=isPickitVirtual?allPickitFac.reduce((a,b)=>a+b.monto,0):v.reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
+  const vol=isPickitVirtual?allPickitVol.reduce((a,b)=>Number(b['Volumen']||0)+a,0):v.reduce((a,b)=>a+(Number(b.cantidad)||0),0);
+  const clis=isPickitVirtual?new Set(['Adidas']):new Set(v.map(x=>x.cliente).filter(Boolean));
+  const maxAnio=v.length?Math.max(...v.map(x=>x.anio)):2025;
+  const owner=OWNERS[prod]||'—';
+  document.getElementById('pn').textContent=num;
+  document.getElementById('pn').style.color=colorAnio(maxAnio);
+  document.getElementById('pname').textContent=prod;
+  document.getElementById('pdesc').textContent=DESCS[prod]||'';
+  document.getElementById('pmeta').innerHTML=`
+    <div class="mi"><div class="mv">${fmtARS(fac)}</div><div class="ml">Facturación</div></div>
+    <div class="ms"></div><div class="mi"><div class="mv">${Math.round(vol).toLocaleString()}</div><div class="ml">Volumen</div></div>
+    <div class="ms"></div><div class="mi"><div class="mv">${clis.size}</div><div class="ml">Clientes</div></div>
+    <div class="ms"></div><div class="mi"><div class="mv" style="font-size:12px">${owner}</div><div class="ml">Owner</div></div>`;
+
+  // kstrip — primeras categorías del plan de indicadores
+  const ks=document.getElementById('ks');
+  ks.innerHTML='<span class="kl">Indicadores:</span>';
+  const cats=INDICADORES[prod]||[];
+  cats.forEach(sec=>{
+    const c=document.createElement('div');c.className='kc';
+    c.innerHTML=`<span class="kd" style="background:${sec.color}"></span>${sec.cat} (${sec.items.length})`;
+    ks.appendChild(c);
+  });
+  setTs();
+  renderResumen(prod,v,fac,vol,clis);
+  // clear lazy panels
+  ['indicadores','slaefec','comparativa','ranking'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    if(el)el.innerHTML='';
+  });
+}
+
+// ── RESUMEN ──
+function renderResumen(prod,v,fac,vol,clis){
+  const pc=document.getElementById('tab-resumen');
+  pc.innerHTML='';
+
+  // SLA & Efec filtrado por mes/año activo
+  const _fMesR=(document.getElementById('fMes')?.value||'').toUpperCase();
+  const _fAnioR=document.getElementById('fAnio')?.value||'';
+  const slaRows=allSlaEfec.filter(r=>{
+    if((r.producto||'').trim()!==prod.trim()) return false;
+    if(_fMesR&&(r.mes||'').toUpperCase()!==_fMesR) return false;
+    if(_fAnioR&&String(r.anio)!==String(_fAnioR)) return false;
+    return true;
+  });
+  const slaWithData=slaRows.filter(r=>r.sla_pct!=null);
+  const efecWithData=slaRows.filter(r=>r.efectividad_pct!=null);
+  const lastSla=slaWithData.length?Number(slaWithData[slaWithData.length-1].sla_pct):null;
+  const lastEfec=efecWithData.length?Number(efecWithData[efecWithData.length-1].efectividad_pct):null;
+  const avgSla=slaWithData.length?slaWithData.reduce((a,b)=>a+Number(b.sla_pct),0)/slaWithData.length:null;
+  const avgEfec=efecWithData.length?efecWithData.reduce((a,b)=>a+Number(b.efectividad_pct),0)/efecWithData.length:null;
+  // Si hay filtro de mes activo: muestra el valor puntual; si no: muestra promedio
+  const hasMesFilter=!!_fMesR;
+  const slaDisp=hasMesFilter?lastSla:avgSla;
+  const efecDisp=hasMesFilter?lastEfec:avgEfec;
+  const slaLblCard=hasMesFilter?'SLA':'SLA';
+  const slaSubCard=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Promedio histórico';
+  const efecSubCard=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Promedio histórico';
+
+  const top1=Object.entries(v.reduce((a,b)=>{if(!b.cliente)return a;a[b.cliente]=(a[b.cliente]||0)+(Number(b.venta_norm)||0);return a;},{})).sort((a,b)=>b[1]-a[1])[0];
+
+  // ── Calcular comparativas dinámicas ──
+  // Obtener todos los datos del producto sin filtro de año/mes para comparativas
+  const vProdTodos=allVentas.filter(x=>x.producto===prod&&(!cliActual||x.cliente===cliActual));
+  const MO_IDX2=Object.fromEntries(MO.map((m,i)=>[m,i]));
+  // Meses disponibles ordenados
+  const mesesDisp2=[...new Set(vProdTodos.map(x=>x.anio+'|'+x.mes))]
+    .sort((a,b)=>{const[ya,ma]=a.split('|');const[yb,mb]=b.split('|');
+      return ya!==yb?Number(ya)-Number(yb):(MO_IDX2[ma]||0)-(MO_IDX2[mb]||0);});
+  // Último mes 2026
+  const meses26=mesesDisp2.filter(k=>k.startsWith('2026|'));
+  const ultK26=meses26[meses26.length-1]||'';
+  const[,ultM26]=ultK26.split('|');
+  // Mismo mes 2025
+  const mismoK25=ultM26?('2025|'+ultM26):'';
+  // Mes anterior al último 2026
+  const antK26=meses26[meses26.length-2]||'';
+  const[,antM26]=antK26.split('|');
+
+  function facMes(anio,mes){
+    return vProdTodos.filter(x=>String(x.anio)===String(anio)&&x.mes===mes)
+      .reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
+  }
+  const fUlt26=ultM26?facMes(2026,ultM26):null;
+  const fMismo25=ultM26?facMes(2025,ultM26):null;
+  const fAnt26=antM26?facMes(2026,antM26):null;
+
+  function mesLabel(mes){if(!mes)return'—';return mes.charAt(0)+mes.slice(1).toLowerCase();}
+  function diffPct(a,b){if(!b||b===0)return null;return((a-b)/Math.abs(b)*100);}
+  function pctBadge(pct){
+    if(pct===null)return'';
+    const col=pct>=0?'#4D7200':'#C0392B';
+    return '<span style="font-size:11px;font-weight:700;color:'+col+'">'+(pct>=0?'+':'')+pct.toFixed(1)+'%</span>';
+  }
+
+  const mrow=document.createElement('div');mrow.className='mrow';
+  if(prod==='Entrega en Punto Pickit'){
+    const MES_MAP_R={ene:'ENERO',feb:'FEBRERO',mar:'MARZO',abr:'ABRIL',may:'MAYO',jun:'JUNIO',jul:'JULIO',ago:'AGOSTO',sep:'SEPTIEMBRE',oct:'OCTUBRE',nov:'NOVIEMBRE',dic:'DICIEMBRE'};
+    const fMesFilt=(document.getElementById('fMes')?.value||'').toUpperCase();
+    const pvFiltered=allPickitVol.filter(r=>{
+      const m=String(r['Mes ']||r['Mes']||'').trim().toLowerCase();
+      if(!m||m==='total general') return false;
+      const mn=MES_MAP_R[m]||m.toUpperCase();
+      return !fMesFilt||mn===fMesFilt;
+    });
+    const pvAll=allPickitVol.filter(r=>{const m=String(r['Mes ']||r['Mes']||'').trim().toLowerCase();return m&&m!=='total general';});
+    const pvLast=pvAll[pvAll.length-1];
+    const pvVolTotal=pvFiltered.length?pvFiltered.reduce((a,b)=>a+(Number(b['Volumen'])||0),0):(pvLast?Number(pvLast['Volumen'])||0:0);
+    const pvLbl=pvLast?String(pvLast['Mes ']||pvLast['Mes']||'').trim():'';
+    // Facturación desde sheet propio
+    const pfFilt=allPickitFac.filter(r=>!fMesFilt||(MES_MAP_R[r.mes]||r.mes.toUpperCase())===fMesFilt);
+    const pfTotal=pfFilt.length?pfFilt.reduce((a,b)=>a+b.monto,0):allPickitFac.reduce((a,b)=>a+b.monto,0);
+    const pfLbl=pfFilt.length?pfFilt[pfFilt.length-1].mes:(allPickitFac.length?allPickitFac[allPickitFac.length-1].mes:'');
+    mrow.innerHTML=`
+      <div class="mc"><div class="mc-l">Facturación</div><div class="mc-v">${fmtARS(pfTotal)}</div><div class="mc-s">${pfLbl||'Total acumulado'}</div></div>
+      <div class="mc"><div class="mc-l">Volumen</div><div class="mc-v">${Math.round(pvVolTotal).toLocaleString()}</div><div class="mc-s">Envíos en punto Pick It · ${pvLbl}</div></div>
+      ${slaDisp!==null?`<div class="mc" style="border-top-color:${slaColor(slaDisp)}"><div class="mc-l">SLA</div><div class="mc-v" style="color:${slaColor(slaDisp)}">${slaDisp.toFixed(1)}%</div><div class="mc-s">${slaSubCard}</div></div>`:''}
+      ${efecDisp!==null?`<div class="mc" style="border-top-color:${slaColor(efecDisp)}"><div class="mc-l">Efectividad</div><div class="mc-v" style="color:${slaColor(efecDisp)}">${efecDisp.toFixed(1)}%</div><div class="mc-s">${efecSubCard}</div></div>`:''}`;
+  } else {
+  mrow.innerHTML=`
+    <div class="mc"><div class="mc-l">Facturación</div><div class="mc-v">${fmtARS(fac)}</div><div class="mc-s">Venta normalizada</div></div>
+    <div class="mc"><div class="mc-l">Volumen</div><div class="mc-v">${Math.round(vol).toLocaleString()}</div><div class="mc-s">Unidades</div></div>
+    <div class="mc"><div class="mc-l">Clientes activos</div><div class="mc-v">${clis.size}</div><div class="mc-s">Con facturación</div></div>
+    ${slaDisp!==null?`<div class="mc" style="border-top-color:${slaColor(slaDisp)}"><div class="mc-l">SLA</div><div class="mc-v" style="color:${slaColor(slaDisp)}">${slaDisp.toFixed(1)}%</div><div class="mc-s">${slaSubCard}</div></div>`:''}
+    ${efecDisp!==null?`<div class="mc" style="border-top-color:${slaColor(efecDisp)}"><div class="mc-l">Efectividad</div><div class="mc-v" style="color:${slaColor(efecDisp)}">${efecDisp.toFixed(1)}%</div><div class="mc-s">${efecSubCard}</div></div>`:''}
+    ${top1?`<div class="mc"><div class="mc-l">Top cliente</div><div class="mc-v" style="font-size:15px">${fmtARS(top1[1])}</div><div class="mc-s">${top1[0]}</div></div>`:''}`;
+  }
+  pc.appendChild(mrow);
+
+  // ── Tarjetas comparativas ──
+  if(prod!=='Entrega en Punto Pickit'&&(fUlt26!==null||fMismo25!==null||fAnt26!==null)){
+    const compRow=document.createElement('div');
+    compRow.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:12px;';
+
+    // Tarjeta 1: mismo mes año anterior
+    if(fUlt26!==null&&fMismo25!==null){
+      const pct1=diffPct(fUlt26,fMismo25);
+      const card1=document.createElement('div');
+      card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct1>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:14px;';
+      card1.innerHTML=
+        '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+mesLabel(ultM26)+' 2025 → '+mesLabel(ultM26)+' 2026</div>'+
+        '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'+
+          '<div>'+
+            '<div style="font-size:9px;color:var(--gray)">'+mesLabel(ultM26)+' 2025</div>'+
+            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:var(--orange)">'+fmtARS(fMismo25)+'</div>'+
+          '</div>'+
+          '<div style="color:var(--gray);font-size:18px">→</div>'+
+          '<div>'+
+            '<div style="font-size:9px;color:var(--gray)">'+mesLabel(ultM26)+' 2026</div>'+
+            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:#97BF0D">'+fmtARS(fUlt26)+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div style="margin-top:6px">'+pctBadge(pct1)+'<span style="font-size:10px;color:var(--gray);margin-left:4px">interanual</span></div>';
+      compRow.appendChild(card1);
+    }
+
+    // Tarjeta 2: mes actual vs mes anterior
+    if(fUlt26!==null&&fAnt26!==null&&antM26){
+      const pct2=diffPct(fUlt26,fAnt26);
+      const card2=document.createElement('div');
+      card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct2>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:14px;';
+      card2.innerHTML=
+        '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+mesLabel(antM26)+' 2026 → '+mesLabel(ultM26)+' 2026</div>'+
+        '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'+
+          '<div>'+
+            '<div style="font-size:9px;color:var(--gray)">'+mesLabel(antM26)+' 2026</div>'+
+            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:#97BF0D">'+fmtARS(fAnt26)+'</div>'+
+          '</div>'+
+          '<div style="color:var(--gray);font-size:18px">→</div>'+
+          '<div>'+
+            '<div style="font-size:9px;color:var(--gray)">'+mesLabel(ultM26)+' 2026</div>'+
+            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:#97BF0D">'+fmtARS(fUlt26)+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div style="margin-top:6px">'+pctBadge(pct2)+'<span style="font-size:10px;color:var(--gray);margin-left:4px">variación mensual</span></div>';
+      compRow.appendChild(card2);
+    }
+    if(compRow.children.length) pc.appendChild(compRow);
+  }
+
+  // Gráficos fac + vol
+  const isPickit=prod==='Entrega en Punto Pickit';
+  const byAM={};
+  if(!isPickit) v.forEach(x=>{const k=x.anio+'|'+(x.mes||'').toUpperCase();byAM[k]=(byAM[k]||0)+(Number(x.venta_norm)||0);});
+  const sorted=Object.entries(byAM).map(([k,val])=>({anio:parseInt(k),mes:k.split('|')[1],val})).filter(x=>MO.includes(x.mes)).sort((a,b)=>a.anio!==b.anio?a.anio-b.anio:MO.indexOf(a.mes)-MO.indexOf(b.mes));
+
+  if(isPickit){
+    // Pickit: gráficos de facturación (allPickitFac) y volumen (allPickitVol)
+    const MES_MAP_G={ene:'ENE',feb:'FEB',mar:'MAR',abr:'ABR',may:'MAY',jun:'JUN',jul:'JUL',ago:'AGO',sep:'SEP',oct:'OCT',nov:'NOV',dic:'DIC'};
+    const pvRows=allPickitVol.filter(r=>{const m=String(r['Mes ']||r['Mes']||'').trim().toLowerCase();return m&&m!=='total general';});
+    const pfRows=allPickitFac.filter(r=>r.mes&&r.mes!=='total general');
+    if(pvRows.length||pfRows.length){
+      const cg=document.createElement('div');cg.className='cgrid';
+      const facHtml=pfRows.length?`<div class="cb"><div class="cb-t">Facturación mensual</div><div class="cb-s">ARS · Entrega en Punto Pickit</div><div class="cw"><canvas id="cf-pickit"></canvas></div></div>`:'';
+      const volHtml=pvRows.length?`<div class="cb"><div class="cb-t">Volumen mensual</div><div class="cb-s">Envíos en punto Pick It</div><div class="cw"><canvas id="cv-pickit"></canvas></div></div>`:'';
+      cg.innerHTML=facHtml+volHtml;
+      pc.appendChild(cg);
+      requestAnimationFrame(()=>{
+        if(pfRows.length){
+          const pfLbls=pfRows.map(r=>MES_MAP_G[r.mes]||r.mes.toUpperCase().slice(0,3));
+          const pfVals=pfRows.map(r=>+(r.monto/1e6).toFixed(1));
+          mkChart('cf-pickit','bar',pfLbls,[{data:pfVals,backgroundColor:'rgba(151,191,13,.8)',borderRadius:4}],{yf:v=>'$'+v+'M'});
+        }
+        if(pvRows.length){
+          const pvLbls=pvRows.map(r=>MES_MAP_G[String(r['Mes ']||r['Mes']||'').trim().toLowerCase()]||'');
+          const pvVals=pvRows.map(r=>Number(r['Volumen'])||0);
+          mkChart('cv-pickit','line',pvLbls,[{data:pvVals,borderColor:T,backgroundColor:'rgba(0,156,163,.08)',tension:.4,fill:true,pointRadius:3}],{yf:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'K':v});
+        }
+      });
+    }
+  } else if(sorted.length){
+    const lbls=sorted.map(x=>MS[MO.indexOf(x.mes)]+"'"+String(x.anio).slice(-2));
+    const vals=sorted.map(x=>+(x.val/1e6).toFixed(1));
+    const cols=sorted.map(x=>x.anio>=2026?'rgba(151,191,13,.8)':'rgba(242,148,0,.8)');
+    const byAMvol={};
+    v.forEach(x=>{const k=x.anio+'|'+(x.mes||'').toUpperCase();byAMvol[k]=(byAMvol[k]||0)+(Number(x.cantidad)||0);});
+    const vols=sorted.map(x=>Math.round(byAMvol[x.anio+'|'+x.mes]||0));
+    const cg=document.createElement('div');cg.className='cgrid';
+    cg.innerHTML=`<div class="cb"><div class="cb-t">Facturación mensual</div><div class="cb-s">ARS M · 🟠 2025 · 🟢 2026</div><div class="cw"><canvas id="cf"></canvas></div></div>
+      <div class="cb"><div class="cb-t">Volumen mensual</div><div class="cb-s">Unidades</div><div class="cw"><canvas id="cv"></canvas></div></div>`;
+    pc.appendChild(cg);
+    requestAnimationFrame(()=>{
+      mkChart('cf','bar',lbls,[{data:vals,backgroundColor:cols,borderRadius:4}],{yf:v=>'$'+v+'M'});
+      mkChart('cv','line',lbls,[{data:vols,borderColor:T,backgroundColor:'rgba(0,156,163,.08)',tension:.4,fill:true,pointRadius:3}],{yf:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'K':v});
+    });
+  }
+
+  // Top clientes
+  const CLI_ALIAS=isPickit?{'PICK IT ARGENTINA':'Adidas entrega en punto'}:{};
+  const byC={};
+  v.forEach(x=>{if(!x.cliente)return;const cn=CLI_ALIAS[x.cliente]||x.cliente;byC[cn]=(byC[cn]||0)+(Number(x.venta_norm)||0);});
+  const topC=Object.entries(byC).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(topC.length){
+    const ct=document.createElement('div');ct.className='ctb';
+    const pickitFacTot=isPickit?allPickitFac.reduce((a,b)=>a+b.monto,0):0;
+    ct.innerHTML=`<h3>Top Clientes</h3><table class="ct"><thead><tr><th>Cliente</th><th style="text-align:right">Facturación</th></tr></thead><tbody>
+      ${topC.map(([n,f],i)=>`<tr><td>${i+1}. ${n}</td><td style="text-align:right;font-weight:600;color:var(--teal)">${isPickit?fmtARS(pickitFacTot):fmtARS(f)}</td></tr>`).join('')}</tbody></table>`;
+    pc.appendChild(ct);
+  }
+
+  pc.appendChild(Object.assign(document.createElement('div'),{
+    className:'src-badge',
+    innerHTML:`<span>🔗 <strong>Google Drive · ventas</strong> · ${v.length.toLocaleString()} registros &nbsp;|&nbsp; 📈 <strong>Google Drive · sla_efectividad</strong> · ${slaRows.length} registros</span>`
+  }));
+}
+
+// ── INDICADORES ──
+function renderIndicadores(prod){
+  const pc=document.getElementById('tab-indicadores');
+  pc.innerHTML='';
+
+  const vProd=allVentas.filter(x=>x.producto===prod&&x.escenario==='Actual'&&(!cliActual||x.cliente===cliActual));
+  const MO_I=Object.fromEntries(MO.map((m,i)=>[m,i]));
+  const mesesDisp=[...new Set(vProd.map(x=>x.anio+'|'+x.mes))].sort((a,b)=>{
+    const[ya,ma]=a.split('|');const[yb,mb]=b.split('|');
+    return ya!==yb?Number(ya)-Number(yb):(MO_I[ma]||0)-(MO_I[mb]||0);
+  });
+  const ultK=mesesDisp[mesesDisp.length-1]||'';
+  const antK=mesesDisp[mesesDisp.length-2]||'';
+  const[ultA,ultM]=ultK.split('|'); const[antA,antM]=antK.split('|');
+  const vUlt=vProd.filter(x=>String(x.anio)===String(ultA)&&x.mes===ultM);
+  const vAnt=vProd.filter(x=>String(x.anio)===String(antA)&&x.mes===antM);
+
+  const facUlt=vUlt.reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
+  const volUlt=vUlt.reduce((a,b)=>a+(Number(b.cantidad)||0),0);
+  const clisUlt=new Set(vUlt.map(x=>x.cliente).filter(Boolean));
+  const clisAnt=new Set(vAnt.map(x=>x.cliente).filter(Boolean));
+  const arpu=clisUlt.size>0?facUlt/clisUlt.size:0;
+  const nuevos=[...clisUlt].filter(c=>!clisAnt.has(c)).length;
+  const bajas=[...clisAnt].filter(c=>!clisUlt.has(c)).length;
+
+  const slaP=allSlaEfec.filter(r=>(r.producto||'').trim()===prod.trim());
+  // KPIs adicionales del producto
+  function kpiVal(nombre){
+    const r=allKpisAd.find(k=>(k.producto||'').trim()===prod.trim()&&(k.indicador||'').toLowerCase().includes(nombre.toLowerCase()));
+    return r?parseFloat(r.valor):null;
+  }
+  const tiempoAwpHfd=kpiVal('AWP');
+  slaP.sort((a,b)=>Number(a.anio)!==Number(b.anio)?Number(a.anio)-Number(b.anio):(MO_I[a.mes]||0)-(MO_I[b.mes]||0));
+  const lSla=slaP.filter(r=>r.sla_pct!=null&&r.sla_pct!=='').pop();
+  const lEfe=slaP.filter(r=>r.efectividad_pct!=null&&r.efectividad_pct!=='').pop();
+  const lEfe1=slaP.filter(r=>r.efectividad_1ra_vuelta!=null&&r.efectividad_1ra_vuelta!=='').pop();
+  const slaVal=lSla?parseFloat(lSla.sla_pct):null;
+  const efeVal=lEfe?parseFloat(lEfe.efectividad_pct):null;
+  const efec1Val=lEfe1?parseFloat(lEfe1.efectividad_1ra_vuelta):null;
+  const slaLbl=lSla?(lSla.mes.charAt(0)+lSla.mes.slice(1).toLowerCase()+' '+lSla.anio):'—';
+  const efeLbl=lEfe?(lEfe.mes.charAt(0)+lEfe.mes.slice(1).toLowerCase()+' '+lEfe.anio):'—';
+  const efec1Lbl=lEfe1?(lEfe1.mes.charAt(0)+lEfe1.mes.slice(1).toLowerCase()+' '+lEfe1.anio):'—';
+  const mesLbl=ultM?(ultM.charAt(0)+ultM.slice(1).toLowerCase()+' '+ultA):'—';
+
+  function fv(val,fmt,nota){
+    const d=document.createElement('div');
+    if(fmt==='txt'){
+      d.style.cssText='font-weight:600;font-size:12px;color:#333';
+      d.textContent=val||'—';
+      return d;
+    }
+    const ok=val!==null&&val!==undefined&&!isNaN(val);
+    if(!ok){
+      d.style.cssText='color:#bbb;font-size:11px';d.textContent='Sin datos';
+      return d;
+    }
+    let txt='';
+    if(fmt==='ars') txt=fmtARS(val);
+    else if(fmt==='pct'){txt=val.toFixed(1)+'%';d.style.color=slaColor(val);}
+    else if(fmt==='num') txt=Math.round(val).toLocaleString('es-AR');
+    else txt=val.toFixed(1);
+    d.style.cssText='font-weight:700;font-size:13px';d.textContent=txt;
+    if(nota){const s=document.createElement('div');s.style.cssText='font-size:9px;color:#aaa;margin-top:1px';s.textContent=nota;d.appendChild(s);}
+    return d;
+  }
+
+  // Definición indicadores por producto
+  function getItems(){
+    const comun=[
+      {n:'Facturación',f:'Suma venta normalizada (escenario Actual)',src:'Google Drive · ventas',val:facUlt,fmt:'ars',nota:mesLbl},
+      {n:'Volumen',f:'Suma unidades del período',src:'Google Drive · ventas',val:volUlt,fmt:'num',nota:mesLbl},
+      {n:'Clientes activos',f:'Clientes distintos con venta > 0',src:'Google Drive · ventas',val:clisUlt.size,fmt:'num',nota:mesLbl},
+      {n:'Nuevos clientes',f:'Clientes sin actividad en mes anterior',src:'Google Drive · ventas',val:nuevos,fmt:'num',nota:mesLbl},
+      {n:'Bajas (Churn qty)',f:'Clientes del mes anterior sin actividad en mes actual',src:'Google Drive · ventas',val:bajas,fmt:'num',nota:mesLbl},
+      {n:'ARPU',f:'Facturación / Clientes activos del período',src:'Google Drive · ventas',val:arpu>0?arpu:null,fmt:'ars',nota:mesLbl},
+    ];
+    const slaItems=[
+      {n:'SLA',f:'Entregas / operaciones en plazo sobre total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
+      {n:'Efectividad',f:'Entregas exitosas sobre total de intentos × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
+      {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
+      {n:'Causas de no entrega',f:'Distribución % de motivos de fallo por categoría',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+      {n:'Errores / rechazos',f:'Operaciones con error o rechazo / Total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+    ];
+    const cliItems=[
+      {n:'NPS',f:'% Promotores − % Detractores (encuesta)',src:'Encuesta NPS',val:null,fmt:'num',nota:null},
+      {n:'Penalidades',f:'Monto total de penalidades aplicadas en el período',src:'Sistema contable',val:null,fmt:'ars',nota:null},
+    ];
+
+    const specific={
+      'Carta Documento Digital':[
+        {cat:'Performance del Negocio',color:'#97BF0D',items:comun},
+        {cat:'Operación',color:'#F29400',items:[
+          {n:'Tasa error operativo',f:'Cartas con problema de impresión / total cartas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+          {n:'Tiempo imposición (AWP→HFD)',f:'Promedio horas desde ingreso AWP hasta pase a HFD',src:'Google Drive · kpis_adicionales',val:tiempoAwpHfd,fmt:'num',nota:null},
+          {n:'Tiempo digitalización acuses',f:'Promedio horas entre entrega y digitalización de acuse (addoc)',src:'Sistema addoc',val:null,fmt:'num',nota:null},
+          {n:'Efectividad 1ra vuelta',f:'Cartas entregadas en 1ra visita / Total cartas × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
+          {n:'Efectividad general',f:'Total entregas exitosas (todas las vueltas) / Total cartas × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
+          {n:'SLA',f:'Cartas entregadas en plazo contractual / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
+        ]},
+        {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+          ...cliItems,
+        ]},
+      ],
+      'Paqueteria E-Commerce B2C':[
+        {cat:'Performance del Negocio',color:'#97BF0D',items:comun},
+        {cat:'Colecta',color:'#E67E22',items:[
+          {n:'Tasa colectas fallidas',f:'Colectas donde no se retiró mercadería / total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+          {n:'Tiempo solicitud → colecta',f:'Promedio horas entre solicitud y ejecución de colecta',src:'Sistema operativo',val:null,fmt:'num',nota:null},
+        ]},
+        {cat:'Última Milla',color:'#009CA3',items:slaItems},
+        {cat:'Performance del Punto (Pick It)',color:'#C0392B',items:[
+          {n:'Tasa paquetes vencidos',f:'Paquetes sin retirar > plazo máximo / total en punto × 100',src:'Sistema Pick It',val:null,fmt:'pct',nota:null},
+          {n:'Incidentes en punto',f:'Cantidad de incidentes reportados en puntos de entrega',src:'Sistema Pick It',val:null,fmt:'num',nota:null},
+        ]},
+        {cat:'Experiencia del Cliente',color:'#1ABC9C',items:[
+          ...cliItems,
+          {n:'Tasa de retiro efectivo',f:'Paquetes retirados / total disponibles en punto × 100',src:'Sistema Pick It',val:null,fmt:'pct',nota:null},
+        ]},
+      ],
+      'Entrega en Punto Pickit':(()=>{
+        const MES_MAP={ene:'ENERO',feb:'FEBRERO',mar:'MARZO',abr:'ABRIL',may:'MAYO',jun:'JUNIO',jul:'JULIO',ago:'AGOSTO',sep:'SEPTIEMBRE',oct:'OCTUBRE',nov:'NOVIEMBRE',dic:'DICIEMBRE'};
+        const fMes=(document.getElementById('fMes')?.value||'').toUpperCase();
+        const fAnio=document.getElementById('fAnio')?.value||'';
+        const pvRows=allPickitVol.filter(r=>{
+          const m=String(r['Mes ']||r['Mes']||'').trim().toLowerCase();
+          if(!m||m==='total general') return false;
+          const mesNorm=MES_MAP[m]||m.toUpperCase();
+          if(fMes&&mesNorm!==fMes) return false;
+          return true;
+        });
+        const pickitVolTotal=pvRows.reduce((a,b)=>a+(Number(b['Volumen'])||0),0);
+        const pvAll=allPickitVol.filter(r=>{const m=String(r['Mes ']||r['Mes']||'').trim().toLowerCase();return m&&m!=='total general';});
+        const pvLast=pvAll[pvAll.length-1];
+        const pvLbl=pvLast?String(pvLast['Mes ']||pvLast['Mes']||'').trim():'';
+        const pickitVolDisp=pvRows.length>0?pickitVolTotal:(pvLast?Number(pvLast['Volumen'])||0:null);
+        // Efectividad en pp y vencidos desde sla_efectividad
+        const ppRows=slaP.filter(r=>r.efectividad_en_pp!=null&&r.efectividad_en_pp!=='');
+        const vcRows=slaP.filter(r=>r.vencidos_en_pp!=null&&r.vencidos_en_pp!=='');
+        const ppVal=ppRows.length?Number(ppRows[ppRows.length-1].efectividad_en_pp):null;
+        const ppLbl=ppRows.length?(ppRows[ppRows.length-1].mes.charAt(0)+ppRows[ppRows.length-1].mes.slice(1).toLowerCase()+' '+ppRows[ppRows.length-1].anio):'';
+        const vcVal=vcRows.length?Number(vcRows[vcRows.length-1].vencidos_en_pp):null;
+        const vcLbl=vcRows.length?(vcRows[vcRows.length-1].mes.charAt(0)+vcRows[vcRows.length-1].mes.slice(1).toLowerCase()+' '+vcRows[vcRows.length-1].anio):'';
+        return [
+        {cat:'Performance del Negocio',color:'#97BF0D',items:[
+          {n:'Volumen',f:'Envíos entregados en punto Pick It',src:'Google Drive · pickit_volumen',val:pickitVolDisp,fmt:'num',nota:pvLbl||mesLbl},
+        ]},
+        {cat:'Entrega en el Punto',color:'#009CA3',items:[
+          {n:'Efectividad',f:'Entregas exitosas en punto / Total envíos a punto × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
+          {n:'SLA',f:'Envíos entregados en plazo / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
+          {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
+        ]},
+        ];})(),
+      'Paqueteria E-Commerce B2C':[
+        {cat:'Performance del Negocio',color:'#97BF0D',items:[
+          {n:'Facturación',f:'Suma venta normalizada (escenario Actual)',src:'Google Drive · ventas',val:facUlt,fmt:'ars',nota:mesLbl},
+          {n:'Volumen',f:'Suma envíos del período',src:'Google Drive · ventas',val:volUlt,fmt:'num',nota:mesLbl},
+          {n:'Costo por envío',f:'Costo total / Total envíos',src:'ERP / Contable',val:null,fmt:'ars',nota:null},
+        ]},
+        {cat:'Clientes',color:'#2ECC71',items:[
+          {n:'Clientes activos',f:'Clientes con al menos un pedido en el período',src:'Google Drive · ventas',val:clisUlt.size,fmt:'num',nota:mesLbl},
+          {n:'Nuevos clientes',f:'Altas de nuevos clientes en el período',src:'Google Drive · ventas',val:nuevos,fmt:'num',nota:mesLbl},
+        ]},
+        {cat:'Colecta',color:'#E67E22',items:[
+          {n:'Tasa colectas fallidas',f:'Colectas sin retiro / total colectas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+          {n:'Tiempo solicitud → colecta',f:'Promedio horas entre solicitud y ejecución',src:'Sistema operativo',val:null,fmt:'num',nota:null},
+        ]},
+        {cat:'Última Milla',color:'#009CA3',items:[
+          {n:'SLA',f:'Envíos en plazo / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
+          {n:'Efectividad',f:'Entregas exitosas / Total × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
+          {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
+          {n:'Causas de no entrega',f:'Distribución % de motivos de fallo',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+        ]},
+        {cat:'Experiencia del Cliente',color:'#1ABC9C',items:[
+          {n:'NPS',f:'% Promotores − % Detractores',src:'Encuesta NPS',val:null,fmt:'num',nota:null},
+        ]},
+      ],
+      'Distribucion Consumo Masivo y Palletizado':[
+        {cat:'Performance del Negocio',color:'#97BF0D',items:[
+          {n:'Facturación',f:'Suma venta normalizada (escenario Actual)',src:'Google Drive · ventas',val:facUlt,fmt:'ars',nota:mesLbl},
+          {n:'Volumen',f:'Suma envíos del período',src:'Google Drive · ventas',val:volUlt,fmt:'num',nota:mesLbl},
+          {n:'Costo por envío',f:'Costo total / Total envíos',src:'ERP / Contable',val:null,fmt:'ars',nota:null},
+          {n:'Clientes activos',f:'Clientes distintos con venta > 0',src:'Google Drive · ventas',val:clisUlt.size,fmt:'num',nota:mesLbl},
+          {n:'Nuevos clientes',f:'Clientes sin actividad en mes anterior',src:'Google Drive · ventas',val:nuevos,fmt:'num',nota:mesLbl},
+        ]},
+        {cat:'Colecta',color:'#E67E22',items:[
+          {n:'SLA colecta',f:'Colectas en plazo / total colectas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+          {n:'Tasa rechazo de colecta',f:'Colectas rechazadas / total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+        ]},
+        {cat:'Cross Docking Molinos',color:'#F29400',items:[
+          {n:'SLA Molinos',f:'Operaciones Molinos en plazo / total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+        ]},
+        {cat:'Última Milla',color:'#009CA3',items:[
+          {n:'SLA',f:'Entregas en plazo / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
+          {n:'Efectividad',f:'Entregas exitosas / Total × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
+          {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
+        ]},
+        {cat:'Rechazos y Devoluciones',color:'#C0392B',items:[
+          {n:'Tasa de rechazo total',f:'Total rechazos / Total entregas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+          {n:'Penalidades por rechazos',f:'Monto total de penalidades asociadas a rechazos',src:'Sistema contable',val:null,fmt:'ars',nota:null},
+          {n:'Motivos de rechazo',f:'Distribución % por categoría de motivo',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
+          {n:'Operación real vs diseño',f:'Desvíos por omisión de diseño, mala práctica o desconocimiento',src:'Operaciones',val:null,fmt:'pct',nota:null},
+          {n:'Diseño de distribución',f:'Análisis de Semis y Chasis: capacidad, ocupación y desvíos vs diseño',src:'Operaciones',val:null,fmt:'pct',nota:null},
+          {n:'Recursos: m2 y personas',f:'Superficie utilizada vs disponible y dotación real vs planificada',src:'Operaciones',val:null,fmt:'num',nota:null},
+          {n:'Insumos clave: Embalaje',f:'Consumo y disponibilidad de insumos de embalaje vs planificado',src:'Operaciones',val:null,fmt:'num',nota:null},
+          {n:'Costo operativo vs Facturación',f:'Costo total operativo / Facturación del período × 100',src:'ERP / Contable',val:null,fmt:'pct',nota:null},
+          {n:'Clientes clave',f:'Performance específica por cliente: Molinos, Mercedes, Renault',src:'Sistema operativo',val:null,fmt:'num',nota:null},
+        ]},
+      ],
+    };
+    if(specific[prod]) return specific[prod];
+    // Genérico para todos los demás
+    return [
+      {cat:'Performance del Negocio',color:'#97BF0D',items:comun},
+      {cat:'Operación / Última Milla',color:'#F29400',items:slaItems},
+      {cat:'Experiencia del Cliente',color:'#009CA3',items:cliItems},
+    ];
+  }
+
+  const secs=getItems();
+  const total=secs.reduce((a,s)=>a+s.items.length,0);
+  const conVal=secs.reduce((a,s)=>a+s.items.filter(i=>i.val!==null&&!isNaN(i.val)).length,0);
+
+  // ── Tarjetas resumen ──
+  function mkMC(label,val,sub,color){
+    const d=document.createElement('div');
+    d.style.cssText='background:#fff;border:1px solid rgba(0,156,163,.18);border-top:3px solid '+color+';border-radius:9px;padding:12px 14px;min-width:110px;';
+    const l=document.createElement('div');l.style.cssText='font-size:9.5px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px';l.textContent=label;
+    const v=document.createElement('div');v.style.cssText='font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:700;color:var(--black)';v.textContent=val;
+    const s=document.createElement('div');s.style.cssText='font-size:10px;color:var(--gray);margin-top:2px';s.textContent=sub;
+    d.appendChild(l);d.appendChild(v);d.appendChild(s);return d;
+  }
+  const rw=document.createElement('div');
+  rw.style.cssText='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;';
+  rw.appendChild(mkMC('Total indicadores',String(total),'definidos','#009CA3'));
+  rw.appendChild(mkMC('✅ Con valor',String(conVal),'calculados ahora','#97BF0D'));
+  rw.appendChild(mkMC('⏳ Sin fuente',String(total-conVal),'fuente externa','#ccc'));
+  if(ultM){const mc=mkMC('Período calculado',mesLbl,'último mes con datos','#009CA3');mc.querySelector('div:nth-child(2)').style.fontSize='14px';rw.appendChild(mc);}
+  pc.appendChild(rw);
+
+  // ── Tabla por sección ──
+  secs.forEach(function(sec){
+    // wrapper
+    const wrap=document.createElement('div');
+    wrap.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-bottom:8px;';
+
+    // header sección
+    const hd=document.createElement('div');
+    hd.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(0,0,0,.06);background:#fafafa;border-radius:10px 10px 0 0;';
+    const badge=document.createElement('span');
+    badge.style.cssText='font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:3px 10px;border-radius:4px;background:'+sec.color+'22;color:'+sec.color;
+    badge.textContent=sec.cat;
+    const cnt=document.createElement('span');
+    cnt.style.cssText='font-size:10px;color:var(--gray);margin-left:auto';
+    cnt.textContent=sec.items.filter(i=>i.val!==null&&!isNaN(i.val)).length+'/'+sec.items.length+' con valor';
+    hd.appendChild(badge);hd.appendChild(cnt);
+    wrap.appendChild(hd);
+
+    // tabla
+    const tbl=document.createElement('table');
+    tbl.style.cssText='width:100%;border-collapse:collapse;table-layout:fixed;';
+
+    // colgroup para anchos fijos
+    tbl.innerHTML='<colgroup>'+
+      '<col style="width:22%"><col style="width:40%">'+
+      '<col style="width:20%"><col style="width:9%"><col style="width:9%">'+
+      '</colgroup>';
+
+    // thead
+    const thead=tbl.createTHead();
+    const hr=thead.insertRow();
+    hr.style.cssText='background:#f5fafa;';
+    ['Indicador','Fórmula / Definición','Valor actual','Frec.','Estado'].forEach(function(txt,ci){
+      const th=document.createElement('th');
+      th.style.cssText='text-align:left;font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;border-bottom:1px solid rgba(0,0,0,.06);';
+      if(ci===2) th.style.textAlign='right';
+      if(ci===3) th.className='col-frec';
+      if(ci===4) th.className='col-resp';
+      th.textContent=txt;
+      hr.appendChild(th);
+    });
+
+    // tbody
+    const tbody=tbl.createTBody();
+    sec.items.forEach(function(item,i){
+      const tr=tbody.insertRow();
+      tr.style.cssText='border-bottom:'+(i<sec.items.length-1?'1px solid rgba(0,0,0,.04)':'none')+';';
+      tr.addEventListener('mouseover',function(){this.style.background='#f8fffe';});
+      tr.addEventListener('mouseout',function(){this.style.background='';});
+
+      const hasVal=item.val!==null&&item.val!==undefined&&!isNaN(item.val);
+
+      function mkTd(style){const td=tr.insertCell();td.style.cssText='padding:8px 10px;vertical-align:top;'+style;return td;}
+
+      // Col 1: nombre
+      const td1=mkTd('font-weight:600;font-size:12px;line-height:1.4;');
+      td1.textContent=item.n;
+
+      // Col 2: fórmula
+      const td2=mkTd('font-size:11px;color:#555;line-height:1.4;');
+      td2.textContent=item.f;
+
+      // Col 3: valor
+      const td4=mkTd('text-align:right;');
+      td4.appendChild(fv(item.val,item.fmt,item.nota));
+
+      // Col 4: frecuencia
+      const td5=mkTd('font-size:11px;color:var(--gray);');td5.className='col-frec';
+      td5.textContent='Mensual';
+
+      // Col 5: estado
+      const td6=mkTd('');td6.className='col-resp';
+      const stBadge=document.createElement('span');
+      stBadge.style.cssText='font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;'+
+        (hasVal?'background:rgba(151,191,13,.15);color:#4D7200':'background:rgba(177,177,177,.15);color:#888');
+      stBadge.textContent=hasVal?'✅ Activo':'⏳ Pendiente';
+      td6.appendChild(stBadge);
+    });
+
+    tbl.appendChild(tbody);
+    wrap.appendChild(tbl);
+    pc.appendChild(wrap);
+  });
+
+  // ── Gráficos Efectividad en Punto y Vencidos en Punto (solo Pickit) ──
+  if(prod==='Entrega en Punto Pickit'){
+    const fMesI=(document.getElementById('fMes')?.value||'').toUpperCase();
+    const fAnioI=document.getElementById('fAnio')?.value||'';
+    // slaP ya está filtrado por producto; aplicar filtro de mes/año si existe
+    const slaFilt=slaP.filter(r=>{
+      if(fMesI&&(r.mes||'').toUpperCase()!==fMesI) return false;
+      if(fAnioI&&String(r.anio)!==String(fAnioI)) return false;
+      return true;
+    });
+    const chartRows=slaFilt.length>0?slaFilt:slaP;
+    function mesShort(r){const m=(r.mes||'').charAt(0)+(r.mes||'').slice(1).toLowerCase();return m+' '+(r.anio||'');}
+    // Tabla estilo "Detalle mensual" para efectividad_en_pp y vencidos_en_pp
+    const ppTbl=document.createElement('div');ppTbl.className='ctb';
+    const ppRows=chartRows.filter(r=>r.efectividad_en_pp!=null&&r.efectividad_en_pp!=='');
+    const vcRows=chartRows.filter(r=>r.vencidos_en_pp!=null&&r.vencidos_en_pp!=='');
+    const hasPP=ppRows.length>0||vcRows.length>0;
+    ppTbl.innerHTML=`<h3>Efectividad en Punto · Vencidos en Punto · Fuente: Google Drive · sla_efectividad</h3>
+      <table class="ct"><thead><tr><th>Mes</th><th>Año</th><th style="text-align:right">Efectividad en Punto</th><th style="text-align:right">Vencidos en Punto</th></tr></thead>
+      <tbody>${chartRows.map(r=>{
+        const pp=r.efectividad_en_pp!=null&&r.efectividad_en_pp!==''?Number(r.efectividad_en_pp):null;
+        const vc=r.vencidos_en_pp!=null&&r.vencidos_en_pp!==''?Number(r.vencidos_en_pp):null;
+        const cPP=pp!==null?(pp>=90?'#97BF0D':pp>=80?'#F29400':'#E74C3C'):'#ccc';
+        const cVC=vc!==null?(vc<5?'#97BF0D':'#E74C3C'):'#ccc';
+        return `<tr><td>${(r.mes||'').charAt(0)+(r.mes||'').slice(1).toLowerCase()}</td><td>${r.anio}</td><td style="text-align:right;font-weight:600;color:${cPP}">${pp!==null?pp.toFixed(1)+'%':'—'}</td><td style="text-align:right;font-weight:600;color:${cVC}">${vc!==null?vc.toFixed(1)+'%':'—'}</td></tr>`;
+      }).join('')}</tbody></table>`;
+    if(hasPP) pc.appendChild(ppTbl);
+  }
+
+  // footer
+  const foot=document.createElement('div');
+  foot.style.cssText='background:#fff;border:1.5px solid rgba(0,156,163,.3);border-radius:10px;padding:9px 14px;font-size:11px;color:var(--gray);';
+  foot.innerHTML='<span>📋 Valores calculados desde <strong style="color:var(--teal)">Google Drive · ventas</strong> y <strong style="color:var(--teal)">sla_efectividad</strong> · Se actualizan al hacer clic en Actualizar</span>';
+  pc.appendChild(foot);
+
+  // ── Gráfico de torta: Causas de no entregado (desde Drive · motivos_noentrega) ──
+  {
+    const motivosRows=allMotivos.filter(r=>(r.producto||'').trim()===prod.trim());
+    if(motivosRows.length>0){
+      const PIE_COLORS=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7'];
+      const sorted=motivosRows.slice().sort((a,b)=>parseFloat(b.pct||0)-parseFloat(a.pct||0));
+      const box=document.createElement('div');
+      box.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-bottom:8px;padding:14px 16px;';
+      box.innerHTML=`
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:3px 10px;border-radius:4px;background:#E05A5A22;color:#E05A5A;display:inline-block;margin-bottom:10px">Causas de No Entregado</div>
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="flex:0 0 260px;height:260px;"><canvas id="ch-motivos-prod"></canvas></div>
+          <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:5px;justify-content:center;">
+            ${sorted.map((r,i)=>`
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px;">
+                <span style="width:10px;height:10px;border-radius:2px;background:${PIE_COLORS[i%PIE_COLORS.length]};flex-shrink:0;display:inline-block"></span>
+                <span style="flex:1">${r.motivo}</span>
+                <strong style="color:${PIE_COLORS[i%PIE_COLORS.length]}">${parseFloat(r.pct||0).toFixed(1)}%</strong>
+              </div>`).join('')}
+          </div>
+        </div>`;
+      pc.appendChild(box);
+      requestAnimationFrame(()=>{
+        dc('ch-motivos-prod');
+        const el=document.getElementById('ch-motivos-prod');
+        if(!el)return;
+        const lbls=sorted.map(r=>r.motivo);
+        const vals=sorted.map(r=>parseFloat(r.pct||0));
+        CI['ch-motivos-prod']=new Chart(el.getContext('2d'),{
+          type:'doughnut',
+          data:{labels:lbls,datasets:[{data:vals,backgroundColor:PIE_COLORS.slice(0,sorted.length),borderWidth:2,borderColor:'#fff'}]},
+          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw.toFixed(1)}%`}}}}
+        });
+      });
+    }
+  }
+}
+
+
+// ── SLA & EFECTIVIDAD (desde Supabase) ──
+function renderSlaEfec(prod){
+  const pc=document.getElementById('tab-slaefec');
+  pc.innerHTML='';
+  // Debug: log en consola para verificar datos
+  console.log('[SLA] prod buscado:', JSON.stringify(prod));
+  console.log('[SLA] allSlaEfec total filas:', allSlaEfec.length);
+  if(allSlaEfec.length>0) console.log('[SLA] primer row:', JSON.stringify(allSlaEfec[0]));
+  const rows=allSlaEfec.filter(r=>{
+    if((r.producto||'').trim()!==prod.trim()) return false;
+    const fMes=(document.getElementById('fMes')?.value||'').toUpperCase();
+    const fAnio=document.getElementById('fAnio')?.value||'';
+    if(fMes&&(r.mes||'').toUpperCase()!==fMes) return false;
+    if(fAnio&&String(r.anio)!==String(fAnio)) return false;
+    return true;
+  });
+  console.log('[SLA] rows para este producto:', rows.length);
+
+  if(!rows.length){
+    // Mostrar todos los productos disponibles en la tabla para diagnóstico
+    const todosProds=[...new Set(allSlaEfec.map(r=>r.producto))];
+    const hayDatos=allSlaEfec.length>0;
+    let msgHtml='<div style="font-size:15px;margin-bottom:8px">📭</div>';
+    if(hayDatos){
+      msgHtml+='<div style="font-weight:700;font-size:13px;margin-bottom:6px">Sin datos para <em>'+prod+'</em></div>';
+      msgHtml+='<div style="font-size:11px;color:var(--gray);margin-bottom:8px">La tabla tiene '+allSlaEfec.length+' filas con estos productos:</div>';
+      msgHtml+='<div style="font-size:11px;text-align:left;background:#f5f5f5;border-radius:6px;padding:8px 12px;display:inline-block;margin-bottom:8px">'+todosProds.map(p=>'<div>• '+p+'</div>').join('')+'</div>';
+      msgHtml+='<div style="font-size:11px;color:#E05A5A;margin-top:4px">⚠️ Nombre esperado: <strong>'+prod+'</strong></div>';
+    } else {
+      msgHtml+='<div style="font-weight:700;font-size:13px;margin-bottom:6px">Tabla sla_efectividad vacía o sin acceso</div>';
+      msgHtml+='<div style="font-size:11px;color:var(--gray);margin-bottom:12px">Si ya importaste el CSV, el problema es RLS (Row Level Security).</div>';
+      msgHtml+='<div style="font-size:11px;text-align:left;background:#1e1e1e;color:#7ec8e3;border-radius:8px;padding:12px 16px;font-family:monospace;margin-bottom:8px">'+
+        'ALTER TABLE sla_efectividad ENABLE ROW LEVEL SECURITY;<br>'+
+        'CREATE POLICY "public read" ON sla_efectividad<br>'+
+        '&nbsp;&nbsp;FOR SELECT USING (true);'+
+        '</div>';
+      msgHtml+='<div style="font-size:11px;color:var(--gray)">Corré ese SQL en <strong>Supabase → SQL Editor</strong></div>';
+    }
+    pc.innerHTML='<div class="nodatabadge" style="max-width:520px;margin:0 auto;text-align:center;padding:20px;">'+msgHtml+'</div>';
+    return;
+  }
+
+  // Ordenar por anio+mes
+  const MO_IDX=Object.fromEntries(MO.map((m,i)=>[m,i]));
+  rows.sort((a,b)=>a.anio!==b.anio?Number(a.anio)-Number(b.anio):(MO_IDX[a.mes]||0)-(MO_IDX[b.mes]||0));
+
+  const slaRows=rows.filter(r=>r.sla_pct!=null&&r.sla_pct!==''&&!isNaN(parseFloat(r.sla_pct)));
+  const efecRows=rows.filter(r=>r.efectividad_pct!=null&&r.efectividad_pct!==''&&!isNaN(parseFloat(r.efectividad_pct)));
+  const efec1Rows=rows.filter(r=>r.efectividad_1ra_vuelta!=null&&r.efectividad_1ra_vuelta!==''&&!isNaN(parseFloat(r.efectividad_1ra_vuelta)));
+  const ppRows=rows.filter(r=>r.efectividad_en_pp!=null&&r.efectividad_en_pp!==''&&!isNaN(parseFloat(r.efectividad_en_pp)));
+  const vcRows=rows.filter(r=>r.vencidos_en_pp!=null&&r.vencidos_en_pp!==''&&!isNaN(parseFloat(r.vencidos_en_pp)));
+  const hasSla=slaRows.length>0, hasEfec=efecRows.length>0, hasEfec1=efec1Rows.length>0;
+
+  const lastSla=hasSla?Number(slaRows[slaRows.length-1].sla_pct):null;
+  const lastEfec=hasEfec?Number(efecRows[efecRows.length-1].efectividad_pct):null;
+  const lastEfec1=hasEfec1?Number(efec1Rows[efec1Rows.length-1].efectividad_1ra_vuelta):null;
+  const lastPP=ppRows.length?Number(ppRows[ppRows.length-1].efectividad_en_pp):null;
+  const lastVC=vcRows.length?Number(vcRows[vcRows.length-1].vencidos_en_pp):null;
+  const avgSla=hasSla?slaRows.reduce((a,b)=>a+Number(b.sla_pct),0)/slaRows.length:null;
+  const avgEfec=hasEfec?efecRows.reduce((a,b)=>a+Number(b.efectividad_pct),0)/efecRows.length:null;
+  const avgEfec1=hasEfec1?efec1Rows.reduce((a,b)=>a+Number(b.efectividad_1ra_vuelta),0)/efec1Rows.length:null;
+  const avgPP=ppRows.length?ppRows.reduce((a,b)=>a+Number(b.efectividad_en_pp),0)/ppRows.length:null;
+  const avgVC=vcRows.length?vcRows.reduce((a,b)=>a+Number(b.vencidos_en_pp),0)/vcRows.length:null;
+  const minSla=hasSla?Math.min(...slaRows.map(r=>Number(r.sla_pct))):null;
+  function mesLbl2(arr){const r=arr[arr.length-1];return r.mes.charAt(0)+r.mes.slice(1).toLowerCase()+' '+r.anio;}
+
+  // KPIs
+  const kpis=document.createElement('div');kpis.className='sla-kpis';
+  if(lastSla!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">SLA último mes</div><div class="sla-kv" style="color:${slaColor(lastSla)}">${lastSla.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(slaRows)}</div></div>`;
+  if(avgSla!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">SLA promedio</div><div class="sla-kv" style="color:${slaColor(avgSla)}">${avgSla.toFixed(1)}%</div><div class="sla-kt">${slaRows.length} meses</div></div>`;
+  if(minSla!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">SLA mínimo</div><div class="sla-kv" style="color:${slaColor(minSla)}">${minSla.toFixed(1)}%</div><div class="sla-kt">peor mes</div></div>`;
+  if(lastEfec!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad último mes</div><div class="sla-kv" style="color:${slaColor(lastEfec)}">${lastEfec.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(efecRows)}</div></div>`;
+  if(avgEfec!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad promedio</div><div class="sla-kv" style="color:${slaColor(avgEfec)}">${avgEfec.toFixed(1)}%</div><div class="sla-kt">${efecRows.length} meses</div></div>`;
+  if(lastEfec1!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad 1ª vuelta último mes</div><div class="sla-kv" style="color:${slaColor(lastEfec1)}">${lastEfec1.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(efec1Rows)}</div></div>`;
+  if(avgEfec1!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad 1ª vuelta promedio</div><div class="sla-kv" style="color:${slaColor(avgEfec1)}">${avgEfec1.toFixed(1)}%</div><div class="sla-kt">${efec1Rows.length} meses</div></div>`;
+  if(lastPP!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad en punto</div><div class="sla-kv" style="color:${slaColor(lastPP)}">${lastPP.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(ppRows)}</div></div>`;
+  if(avgPP!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad en punto promedio</div><div class="sla-kv" style="color:${slaColor(avgPP)}">${avgPP.toFixed(1)}%</div><div class="sla-kt">${ppRows.length} meses</div></div>`;
+  if(lastVC!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Vencidos en punto</div><div class="sla-kv" style="color:${slaColor(100-lastVC)}">${lastVC.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(vcRows)}</div></div>`;
+  if(avgVC!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Vencidos en punto promedio</div><div class="sla-kv" style="color:${slaColor(100-avgVC)}">${avgVC.toFixed(1)}%</div><div class="sla-kt">${vcRows.length} meses</div></div>`;
+  pc.appendChild(kpis);
+
+  // Gráfico SLA
+  if(hasSla){
+    const lbls=slaRows.map(r=>MS[MO_IDX[r.mes]]+"'"+String(r.anio).slice(-2));
+    const vals=slaRows.map(r=>Number(r.sla_pct));
+    const cols=vals.map(v=>v>=95?'rgba(151,191,13,.85)':v>=80?'rgba(242,148,0,.85)':'rgba(192,57,43,.85)');
+    const box=document.createElement('div');box.className='chart-box';
+    box.innerHTML=`<div class="chart-box-t">📊 SLA — Cumplimiento de Nivel de Servicio</div><div class="chart-box-s">🟢 ≥95% &nbsp; 🟠 80-95% &nbsp; 🔴 &lt;80% &nbsp;&nbsp; — — línea objetivo 95%</div><div class="chwrap"><canvas id="ch-sla"></canvas></div>`;
+    pc.appendChild(box);
+    const refLine={id:'r95',afterDraw(c){const{ctx,chartArea:{left,right},scales:{y}}=c;const py=y.getPixelForValue(95);ctx.save();ctx.beginPath();ctx.strokeStyle='rgba(151,191,13,.6)';ctx.setLineDash([5,3]);ctx.lineWidth=1.5;ctx.moveTo(left,py);ctx.lineTo(right,py);ctx.stroke();ctx.restore();}};
+    requestAnimationFrame(()=>{
+      dc('ch-sla');const el=document.getElementById('ch-sla');
+      if(el) CI['ch-sla']=new Chart(el.getContext('2d'),{type:'bar',data:{labels:lbls,datasets:[{data:vals,backgroundColor:cols,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:0,max:100,ticks:{callback:v=>v+'%',stepSize:20},grid:{color:'rgba(0,0,0,.04)'}}}},plugins:[refLine]});
+    });
+  }
+
+  // Gráfico Efectividad
+  if(hasEfec){
+    const lbls=efecRows.map(r=>MS[MO_IDX[r.mes]]+"'"+String(r.anio).slice(-2));
+    const vals=efecRows.map(r=>Number(r.efectividad_pct));
+    const ptCols=vals.map(v=>v>=95?'#4D7200':v>=80?'#A06800':'#C0392B');
+    const box=document.createElement('div');box.className='chart-box';
+    box.innerHTML=`<div class="chart-box-t">📦 Efectividad Final de Entrega</div><div class="chart-box-s">Porcentaje de entregas exitosas sobre total de intentos</div><div class="chwrap"><canvas id="ch-efec"></canvas></div>`;
+    pc.appendChild(box);
+    const refLine={id:'r95e',afterDraw(c){const{ctx,chartArea:{left,right},scales:{y}}=c;const py=y.getPixelForValue(95);ctx.save();ctx.beginPath();ctx.strokeStyle='rgba(0,156,163,.5)';ctx.setLineDash([5,3]);ctx.lineWidth=1.5;ctx.moveTo(left,py);ctx.lineTo(right,py);ctx.stroke();ctx.restore();}};
+    requestAnimationFrame(()=>{
+      dc('ch-efec');const el=document.getElementById('ch-efec');
+      if(el) CI['ch-efec']=new Chart(el.getContext('2d'),{type:'line',data:{labels:lbls,datasets:[{data:vals,borderColor:T,backgroundColor:'rgba(0,156,163,.07)',pointBackgroundColor:ptCols,pointRadius:5,tension:.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:0,max:100,ticks:{callback:v=>v+'%',stepSize:20},grid:{color:'rgba(0,0,0,.04)'}}}},plugins:[refLine]});
+    });
+  }
+
+  // Gráfico Efectividad 1ª vuelta
+  if(hasEfec1){
+    const lbls=efec1Rows.map(r=>MS[MO_IDX[r.mes]]+"'"+String(r.anio).slice(-2));
+    const vals=efec1Rows.map(r=>Number(r.efectividad_1ra_vuelta));
+    const ptCols=vals.map(v=>v>=95?'#4D7200':v>=80?'#A06800':'#C0392B');
+    const box=document.createElement('div');box.className='chart-box';
+    box.innerHTML=`<div class="chart-box-t">🚀 Efectividad 1ª Vuelta</div><div class="chart-box-s">Porcentaje de entregas exitosas en el primer intento</div><div class="chwrap"><canvas id="ch-efec1"></canvas></div>`;
+    pc.appendChild(box);
+    const refLine={id:'r95e1',afterDraw(c){const{ctx,chartArea:{left,right},scales:{y}}=c;const py=y.getPixelForValue(95);ctx.save();ctx.beginPath();ctx.strokeStyle='rgba(0,156,163,.5)';ctx.setLineDash([5,3]);ctx.lineWidth=1.5;ctx.moveTo(left,py);ctx.lineTo(right,py);ctx.stroke();ctx.restore();}};
+    requestAnimationFrame(()=>{
+      dc('ch-efec1');const el=document.getElementById('ch-efec1');
+      if(el) CI['ch-efec1']=new Chart(el.getContext('2d'),{type:'line',data:{labels:lbls,datasets:[{data:vals,borderColor:'#F29400',backgroundColor:'rgba(242,148,0,.07)',pointBackgroundColor:ptCols,pointRadius:5,tension:.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:0,max:100,ticks:{callback:v=>v+'%',stepSize:20},grid:{color:'rgba(0,0,0,.04)'}}}},plugins:[refLine]});
+    });
+  }
+
+  // Tabla detalle mensual
+  const tbl=document.createElement('div');tbl.className='ctb';
+  tbl.innerHTML=`<h3>Detalle mensual · Fuente: Google Drive · sla_efectividad</h3>
+    <table class="ct"><thead><tr><th>Mes</th><th>Año</th>${hasSla?'<th style="text-align:right">SLA</th>':''}${hasEfec?'<th style="text-align:right">Efectividad</th>':''}${hasEfec1?'<th style="text-align:right">Efect. 1ª vuelta</th>':''}</tr></thead>
+    <tbody>${rows.map(r=>{
+      const s=r.sla_pct!=null&&r.sla_pct!==''?Number(r.sla_pct):null;
+      const e=r.efectividad_pct!=null&&r.efectividad_pct!==''?Number(r.efectividad_pct):null;
+      const e1=r.efectividad_1ra_vuelta!=null&&r.efectividad_1ra_vuelta!==''?Number(r.efectividad_1ra_vuelta):null;
+      return `<tr><td>${r.mes.charAt(0)+r.mes.slice(1).toLowerCase()}</td><td>${r.anio}</td>${hasSla?`<td style="text-align:right;font-weight:600;color:${s!==null?slaColor(s):'#ccc'}">${s!==null?s.toFixed(1)+'%':'—'}</td>`:''}${hasEfec?`<td style="text-align:right;font-weight:600;color:${e!==null?slaColor(e):'#ccc'}">${e!==null?e.toFixed(1)+'%':'—'}</td>`:''}${hasEfec1?`<td style="text-align:right;font-weight:600;color:${e1!==null?slaColor(e1):'#ccc'}">${e1!==null?e1.toFixed(1)+'%':'—'}</td>`:''}</tr>`;
+    }).join('')}</tbody></table>`;
+  pc.appendChild(tbl);
+
+  pc.appendChild(Object.assign(document.createElement('div'),{
+    className:'src-badge',
+    innerHTML:`<span>📈 Fuente: <strong>Google Drive · sla_efectividad</strong> · ${rows.length} registros</span>`
+  }));
+}
+
+// ── EXPERIENCIA DEL CLIENTE BI ──
+function renderCXBI(prod){
+  const cont=document.getElementById('cxbi-content');
+  cont.innerHTML='';
+  const CX_URL='https://app.powerbi.com/reportEmbed?reportId=14350c8e-8242-4d38-91b6-738e082417de&autoAuth=true&ctid=91a5b5c8-673e-4a80-871c-5ed3412dd451';
+  cont.innerHTML=
+    '<div class="pbi-toolbar">'+
+      '<div class="pbi-title"><span style="font-size:20px">🎯</span> Experiencia del Cliente BI · '+prod+'</div>'+
+    '</div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-card" style="border-color:rgba(0,156,163,.3)">'+
+        '<div class="pbi-icon">🎯</div>'+
+        '<div class="pbi-card-title">Experiencia del Cliente · '+prod+'</div>'+
+        '<div class="pbi-card-sub">Tickets, motivos y tiempos de resolución de atención al cliente.</div>'+
+        '<a href="'+CX_URL+'" target="_blank" class="pbi-open-btn">'+
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'+
+          'Abrir Experiencia del Cliente en Power BI'+
+        '</a>'+
+        '<div class="pbi-note">Requiere acceso Power BI con cuenta OCASA</div>'+
+      '</div>'+
+    '</div>';
+}
+
+// ── PERFORMANCE BI ──
+function renderPBI(prod){
+  const cont=document.getElementById('pbi-content');
+  cont.innerHTML='';
+  cont.innerHTML=
+    '<div class="pbi-toolbar">'+
+      '<div class="pbi-title"><span style="font-size:20px">💰</span> Margen Bruto BI · '+prod+'</div>'+
+    '</div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-card" style="border-color:rgba(151,191,13,.3)">'+
+        '<div class="pbi-icon">💰</div>'+
+        '<div class="pbi-card-title">Margen Bruto · '+prod+'</div>'+
+        '<div class="pbi-card-sub">Análisis de margen bruto, costo vs facturación y evolución por período.</div>'+
+        '<a href="'+PBI_REPORT_URL+'" target="_blank" class="pbi-open-btn" style="background:#97BF0D">'+
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'+
+          'Abrir Margen Bruto en Power BI'+
+        '</a>'+
+        '<div class="pbi-note">Requiere acceso Power BI con cuenta OCASA</div>'+
+      '</div>'+
+    '</div>';
+}
+
+// ── COMPARATIVA ──
+function renderComparativa(prod){
+  const pc=document.getElementById('tab-comparativa');
+  if(prod==='Entrega en Punto Pickit'){pc.innerHTML='<div class="nodatabadge">Sin datos de facturación para comparativa.</div>';return;}
+  const v=allVentas.filter(x=>x.producto===prod&&x.escenario==='Actual'&&(!cliActual||x.cliente===cliActual));
+  if(!v.length){pc.innerHTML='<div class="nodatabadge">Sin datos.</div>';return;}
+
+  // Calcular dinámicamente el último mes disponible en 2026
+  const MO_IC=Object.fromEntries(MO.map((m,i)=>[m,i]));
+  const meses26c=[...new Set(v.filter(x=>x.anio===2026).map(x=>x.mes))]
+    .sort((a,b)=>(MO_IC[a]||0)-(MO_IC[b]||0));
+  const ultM=meses26c[meses26c.length-1]||null;
+  const antM=meses26c[meses26c.length-2]||null;
+
+  function facMesComp(anio,mes){
+    return v.filter(x=>x.anio===anio&&x.mes===mes).reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
+  }
+  function mesLbl(m){return m?m.charAt(0)+m.slice(1).toLowerCase():'—';}
+  function pct(a,b){return b&&b!==0?((a-b)/Math.abs(b)*100):null;}
+  function pctHtml(p){
+    if(p===null)return'';
+    const col=p>=0?'#4D7200':'#C0392B';
+    return '<span style="font-size:13px;font-weight:700;color:'+col+'">'+(p>=0?'+':'')+p.toFixed(1)+'%</span>';
+  }
+
+  const f26=ultM?facMesComp(2026,ultM):0;
+  const f25=ultM?facMesComp(2025,ultM):0;
+  const fAnt=antM?facMesComp(2026,antM):0;
+
+  // ── Tarjeta 1: último mes 2026 vs mismo mes 2025 ──
+  const card1=document.createElement('div');
+  card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct(f26,f25)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
+  card1.innerHTML=
+    '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">'+
+      mesLbl(ultM)+' 2026 vs '+mesLbl(ultM)+' 2025'+
+    '</div>'+
+    '<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultM)+' 2026</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(f26)+'</div>'+
+      '</div>'+
+      '<div style="font-size:20px;color:#ccc;padding-bottom:4px">↔</div>'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultM)+' 2025</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#F29400">'+fmtARS(f25)+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div>'+pctHtml(pct(f26,f25))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación interanual</span></div>';
+
+  // ── Tarjeta 2: último mes 2026 vs mes anterior 2026 ──
+  const card2=document.createElement('div');
+  card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(antM&&pct(f26,fAnt)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
+  card2.innerHTML=
+    '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">'+
+      mesLbl(antM)+' 2026 vs '+mesLbl(ultM)+' 2026'+
+    '</div>'+
+    '<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(antM)+' 2026</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(fAnt)+'</div>'+
+      '</div>'+
+      '<div style="font-size:20px;color:#ccc;padding-bottom:4px">→</div>'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultM)+' 2026</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(f26)+'</div>'+
+      '</div>'+
+    '</div>'+
+    (antM?'<div>'+pctHtml(pct(f26,fAnt))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación mensual</span></div>':'<div style="font-size:11px;color:var(--gray)">Solo un mes disponible en 2026</div>');
+
+  const row=document.createElement('div');
+  row.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:14px;';
+  row.appendChild(card1);
+  row.appendChild(card2);
+  pc.appendChild(row);
+
+  // ── Gráfico anual completo ──
+  const byAM={};
+  v.forEach(x=>{const k=x.anio+'|'+(x.mes||'').toUpperCase();byAM[k]=(byAM[k]||0)+(Number(x.venta_norm)||0);});
+  const years=[...new Set(v.map(x=>x.anio))].sort();
+  const yr1=years[0],yr2=years[years.length-1];
+  const d1=MO.map(m=>byAM[yr1+'|'+m]||0);
+  const d2=years.length>1?MO.map(m=>byAM[yr2+'|'+m]||0):null;
+  const cg=document.createElement('div');
+  cg.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;';
+  cg.innerHTML='<div style="font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:700;margin-bottom:3px">Facturación mensual — '+yr1+(d2?' vs '+yr2:'')+'</div><div style="font-size:10px;color:var(--gray);margin-bottom:8px">ARS M</div><div style="position:relative;height:200px"><canvas id="cc-comp"></canvas></div>';
+  pc.appendChild(cg);
+  const ds=[{label:String(yr1),data:d1.map(x=>+(x/1e6).toFixed(1)),backgroundColor:'rgba(242,148,0,.75)',borderRadius:4}];
+  if(d2) ds.push({label:String(yr2),data:d2.map(x=>+(x/1e6).toFixed(1)),backgroundColor:'rgba(151,191,13,.75)',borderRadius:4});
+  requestAnimationFrame(()=>mkChart('cc-comp','bar',MO.map(m=>m.slice(0,3)),ds,{leg:true,yf:x=>'$'+x+'M',ex:{plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:12}}}}}));
+}
+
+// ── RANKING ──
+function renderRanking(prod){
+  const pc=document.getElementById('tab-ranking');
+  if(prod==='Entrega en Punto Pickit'){pc.innerHTML='<div class="nodatabadge">Sin datos de facturación para ranking.</div>';return;}
+  const fMes=(document.getElementById('fMes')?.value||'').toUpperCase();
+  const fAnio=document.getElementById('fAnio')?.value||'';
+  const v=allVentas.filter(x=>x.producto===prod&&x.escenario==='Actual'&&(!cliActual||x.cliente===cliActual));
+  if(!v.length){pc.innerHTML='<div class="nodatabadge">Sin datos.</div>';return;}
+  const years=[...new Set(v.map(x=>x.anio))].sort();
+  const yr2=fAnio?Number(fAnio):years[years.length-1];
+  const CLI_ALIAS_RANK={};
+  const byC2={};
+  v.filter(x=>x.anio===yr2&&(!fMes||x.mes===fMes)).forEach(x=>{if(!x.cliente)return;const cn=CLI_ALIAS_RANK[x.cliente]||x.cliente;byC2[cn]=(byC2[cn]||0)+(Number(x.venta_norm)||0);});
+  const sorted=Object.entries(byC2).sort((a,b)=>b[1]-a[1]).filter(([,x])=>x>0);
+  const periodoLbl=fMes?(fMes.charAt(0)+fMes.slice(1).toLowerCase()+' '+yr2):String(yr2);
+  if(!sorted.length){pc.innerHTML='<div class="nodatabadge">Sin datos para '+periodoLbl+'.</div>';return;}
+  const top20=sorted.slice(0,20),maxF=top20[0][1];
+  const totalF=sorted.reduce((a,b)=>a+b[1],0);
+  const top3p=top20.slice(0,3).reduce((a,b)=>a+b[1],0)/totalF*100;
+  const rsm=document.createElement('div');rsm.className='comp-row';
+  rsm.innerHTML=`<div class="comp-card"><h4>Concentración Top 3</h4><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:${T}">${top3p.toFixed(1)}%</div><div style="font-size:10px;color:var(--gray);margin-top:2px">del total</div></div>
+    <div class="comp-card"><h4>Clientes activos · ${periodoLbl}</h4><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700">${sorted.length}</div><div style="font-size:10px;color:var(--gray);margin-top:2px">con facturación &gt; $0</div></div>`;
+  pc.appendChild(rsm);
+  const rb=document.createElement('div');rb.className='rank-box';
+  rb.innerHTML=`<h4>Top 20 Clientes · ${periodoLbl}</h4><div class="rank-sub">Facturación del período</div>`;
+  top20.forEach(([name,fac],i)=>{
+    const row=document.createElement('div');row.className='rank-item';
+    row.innerHTML=`<span class="rank-pos">${i+1}</span><span class="rank-name" title="${name}">${name}</span>
+      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${(fac/maxF*100).toFixed(0)}%"></div></div>
+      <span class="rank-val">${fmtARS(fac)}</span>`;
+    rb.appendChild(row);
+  });
+  pc.appendChild(rb);
+  const top5=top20.slice(0,5),resto=sorted.slice(5).reduce((a,b)=>a+b[1],0);
+  const pie=document.createElement('div');pie.className='comp-card';
+  pie.innerHTML=`<h4>Distribución top 5 + resto</h4><div style="position:relative;height:200px"><canvas id="cc-pie"></canvas></div>`;
+  pc.appendChild(pie);
+  requestAnimationFrame(()=>mkChart('cc-pie','doughnut',[...top5.map(([n])=>n.length>22?n.substring(0,22)+'…':n),'Resto'],[{data:[...top5.map(([,x])=>+(x/1e6).toFixed(1)),+(resto/1e6).toFixed(1)],backgroundColor:['#009CA3','#1DB4C2','#97BF0D','#F29400','#231F20','#B1B1B1'],borderWidth:2,borderColor:'#fff'}],{ex:{plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:c=>' '+c.label+': $'+c.raw+'M'}}}}}));
+}
+
+// ── UTILS ──
+function setTs(){document.getElementById('tsv').textContent=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function reloadAll(){
+  const ic=document.getElementById('refIco');
+  ic.style.transition='transform .6s';ic.style.transform='rotate(360deg)';
+  setTimeout(()=>{ic.style.transition='';ic.style.transform='';},650);
+  loadAll();
+}
+loadAll();
+</script>
+</body>
+</html>
