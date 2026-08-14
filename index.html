@@ -155,7 +155,19 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .pbi-actions{display:flex;gap:8px;}
 .pbi-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--teal);color:var(--teal);background:#fff;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer;text-transform:uppercase;text-decoration:none;transition:background .15s;}
 .pbi-btn:hover,.pbi-btn.prim{background:var(--teal);color:#fff;}
-.pbi-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px 16px 28px;background:var(--surface);}
+.pbi-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:20px 16px 28px;background:var(--surface);}
+.pbi-head{width:100%;max-width:900px;text-align:left;}
+.pbi-eyebrow{font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--teal);text-transform:uppercase;margin-bottom:2px;}
+.pbi-bigtitle{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:var(--black);line-height:1.1;}
+.pbi-subdate{font-size:11px;color:var(--gray);margin-top:4px;}
+.pbi-alert{width:100%;max-width:900px;background:#FDEDED;border:1px solid #f3b9b9;border-radius:10px;padding:12px 16px;font-size:12.5px;color:#8a2c2c;line-height:1.6;text-align:left;}
+.pbi-alert b{color:#b02a2a;}
+.pbi-cards5{width:100%;max-width:900px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.pbi-mcard{background:#fff;border:1px solid rgba(0,156,163,.18);border-radius:10px;padding:14px 12px;text-align:left;box-shadow:0 1px 6px rgba(0,156,163,.06);min-width:0;}
+.pbi-mcard-lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;white-space:nowrap;}
+.pbi-mcard-v{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pbi-chartwrap{width:100%;max-width:900px;background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.04);}
+.pbi-chartwrap canvas{max-height:260px;}
 .pbi-card{background:#fff;border:1px solid rgba(0,156,163,.2);border-radius:14px;padding:24px 28px;max-width:540px;width:100%;text-align:center;box-shadow:0 2px 12px rgba(0,156,163,.08);}
 .pbi-icon{font-size:40px;margin-bottom:10px;}
 .pbi-card-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--black);margin-bottom:6px;}
@@ -362,6 +374,8 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
   .pbi-card{padding:20px 18px;}
   .pbi-icon{font-size:36px;}
   .pbi-card-title{font-size:18px;}
+  .pbi-cards5{grid-template-columns:repeat(2,1fr);}
+  .pbi-bigtitle{font-size:21px;}
 }
 
 /* Extra small phones */
@@ -2230,12 +2244,26 @@ function renderCXBI(prod){
 }
 
 // ── PERFORMANCE BI ──
+let pbiChartInstance=null;
+const MARGEN_CONSULTADO='14/08/2026';
+
+function mesesNegativos(hist){
+  return hist.filter(h=>h.margen<0).map(h=>{
+    const cap=h.mes.charAt(0)+h.mes.slice(1).toLowerCase();
+    return cap+' '+h.anio;
+  });
+}
+function listaConY(arr){
+  if(arr.length===0) return '';
+  if(arr.length===1) return arr[0];
+  return arr.slice(0,-1).join(', ')+' y '+arr[arr.length-1];
+}
+
 function renderPBI(prod){
   const cont=document.getElementById('pbi-content');
   cont.innerHTML='';
+  if(pbiChartInstance){ pbiChartInstance.destroy(); pbiChartInstance=null; }
 
-  // Entrega en Punto Pickit: se mide solo cliente Adidas, distinto del "Entrega en Punto" de cliente Pickit.
-  // Queda manual vía Excel — no se cruza con Power BI para evitar mezclar fuentes.
   if(prod==='Entrega en Punto Pickit'){
     cont.innerHTML=
       '<div class="pbi-toolbar">'+
@@ -2282,36 +2310,67 @@ function renderPBI(prod){
   const fmtM=n=>'$'+Math.round(n).toLocaleString('es-AR');
   const fmtV=n=>Math.round(n).toLocaleString('es-AR');
 
-  const filas=hist.map(h=>{
-    const pct=h.venta?((h.margen/h.venta)*100):0;
-    return '<tr><td>'+h.mes.slice(0,3)+' '+h.anio+'</td><td>'+fmtM(h.venta)+'</td><td>'+fmtM(h.costo)+'</td>'+
-      '<td style="color:'+(h.margen>=0?'#97BF0D':'#e05252')+'">'+fmtM(h.margen)+'</td><td>'+pct.toFixed(1)+'%</td></tr>';
-  }).join('');
+  const negs=mesesNegativos(hist);
+  const alertHtml = negs.length
+    ? '<div class="pbi-alert"><b>'+negs.length+' mes'+(negs.length>1?'es':'')+' con margen negativo:</b> '+listaConY(negs)+
+      ' tuvo'+(negs.length>1?'ieron':'') +' costo mayor a la venta en este producto.</div>'
+    : '';
 
   cont.innerHTML=
     '<div class="pbi-toolbar">'+
-      '<div class="pbi-title"><span style="font-size:20px">💰</span> Margen Bruto · '+prod+' · '+ult.mes.slice(0,3)+' '+ult.anio+'</div>'+
+      '<div class="pbi-title"><span style="font-size:20px">💰</span> Margen Bruto BI · '+prod+'</div>'+
     '</div>'+
     '<div class="pbi-body">'+
-      '<div class="pbi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px">'+
-        '<div class="pbi-card" style="border-color:rgba(151,191,13,.3)"><div class="pbi-card-title">Venta</div><div style="font-size:20px;font-weight:700">'+fmtM(ult.venta)+'</div></div>'+
-        '<div class="pbi-card" style="border-color:rgba(255,171,64,.3)"><div class="pbi-card-title">Costo</div><div style="font-size:20px;font-weight:700">'+fmtM(ult.costo)+'</div></div>'+
-        '<div class="pbi-card" style="border-color:rgba(151,191,13,.3)"><div class="pbi-card-title">Margen Bruto</div><div style="font-size:20px;font-weight:700;color:'+(ult.margen>=0?'#97BF0D':'#e05252')+'">'+fmtM(ult.margen)+'</div></div>'+
-        '<div class="pbi-card" style="border-color:rgba(29,180,194,.3)"><div class="pbi-card-title">Margen %</div><div style="font-size:20px;font-weight:700">'+margenPct.toFixed(1)+'%</div></div>'+
+      '<div class="pbi-head">'+
+        '<div class="pbi-eyebrow">Margen Producto</div>'+
+        '<div class="pbi-bigtitle">'+prod+'</div>'+
+        '<div class="pbi-subdate">Datos consultados el '+MARGEN_CONSULTADO+' vía Power BI (workspace IA - COMPANY DATA)</div>'+
       '</div>'+
-      '<div class="pbi-card" style="border-color:rgba(255,255,255,.1)">'+
-        '<div class="pbi-card-title" style="margin-bottom:8px">Evolución mensual '+ult.anio+'</div>'+
-        '<table style="width:100%;font-size:13px;border-collapse:collapse">'+
-          '<thead><tr style="color:#9fb0b8;text-align:left"><th>Mes</th><th>Venta</th><th>Costo</th><th>Margen</th><th>%</th></tr></thead>'+
-          '<tbody>'+filas+'</tbody>'+
-        '</table>'+
+      alertHtml+
+      '<div class="pbi-cards5">'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Volumen · '+ult.mes.slice(0,3)+' '+ult.anio+'</div><div class="pbi-mcard-v">'+fmtV(ult.volumen)+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Venta · '+ult.mes.slice(0,3)+' '+ult.anio+'</div><div class="pbi-mcard-v">'+fmtM(ult.venta)+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Costo · '+ult.mes.slice(0,3)+' '+ult.anio+'</div><div class="pbi-mcard-v">'+fmtM(ult.costo)+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Margen Bruto</div><div class="pbi-mcard-v" style="color:'+(ult.margen>=0?'#5a9216':'#c23b3b')+'">'+fmtM(ult.margen)+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Margen %</div><div class="pbi-mcard-v" style="color:'+(margenPct>=0?'#5a9216':'#c23b3b')+'">'+margenPct.toFixed(1)+'%</div></div>'+
       '</div>'+
-      '<a href="'+PBI_REPORT_URL+'" target="_blank" class="pbi-open-btn" style="background:#97BF0D;margin-top:12px;display:inline-flex">'+
+      '<div class="pbi-chartwrap">'+
+        '<canvas id="pbiChartCanvas"></canvas>'+
+      '</div>'+
+      '<a href="'+PBI_REPORT_URL+'" target="_blank" class="pbi-open-btn" style="background:#97BF0D">'+
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'+
         'Ver detalle completo en Power BI'+
       '</a>'+
       '<div class="pbi-note">Fuente: Power BI (dataset Rentabilidad por Cliente - IA) · Actualización mensual manual</div>'+
     '</div>';
+
+  const labels=hist.map(h=>h.mes.slice(0,3).charAt(0)+h.mes.slice(1,3).toLowerCase()+' '+String(h.anio).slice(2));
+  const ventaData=hist.map(h=>h.venta);
+  const costoData=hist.map(h=>h.costo);
+  const margenPctData=hist.map(h=>h.venta?((h.margen/h.venta)*100):0);
+
+  const ctx=document.getElementById('pbiChartCanvas').getContext('2d');
+  pbiChartInstance=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:labels,
+      datasets:[
+        {type:'bar',label:'Venta',data:ventaData,backgroundColor:'#003E51',order:2,yAxisID:'y'},
+        {type:'bar',label:'Costo',data:costoData,backgroundColor:'#c9d3d6',order:2,yAxisID:'y'},
+        {type:'line',label:'Margen %',data:margenPctData,borderColor:'#97BF0D',backgroundColor:'#97BF0D',pointBackgroundColor:'#97BF0D',borderWidth:2.5,tension:.35,yAxisID:'y1',order:1}
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:14}}},
+      scales:{
+        y:{position:'left',ticks:{callback:v=>'$'+(v/1e6).toFixed(0)+'M'},title:{display:true,text:'ARS'}},
+        y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'},title:{display:true,text:'Margen %'}}
+      }
+    }
+  });
 }
 
 // ── COMPARATIVA ──
