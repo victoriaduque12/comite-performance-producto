@@ -1591,6 +1591,7 @@ function renderResumen(prod,v,fac,vol,clis){
   const slaLblCard=hasMesFilter?'SLA':'SLA';
   const slaSubCard=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Promedio histórico';
   const efecSubCard=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Promedio histórico';
+  const periodoLbl=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Total histórico (todos los meses)';
 
   const top1=Object.entries(v.reduce((a,b)=>{if(!b.cliente)return a;a[b.cliente]=(a[b.cliente]||0)+(Number(b.venta_norm)||0);return a;},{})).sort((a,b)=>b[1]-a[1])[0];
 
@@ -1653,12 +1654,12 @@ function renderResumen(prod,v,fac,vol,clis){
       ${efecDisp!==null?`<div class="mc" style="border-top-color:${slaColor(efecDisp)}"><div class="mc-l">Efectividad</div><div class="mc-v" style="color:${slaColor(efecDisp)}">${efecDisp.toFixed(1)}%</div><div class="mc-s">${efecSubCard}</div></div>`:''}`;
   } else {
   mrow.innerHTML=`
-    <div class="mc"><div class="mc-l">Facturación</div><div class="mc-v">${fmtARS(fac)}</div><div class="mc-s">Venta normalizada</div></div>
-    <div class="mc"><div class="mc-l">Volumen</div><div class="mc-v">${Math.round(vol).toLocaleString()}</div><div class="mc-s">Unidades</div></div>
-    <div class="mc"><div class="mc-l">Clientes activos</div><div class="mc-v">${clis.size}</div><div class="mc-s">Con facturación</div></div>
+    <div class="mc"><div class="mc-l">Facturación</div><div class="mc-v">${fmtARS(fac)}</div><div class="mc-s">Venta normalizada · ${periodoLbl}</div></div>
+    <div class="mc"><div class="mc-l">Volumen</div><div class="mc-v">${Math.round(vol).toLocaleString()}</div><div class="mc-s">Unidades · ${periodoLbl}</div></div>
+    <div class="mc"><div class="mc-l">Clientes activos</div><div class="mc-v">${clis.size}</div><div class="mc-s">Con facturación · ${periodoLbl}</div></div>
     ${slaDisp!==null?`<div class="mc" style="border-top-color:${slaColor(slaDisp)}"><div class="mc-l">SLA</div><div class="mc-v" style="color:${slaColor(slaDisp)}">${slaDisp.toFixed(1)}%</div><div class="mc-s">${slaSubCard}</div></div>`:''}
     ${efecDisp!==null?`<div class="mc" style="border-top-color:${slaColor(efecDisp)}"><div class="mc-l">Efectividad</div><div class="mc-v" style="color:${slaColor(efecDisp)}">${efecDisp.toFixed(1)}%</div><div class="mc-s">${efecSubCard}</div></div>`:''}
-    ${top1?`<div class="mc"><div class="mc-l">Top cliente</div><div class="mc-v" style="font-size:15px">${fmtARS(top1[1])}</div><div class="mc-s">${top1[0]}</div></div>`:''}`;
+    ${top1?`<div class="mc"><div class="mc-l">Top cliente</div><div class="mc-v" style="font-size:15px">${fmtARS(top1[1])}</div><div class="mc-s">${top1[0]} · ${periodoLbl}</div></div>`:''}`;
   }
   pc.appendChild(mrow);
 
