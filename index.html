@@ -2399,10 +2399,11 @@ function renderAdopcion(){
 }
 
 // ── RASH: ISSUES (automático, vía Google Sheets) ──
-let issuesChartInstance=null;
+let issuesChartInstance=null, issuesSemanaInstance=null;
 function renderIssues(){
   const cont=document.getElementById('issues-content');
   if(issuesChartInstance){issuesChartInstance.destroy();issuesChartInstance=null;}
+  if(issuesSemanaInstance){issuesSemanaInstance.destroy();issuesSemanaInstance=null;}
   const rows=allRashIssues||[];
   if(!rows.length){
     cont.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🐞</span> Issues reportados · Rash</div></div>'+
@@ -2423,6 +2424,37 @@ function renderIssues(){
   const modLabels=Object.keys(porModulo);
   const modData=modLabels.map(m=>porModulo[m]);
 
+  // Issues por semana desde el Go Live (agrupado por lunes de la semana de "Fecha de issue")
+  function parseFechaDDMMYYYY(s){
+    if(!s) return null;
+    const parts=String(s).trim().split('/');
+    if(parts.length!==3) return null;
+    const [d,m,y]=parts.map(Number);
+    if(!d||!m||!y) return null;
+    return new Date(y,m-1,d);
+  }
+  function lunesDeLaSemana(d){
+    const dd=new Date(d);
+    const day=dd.getDay(); // 0=domingo
+    const diff=(day===0?-6:1-day);
+    dd.setDate(dd.getDate()+diff);
+    return dd;
+  }
+  const porSemana={};
+  rows.forEach(r=>{
+    const f=parseFechaDDMMYYYY(r['Fecha de issue']);
+    if(!f) return;
+    const lunes=lunesDeLaSemana(f);
+    const key=lunes.getTime();
+    porSemana[key]=(porSemana[key]||0)+1;
+  });
+  const semanaKeys=Object.keys(porSemana).map(Number).sort((a,b)=>a-b);
+  const semanaLabels=semanaKeys.map(k=>{
+    const d=new Date(k);
+    return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  });
+  const semanaData=semanaKeys.map(k=>porSemana[k]);
+
   cont.innerHTML=
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🐞</span> Issues reportados · Rash</div></div>'+
     '<div class="pbi-body">'+
@@ -2435,11 +2467,15 @@ function renderIssues(){
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">MTTR promedio (días)</div><div class="pbi-mcard-v">'+mttrProm.toFixed(1)+'</div></div>'+
       '</div>'+
       (abiertos>0?'<div class="pbi-alert" style="max-width:900px"><b>'+abiertos+' issue(s) sin cierre confirmado.</b></div>':'')+
+      '<div class="pbi-chartwrap"><canvas id="issuesSemanaCanvas"></canvas></div>'+
       '<div class="pbi-chartwrap"><canvas id="issuesChartCanvas"></canvas></div>'+
     '</div>';
+  const ctxSemana=document.getElementById('issuesSemanaCanvas').getContext('2d');
+  issuesSemanaInstance=new Chart(ctxSemana,{type:'bar',data:{labels:semanaLabels,datasets:[{label:'Issues por semana',data:semanaData,backgroundColor:'#0099A8',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Issues reportados por semana desde el Go Live',font:{size:13}}}}});
   const ctx=document.getElementById('issuesChartCanvas').getContext('2d');
   issuesChartInstance=new Chart(ctx,{type:'bar',data:{labels:modLabels,datasets:[{label:'Issues por módulo',data:modData,backgroundColor:'#003E51',borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}}}});
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},title:{display:true,text:'Issues por módulo',font:{size:13}}}}});
 }
 
 // ── RASH: NPS (manual, captura Power BI) ──
