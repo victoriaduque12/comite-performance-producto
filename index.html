@@ -479,6 +479,9 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-btn"     data-tab="ranking"     onclick="switchTab('ranking',this)">🏆 Ranking</div>
         <div class="tab-btn"     data-tab="pbi"         onclick="switchTab('pbi',this)">💰 Margen Bruto BI</div>
         <div class="tab-btn" data-tab="cxbi" onclick="switchTab('cxbi',this)">🎯 Experiencia del Cliente BI</div>
+        <div class="tab-btn" data-tab="adopcion" style="display:none" onclick="switchTab('adopcion',this)">🌱 Adopción</div>
+        <div class="tab-btn" data-tab="issues" style="display:none" onclick="switchTab('issues',this)">🐞 Issues</div>
+        <div class="tab-btn" data-tab="nps" style="display:none" onclick="switchTab('nps',this)">💬 NPS</div>
       </div>
       <div class="ts">Última actualización: <span id="tsv">—</span></div>
       <div class="pcont">
@@ -489,6 +492,9 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-panel"    id="tab-ranking"></div>
         <div class="tab-full"     id="tab-pbi"><div class="pbi-full" id="pbi-content"></div></div>
         <div class="tab-full"     id="tab-cxbi"><div class="pbi-full" id="cxbi-content"></div></div>
+        <div class="tab-full"     id="tab-adopcion"><div class="pbi-full" id="adopcion-content"></div></div>
+        <div class="tab-full"     id="tab-issues"><div class="pbi-full" id="issues-content"></div></div>
+        <div class="tab-full"     id="tab-nps"><div class="pbi-full" id="nps-content"></div></div>
       </div>
     </div>
   </main>
@@ -556,6 +562,7 @@ const ID_KPIS='1xjh0quAo6y7ZCjWL5-qI1N2mgE7yq2lwGYT6iBhPnvI';
 const ID_MOTIVOS='1-VccjQJTRR16fL_JqlIiyRoBIQw9LmZlizFCLp-Qqu0';
 const ID_PICKIT_VOL='16TWKmyh55EeyPIBxNWI0TGNFytRKgS1kHFu6gVJ-to4';
 const ID_PICKIT_FAC='1L25cfqlFXdVKTIrcVguAJuYyaYEoiTbIz5uHMTkXUOo';
+const ID_RASH_ISSUES='1k6tXmQJtodeTLzhFCyBr4fG4TyH1Hz3vGwZVp2zpzIE';
 const PBI_REPORT_URL='https://app.powerbi.com/groups/me/reports/2ea1b575-1feb-4464-8a24-dac0ac0387e1/d050495042d3d060d741?ctid=91a5b5c8-673e-4a80-871c-5ed3412dd451&experience=power-bi';
 // Rash: snapshot de Volumen portado desde rash_kpi_dashboard.html (dashboard que se va a eliminar).
 // Pendiente: SLA, Efectividad y Motivos de No Entrega — todavía no están en las sheets del comité.
@@ -577,7 +584,34 @@ const RASH_NPS_SNAPSHOT={
   tasaRespuesta:3.9,
   pctPromotor:53.3,
   pctPasivo:0.0,
-  pctDetractor:46.7
+  pctDetractor:46.7,
+  paretoLabels:['Dirección de origen no autocompleta','Formulario extenso / complejo','Falla técnica de la página','Faltaba documentación a mano','Proceso poco claro (cómo seguir)'],
+  paretoData:[2,1,1,1,1]
+};
+// Adopción: portado de rash_kpi_dashboard.html (corte semana del 03/08/2026, parcial)
+const RASH_ADOPCION_SNAPSHOT={
+  fechaCorte:'03/08/2026 (semana parcial)',
+  altasTotales:254,
+  altasDesde:'13/05/2026',
+  altasNota:'Solo clientes que terminaron onboarding (Activo). Excluye 45 cuentas de prueba y 198 con registro pendiente.',
+  altasUltSemana:34,
+  altasUltSemanaRango:'27/07 al 02/08',
+  variacionSemanal:-15.0,
+  variacionDetalle:'34 vs. 40 (semana del 20/07)',
+  altasLabels:['11/05','18/05','01/06','08/06','15/06','22/06','29/06','06/07','13/07','20/07','27/07','03/08*'],
+  altasSemana:[4,2,3,2,30,37,27,31,39,40,34,5],
+  altasAcum:[4,6,9,11,41,78,105,136,175,215,249,254],
+  tasaFinalizacion:56.2,
+  tasaFinalizacionDetalle:'254 Activos / 452 (Activos + Pendientes)',
+  tasaActivacion:5.1,
+  tasaActivacionDetalle:'13 con ≥1 envío / 254 Activos',
+  zombies:241,
+  zombiesPct:94.9,
+  pctRecurrentes:53.8,
+  pctRecurrentesDetalle:'7 de los 13 clientes activados',
+  enviosPromedio:8.2,
+  enviosPromedioDetalle:'Sobre los 13 con ≥1 envío',
+  nota:'Base muy chica todavía (13 clientes activados sobre 254 altas) — cualquier variación porcentual acá puede ser ruido, no tendencia. A monitorear, no a accionar todavía.'
 };
 
 // Histórico de Margen Bruto embebido desde Power BI (dataset "Rentabilidad por Cliente - IA").
@@ -883,7 +917,7 @@ let META_NUMS={
 };
 
 // ── STATE ──
-let allVentas=[], allSlaEfec=[], allKpisAd=[], allMotivos=[], allPickitVol=[], allPickitFac=[], cur='overview', prodActual='', allProductos=[], cliActual='', allClientes=[];
+let allVentas=[], allSlaEfec=[], allKpisAd=[], allMotivos=[], allPickitVol=[], allPickitFac=[], allRashIssues=[], cur='overview', prodActual='', allProductos=[], cliActual='', allClientes=[];
 
 // Normaliza: minúsculas, sin tildes, espacios colapsados, trim
 function norm(s){
@@ -1142,6 +1176,13 @@ async function loadAll(){
     }
     catch(e){ console.warn('pickit_facturacion error:',e.message,'– Verificar que ID_PICKIT_FAC esté compartido públicamente'); }
 
+    let rashIssuesData=[];
+    try{
+      rashIssuesData=await sheetFetch(ID_RASH_ISSUES,'rash_issues');
+      console.log('rash_issues cargado: '+rashIssuesData.length+' filas');
+    }
+    catch(e){ console.warn('rash_issues error:',e.message,'– Verificar que la hoja esté compartida públicamente ("Cualquier persona con el enlace")'); }
+
     const PROD_ALIAS={
       'Entrega en un Punto':'Logística a Punto Pickit (cliente Pickit)',
       'Entrega en Un Punto':'Logística a Punto Pickit (cliente Pickit)',
@@ -1182,6 +1223,7 @@ async function loadAll(){
     allMotivos=motivosData;
     allPickitVol=pickitVolData;
     allPickitFac=pickitFacData;
+    allRashIssues=rashIssuesData;
     allProductos=[...new Set(ventas.map(v=>v.producto).filter(p=>p&&p!=='Otros'))].sort();
     allClientes=[...new Set(ventas.map(v=>v.cliente).filter(Boolean))].sort();
     buildSidebar(mats);
@@ -1436,9 +1478,16 @@ function go(id,el){
   document.querySelectorAll('.tab-full').forEach(p=>p.classList.remove('on'));
   document.querySelector('.tab-btn[data-tab="resumen"]').classList.add('on');
   document.getElementById('tab-resumen').classList.add('on');
-  // Ranking: no aplica para Rash (no tiene ventas propias para rankear clientes)
-  const rankBtn=document.querySelector('.tab-btn[data-tab="ranking"]');
-  if(rankBtn) rankBtn.style.display = (id==='Rash') ? 'none' : '';
+  // Rash tiene su propia estructura de solapas: sin Indicadores/Ranking, con Adopción/Issues/NPS
+  const esRash = id==='Rash';
+  ['ranking','indicadores'].forEach(t=>{
+    const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
+    if(b) b.style.display = esRash ? 'none' : '';
+  });
+  ['adopcion','issues','nps'].forEach(t=>{
+    const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
+    if(b) b.style.display = esRash ? '' : 'none';
+  });
   render(id);
 }
 
@@ -1454,6 +1503,15 @@ function switchTab(tab,el){
   } else if(tab==='cxbi'){
     document.getElementById('tab-cxbi').classList.add('on');
     renderCXBI(cur);
+  } else if(tab==='adopcion'){
+    document.getElementById('tab-adopcion').classList.add('on');
+    renderAdopcion();
+  } else if(tab==='issues'){
+    document.getElementById('tab-issues').classList.add('on');
+    renderIssues();
+  } else if(tab==='nps'){
+    document.getElementById('tab-nps').classList.add('on');
+    renderNPS();
   } else {
     const panel=document.getElementById('tab-'+tab);
     if(panel){ panel.classList.add('on'); }
@@ -1714,29 +1772,18 @@ function renderResumen(prod,v,fac,vol,clis){
 
   if(prod==='Rash'){
     const rs=RASH_VOL_SNAPSHOT;
-    const nps=RASH_NPS_SNAPSHOT;
     const rd=document.createElement('div');rd.className='ctb';
     rd.innerHTML=`<h3>Volumen · Rash (portado de rash_kpi_dashboard.html)</h3>
+      <div class="pbi-note" style="margin-bottom:10px">Estos 3 números son de <b>junio 2026</b> (mes con datos completos). Más abajo, "Última fecha de solicitud" es un dato puntual, no del mismo período.</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Solicitudes</div><div class="pbi-mcard-v">${rs.solicitudes}</div></div>
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Impuestos</div><div class="pbi-mcard-v">${rs.impuestos}</div></div>
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">% Impuestos</div><div class="pbi-mcard-v">${rs.pctImpuestos}%</div></div>
+        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Solicitudes · Jun 2026</div><div class="pbi-mcard-v">${rs.solicitudes}</div></div>
+        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Impuestos · Jun 2026</div><div class="pbi-mcard-v">${rs.impuestos}</div></div>
+        <div class="pbi-mcard"><div class="pbi-mcard-lbl">% Impuestos · Jun 2026</div><div class="pbi-mcard-v">${rs.pctImpuestos}%</div></div>
       </div>
-      <table class="ct"><thead><tr><th>Flujo</th><th style="text-align:right">%</th></tr></thead><tbody>
+      <table class="ct"><thead><tr><th>Flujo (junio 2026)</th><th style="text-align:right">%</th></tr></thead><tbody>
       ${rs.flujos.map(f=>`<tr><td>${f.label}</td><td style="text-align:right;font-weight:600;color:var(--teal)">${f.pct}%</td></tr>`).join('')}</tbody></table>
-      <div class="pbi-note" style="margin-top:8px">Última fecha de solicitud: ${rs.fechaUltimaSolicitud} · SLA, Efectividad y Motivos de No Entrega: pendientes de sumar a las sheets del comité.</div>`;
+      <div class="pbi-note" style="margin-top:8px">📅 Última fecha de solicitud registrada: <b>${rs.fechaUltimaSolicitud}</b> (dato puntual, no de junio) · Ver solapas "Adopción" e "Issues" para el detalle semanal/actualizado · SLA, Efectividad y Motivos de No Entrega: pendientes de sumar a las sheets del comité.</div>`;
     pc.appendChild(rd);
-
-    const npsDiv=document.createElement('div');npsDiv.className='ctb';
-    npsDiv.innerHTML=`<h3>NPS B2B · Rash (corte actual, captura manual Power BI)</h3>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">NPS (experiencia)</div><div class="pbi-mcard-v">${nps.npsScore}%</div></div>
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Respuestas</div><div class="pbi-mcard-v">${nps.respuestas}</div></div>
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">% Promotor</div><div class="pbi-mcard-v" style="color:#5a9216">${nps.pctPromotor}%</div></div>
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">% Detractor</div><div class="pbi-mcard-v" style="color:#c23b3b">${nps.pctDetractor}%</div></div>
-      </div>
-      <div class="pbi-note">${nps.respuestas} respuestas sobre ${nps.envios} envíos (tasa de respuesta ${nps.tasaRespuesta}%). % Pasivo: ${nps.pctPasivo}%.</div>`;
-    pc.appendChild(npsDiv);
   }
 
   pc.appendChild(Object.assign(document.createElement('div'),{
@@ -2307,6 +2354,121 @@ function renderCXBI(prod){
         '<div class="pbi-note">Requiere acceso Power BI con cuenta OCASA</div>'+
       '</div>'+
     '</div>';
+}
+
+// ── RASH: ADOPCIÓN (manual, portado de rash_kpi_dashboard.html) ──
+let adopcionChartInstance=null;
+function renderAdopcion(){
+  const cont=document.getElementById('adopcion-content');
+  const a=RASH_ADOPCION_SNAPSHOT;
+  if(adopcionChartInstance){adopcionChartInstance.destroy();adopcionChartInstance=null;}
+  cont.innerHTML=
+    '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🌱</span> Adopción · Rash</div></div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Solapa manual — se actualiza cuando Victoria envía datos nuevos. Corte actual: <b>'+a.fechaCorte+'</b>.</div>'+
+      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Adopción</div><div class="pbi-bigtitle" style="font-size:18px">Altas de clientes — detalle semanal (corte actual)</div></div>'+
+      '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas totales (desde '+a.altasDesde+')</div><div class="pbi-mcard-v">'+a.altasTotales+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas última semana ('+a.altasUltSemanaRango+')</div><div class="pbi-mcard-v">'+a.altasUltSemana+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Variación semana vs. anterior</div><div class="pbi-mcard-v" style="color:'+(a.variacionSemanal>=0?'#5a9216':'#c23b3b')+'">'+a.variacionSemanal+'%</div></div>'+
+      '</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">'+a.altasNota+' · Variación: '+a.variacionDetalle+'</div>'+
+      '<div class="pbi-chartwrap"><canvas id="adopcionChartCanvas"></canvas></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Activación · Engagement</div><div class="pbi-bigtitle" style="font-size:18px">De registrado a cliente activo (corte actual)</div></div>'+
+      '<div class="pbi-cards5">'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Tasa de finalización onboarding</div><div class="pbi-mcard-v">'+a.tasaFinalizacion+'%</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Tasa de activación</div><div class="pbi-mcard-v">'+a.tasaActivacion+'%</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Clientes "zombie" (0 envíos)</div><div class="pbi-mcard-v" style="color:#c23b3b">'+a.zombies+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">% Recurrentes (≥2 envíos)</div><div class="pbi-mcard-v" style="color:#5a9216">'+a.pctRecurrentes+'%</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Envíos promedio / cliente activado</div><div class="pbi-mcard-v">'+a.enviosPromedio+'</div></div>'+
+      '</div>'+
+      '<div class="pbi-alert" style="max-width:900px"><b>Base chica:</b> '+a.nota+'</div>'+
+    '</div>';
+  const ctx=document.getElementById('adopcionChartCanvas').getContext('2d');
+  adopcionChartInstance=new Chart(ctx,{
+    data:{labels:a.altasLabels,datasets:[
+      {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y'},
+      {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',backgroundColor:'#F6A945',tension:.3,yAxisID:'y1'}
+    ]},
+    options:{responsive:true,plugins:{legend:{position:'bottom'}},
+      scales:{y:{position:'left',title:{display:true,text:'Altas por semana'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Acumulado'}}}}
+  });
+}
+
+// ── RASH: ISSUES (automático, vía Google Sheets) ──
+let issuesChartInstance=null;
+function renderIssues(){
+  const cont=document.getElementById('issues-content');
+  if(issuesChartInstance){issuesChartInstance.destroy();issuesChartInstance=null;}
+  const rows=allRashIssues||[];
+  if(!rows.length){
+    cont.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🐞</span> Issues reportados · Rash</div></div>'+
+      '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin datos todavía</div>'+
+      '<div class="pbi-card-sub">No se pudo cargar la sheet de Issues (revisar que esté compartida como "Cualquier persona con el enlace").</div></div></div>';
+    return;
+  }
+  const total=rows.length;
+  const bugs=rows.filter(r=>(r['Tipo (bug o mejora)']||'').trim().toLowerCase()==='bug').length;
+  const mejoras=rows.filter(r=>(r['Tipo (bug o mejora)']||'').trim().toLowerCase()==='mejora').length;
+  const resueltos=rows.filter(r=>(r['Estado']||'').trim().toLowerCase().includes('resuelto')).length;
+  const abiertos=total-resueltos;
+  const mttrVals=rows.map(r=>Number(r['Días de resolución (MTTR)'])).filter(n=>!isNaN(n));
+  const mttrProm=mttrVals.length?(mttrVals.reduce((a,b)=>a+b,0)/mttrVals.length):0;
+  // Issues por módulo
+  const porModulo={};
+  rows.forEach(r=>{const m=(r['Módulo']||'Sin módulo').trim();porModulo[m]=(porModulo[m]||0)+1;});
+  const modLabels=Object.keys(porModulo);
+  const modData=modLabels.map(m=>porModulo[m]);
+
+  cont.innerHTML=
+    '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🐞</span> Issues reportados · Rash</div></div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-head" style="max-width:900px"><div class="pbi-subdate">Fuente: Google Sheets (en vivo) · '+total+' registros cargados</div></div>'+
+      '<div class="pbi-cards5">'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Issues totales</div><div class="pbi-mcard-v">'+total+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Bugs</div><div class="pbi-mcard-v" style="color:#c23b3b">'+bugs+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Mejoras</div><div class="pbi-mcard-v">'+mejoras+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Resueltos</div><div class="pbi-mcard-v" style="color:#5a9216">'+resueltos+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">MTTR promedio (días)</div><div class="pbi-mcard-v">'+mttrProm.toFixed(1)+'</div></div>'+
+      '</div>'+
+      (abiertos>0?'<div class="pbi-alert" style="max-width:900px"><b>'+abiertos+' issue(s) sin cierre confirmado.</b></div>':'')+
+      '<div class="pbi-chartwrap"><canvas id="issuesChartCanvas"></canvas></div>'+
+    '</div>';
+  const ctx=document.getElementById('issuesChartCanvas').getContext('2d');
+  issuesChartInstance=new Chart(ctx,{type:'bar',data:{labels:modLabels,datasets:[{label:'Issues por módulo',data:modData,backgroundColor:'#003E51',borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}}}});
+}
+
+// ── RASH: NPS (manual, captura Power BI) ──
+let npsDonutInstance=null, npsParetoInstance=null;
+function renderNPS(){
+  const cont=document.getElementById('nps-content');
+  const n=RASH_NPS_SNAPSHOT;
+  if(npsDonutInstance){npsDonutInstance.destroy();npsDonutInstance=null;}
+  if(npsParetoInstance){npsParetoInstance.destroy();npsParetoInstance=null;}
+  cont.innerHTML=
+    '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">💬</span> NPS B2B · Rash (corte actual, captura manual Power BI)</div></div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-cards5">'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">NPS (experiencia)</div><div class="pbi-mcard-v">'+n.npsScore+'%</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Respuestas</div><div class="pbi-mcard-v">'+n.respuestas+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">% Promotor</div><div class="pbi-mcard-v" style="color:#5a9216">'+n.pctPromotor+'%</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">% Detractor</div><div class="pbi-mcard-v" style="color:#c23b3b">'+n.pctDetractor+'%</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">% Pasivo</div><div class="pbi-mcard-v">'+n.pctPasivo+'%</div></div>'+
+      '</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">'+n.respuestas+' respuestas sobre '+n.envios+' envíos (tasa de respuesta '+n.tasaRespuesta+'%).</div>'+
+      '<div style="width:100%;max-width:900px;display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
+        '<div class="pbi-chartwrap"><canvas id="npsDonutCanvas"></canvas></div>'+
+        '<div class="pbi-chartwrap"><canvas id="npsParetoCanvas"></canvas></div>'+
+      '</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Comentarios individuales de respondentes no se incluyen acá (tienen nombre y apellido de clientes) — el repo del comité es público.</div>'+
+    '</div>';
+  const ctx1=document.getElementById('npsDonutCanvas').getContext('2d');
+  npsDonutInstance=new Chart(ctx1,{type:'doughnut',data:{labels:['Promotor','Pasivo','Detractor'],datasets:[{data:[n.pctPromotor,n.pctPasivo,n.pctDetractor],backgroundColor:['#8FBF4C','#F6A945','#e0574c'],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+  const ctx2=document.getElementById('npsParetoCanvas').getContext('2d');
+  npsParetoInstance=new Chart(ctx2,{type:'bar',data:{labels:n.paretoLabels,datasets:[{label:'Menciones',data:n.paretoData,backgroundColor:'#0099A8',borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},title:{display:true,text:'Motivos de inconveniente (Pareto)'}}}});
 }
 
 // ── PERFORMANCE BI ──
