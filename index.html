@@ -164,7 +164,10 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .pbi-alert b{color:#b02a2a;}
 .pbi-cards5{width:100%;max-width:900px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
 .pbi-mcard{background:#fff;border:1px solid rgba(0,156,163,.18);border-radius:10px;padding:14px 12px;text-align:left;box-shadow:0 1px 6px rgba(0,156,163,.06);min-width:0;}
-.pbi-mcard-lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;white-space:nowrap;}
+.pbi-mcard-lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;line-height:1.3;}
+.pbi-mcard-sub{font-size:10.5px;color:var(--gray);margin-top:4px;line-height:1.35;}
+.pbi-mcard-sub em{font-style:italic;display:block;margin-top:3px;}
+.pbi-mcard-top{border-top:3px solid; }
 .pbi-mcard-v{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pbi-chartwrap{width:100%;max-width:900px;background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.04);}
 .pbi-chartwrap canvas{max-height:260px;}
@@ -1480,7 +1483,7 @@ function go(id,el){
   document.getElementById('tab-resumen').classList.add('on');
   // Rash tiene su propia estructura de solapas: sin Indicadores/Ranking, con Adopción/Issues/NPS
   const esRash = id==='Rash';
-  ['ranking','indicadores'].forEach(t=>{
+  ['ranking','indicadores','cxbi'].forEach(t=>{
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
     if(b) b.style.display = esRash ? 'none' : '';
   });
@@ -2365,7 +2368,7 @@ function renderAdopcion(){
   cont.innerHTML=
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🌱</span> Adopción · Rash</div></div>'+
     '<div class="pbi-body">'+
-      '<div class="pbi-note" style="width:100%;max-width:900px">Solapa manual — se actualiza cuando Victoria envía datos nuevos. Corte actual: <b>'+a.fechaCorte+'</b>.</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Se actualiza manualmente con datos nuevos. Corte actual: <b>'+a.fechaCorte+'</b>.</div>'+
       '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Adopción</div><div class="pbi-bigtitle" style="font-size:18px">Altas de clientes — detalle semanal (corte actual)</div></div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas totales (desde '+a.altasDesde+')</div><div class="pbi-mcard-v">'+a.altasTotales+'</div></div>'+
@@ -2376,11 +2379,11 @@ function renderAdopcion(){
       '<div class="pbi-chartwrap"><canvas id="adopcionChartCanvas"></canvas></div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Activación · Engagement</div><div class="pbi-bigtitle" style="font-size:18px">De registrado a cliente activo (corte actual)</div></div>'+
       '<div class="pbi-cards5">'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Tasa de finalización onboarding</div><div class="pbi-mcard-v">'+a.tasaFinalizacion+'%</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Tasa de activación</div><div class="pbi-mcard-v">'+a.tasaActivacion+'%</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Clientes "zombie" (0 envíos)</div><div class="pbi-mcard-v" style="color:#c23b3b">'+a.zombies+'</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">% Recurrentes (≥2 envíos)</div><div class="pbi-mcard-v" style="color:#5a9216">'+a.pctRecurrentes+'%</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Envíos promedio / cliente activado</div><div class="pbi-mcard-v">'+a.enviosPromedio+'</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#0099A8"><div class="pbi-mcard-v" style="font-size:24px">'+a.tasaFinalizacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de finalización de onboarding</div><div class="pbi-mcard-sub">'+a.tasaFinalizacionDetalle+'</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#F6A945"><div class="pbi-mcard-v" style="font-size:24px">'+a.tasaActivacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de activación</div><div class="pbi-mcard-sub">'+a.tasaActivacionDetalle+'<em>Qué % de los que se registraron llegó a usar Rash de verdad (hizo al menos un envío)</em></div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#e0574c"><div class="pbi-mcard-v" style="font-size:24px">'+a.zombies+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Clientes "zombie" (0 envíos)</div><div class="pbi-mcard-sub">'+a.zombiesPct+'% de los Activos</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#8FBF4C"><div class="pbi-mcard-v" style="font-size:24px">'+a.pctRecurrentes+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">% Recurrentes (≥2 envíos)</div><div class="pbi-mcard-sub">'+a.pctRecurrentesDetalle+'<em>De los que ya usaron Rash una vez, qué % volvió a enviar (no fue algo puntual)</em></div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#8FBF4C"><div class="pbi-mcard-v" style="font-size:24px">'+a.enviosPromedio+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Envíos promedio por cliente activado</div><div class="pbi-mcard-sub">'+a.enviosPromedioDetalle+'</div></div>'+
       '</div>'+
       '<div class="pbi-alert" style="max-width:900px"><b>Base chica:</b> '+a.nota+'</div>'+
     '</div>';
