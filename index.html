@@ -497,11 +497,19 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-full"     id="tab-adopcion"><div class="pbi-full" id="adopcion-content"></div></div>
         <div class="tab-full"     id="tab-issues"><div class="pbi-full" id="issues-content"></div></div>
         <div class="tab-full"     id="tab-nps"><div class="pbi-full" id="nps-content"></div></div>
-        <div class="tab-full"     id="tab-estabilidad"><iframe src="kpis_estabilidad_cdd.html" style="width:100%;height:100%;border:none;min-height:900px" title="KPIs Estabilidad CDD"></iframe></div>
+        <div class="tab-full"     id="tab-estabilidad"><iframe id="ifr-estabilidad" src="kpis_estabilidad_cdd.html" style="width:100%;height:900px;border:none" title="KPIs Estabilidad CDD"></iframe></div>
       </div>
     </div>
   </main>
 </div>
+<script>
+window.addEventListener('message', function(e){
+  if(e.data && e.data.type==='cdd-kpis-height'){
+    const ifr=document.getElementById('ifr-estabilidad');
+    if(ifr) ifr.style.height=(e.data.height+30)+'px';
+  }
+});
+</script>
 
 <!-- MOBILE BOTTOM NAV -->
 <div id="mob-backdrop" onclick="closeSidebar()"></div>
