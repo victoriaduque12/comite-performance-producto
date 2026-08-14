@@ -476,7 +476,6 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
       <div class="kstrip" id="ks"></div>
       <div class="tabs-bar">
         <div class="tab-btn on"  data-tab="resumen"     onclick="switchTab('resumen',this)">📊 Resumen</div>
-        <div class="tab-btn"     data-tab="indicadores" onclick="switchTab('indicadores',this)">📋 Indicadores</div>
         <div class="tab-btn"     data-tab="slaefec"     onclick="switchTab('slaefec',this)">📈 SLA & Efectividad</div>
         <div class="tab-btn"     data-tab="comparativa" onclick="switchTab('comparativa',this)">📆 Comparativa</div>
         <div class="tab-btn"     data-tab="ranking"     onclick="switchTab('ranking',this)">🏆 Ranking</div>
@@ -489,7 +488,6 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
       <div class="ts">Última actualización: <span id="tsv">—</span></div>
       <div class="pcont">
         <div class="tab-panel on" id="tab-resumen"></div>
-        <div class="tab-panel"    id="tab-indicadores"></div>
         <div class="tab-panel"    id="tab-slaefec"></div>
         <div class="tab-panel"    id="tab-comparativa"></div>
         <div class="tab-panel"    id="tab-ranking"></div>
@@ -1271,12 +1269,14 @@ function filterAndRender(){
     if(targetPanel) targetPanel.classList.add('on');
     // Re-renderizar según tab activo
     if(activeTab==='resumen') render(cur);
-    else if(activeTab==='indicadores') renderIndicadores(cur);
     else if(activeTab==='slaefec') renderSlaEfec(cur);
     else if(activeTab==='comparativa') renderComparativa(cur);
     else if(activeTab==='ranking') renderRanking(cur);
     else if(activeTab==='pbi') renderPBI(cur);
     else if(activeTab==='cxbi') renderCXBI(cur);
+    else if(activeTab==='adopcion') renderAdopcion();
+    else if(activeTab==='issues') renderIssues();
+    else if(activeTab==='nps') renderNPS();
     else render(cur);
   }
 }
@@ -1483,7 +1483,7 @@ function go(id,el){
   document.getElementById('tab-resumen').classList.add('on');
   // Rash tiene su propia estructura de solapas: sin Indicadores/Ranking, con Adopción/Issues/NPS
   const esRash = id==='Rash';
-  ['ranking','indicadores','cxbi'].forEach(t=>{
+  ['ranking','cxbi'].forEach(t=>{
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
     if(b) b.style.display = esRash ? 'none' : '';
   });
@@ -1518,7 +1518,6 @@ function switchTab(tab,el){
   } else {
     const panel=document.getElementById('tab-'+tab);
     if(panel){ panel.classList.add('on'); }
-    if(tab==='indicadores'&&document.getElementById('tab-indicadores').innerHTML==='') renderIndicadores(cur);
     if(tab==='slaefec'&&document.getElementById('tab-slaefec').innerHTML==='') renderSlaEfec(cur);
     if(tab==='comparativa'&&document.getElementById('tab-comparativa').innerHTML==='') renderComparativa(cur);
     if(tab==='ranking'&&document.getElementById('tab-ranking').innerHTML==='') renderRanking(cur);
@@ -1796,402 +1795,6 @@ function renderResumen(prod,v,fac,vol,clis){
   }));
 }
 
-// ── INDICADORES ──
-function renderIndicadores(prod){
-  const pc=document.getElementById('tab-indicadores');
-  pc.innerHTML='';
-
-  const vProd=allVentas.filter(x=>x.producto===prod&&x.escenario==='Actual'&&(!cliActual||x.cliente===cliActual));
-  const MO_I=Object.fromEntries(MO.map((m,i)=>[m,i]));
-  const mesesDisp=[...new Set(vProd.map(x=>x.anio+'|'+x.mes))].sort((a,b)=>{
-    const[ya,ma]=a.split('|');const[yb,mb]=b.split('|');
-    return ya!==yb?Number(ya)-Number(yb):(MO_I[ma]||0)-(MO_I[mb]||0);
-  });
-  const ultK=mesesDisp[mesesDisp.length-1]||'';
-  const antK=mesesDisp[mesesDisp.length-2]||'';
-  const[ultA,ultM]=ultK.split('|'); const[antA,antM]=antK.split('|');
-  const vUlt=vProd.filter(x=>String(x.anio)===String(ultA)&&x.mes===ultM);
-  const vAnt=vProd.filter(x=>String(x.anio)===String(antA)&&x.mes===antM);
-
-  const facUlt=vUlt.reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
-  const volUlt=vUlt.reduce((a,b)=>a+(Number(b.cantidad)||0),0);
-  const clisUlt=new Set(vUlt.map(x=>x.cliente).filter(Boolean));
-  const clisAnt=new Set(vAnt.map(x=>x.cliente).filter(Boolean));
-  const arpu=clisUlt.size>0?facUlt/clisUlt.size:0;
-  const nuevos=[...clisUlt].filter(c=>!clisAnt.has(c)).length;
-  const bajas=[...clisAnt].filter(c=>!clisUlt.has(c)).length;
-
-  const slaP=allSlaEfec.filter(r=>(r.producto||'').trim()===prod.trim());
-  // KPIs adicionales del producto
-  function kpiVal(nombre){
-    const r=allKpisAd.find(k=>(k.producto||'').trim()===prod.trim()&&(k.indicador||'').toLowerCase().includes(nombre.toLowerCase()));
-    return r?parseFloat(r.valor):null;
-  }
-  const tiempoAwpHfd=kpiVal('AWP');
-  slaP.sort((a,b)=>Number(a.anio)!==Number(b.anio)?Number(a.anio)-Number(b.anio):(MO_I[a.mes]||0)-(MO_I[b.mes]||0));
-  const lSla=slaP.filter(r=>r.sla_pct!=null&&r.sla_pct!=='').pop();
-  const lEfe=slaP.filter(r=>r.efectividad_pct!=null&&r.efectividad_pct!=='').pop();
-  const lEfe1=slaP.filter(r=>r.efectividad_1ra_vuelta!=null&&r.efectividad_1ra_vuelta!=='').pop();
-  const slaVal=lSla?parseFloat(lSla.sla_pct):null;
-  const efeVal=lEfe?parseFloat(lEfe.efectividad_pct):null;
-  const efec1Val=lEfe1?parseFloat(lEfe1.efectividad_1ra_vuelta):null;
-  const slaLbl=lSla?(lSla.mes.charAt(0)+lSla.mes.slice(1).toLowerCase()+' '+lSla.anio):'—';
-  const efeLbl=lEfe?(lEfe.mes.charAt(0)+lEfe.mes.slice(1).toLowerCase()+' '+lEfe.anio):'—';
-  const efec1Lbl=lEfe1?(lEfe1.mes.charAt(0)+lEfe1.mes.slice(1).toLowerCase()+' '+lEfe1.anio):'—';
-  const mesLbl=ultM?(ultM.charAt(0)+ultM.slice(1).toLowerCase()+' '+ultA):'—';
-
-  function fv(val,fmt,nota){
-    const d=document.createElement('div');
-    if(fmt==='txt'){
-      d.style.cssText='font-weight:600;font-size:12px;color:#333';
-      d.textContent=val||'—';
-      return d;
-    }
-    const ok=val!==null&&val!==undefined&&!isNaN(val);
-    if(!ok){
-      d.style.cssText='color:#bbb;font-size:11px';d.textContent='Sin datos';
-      return d;
-    }
-    let txt='';
-    if(fmt==='ars') txt=fmtARS(val);
-    else if(fmt==='pct'){txt=val.toFixed(1)+'%';d.style.color=slaColor(val);}
-    else if(fmt==='num') txt=Math.round(val).toLocaleString('es-AR');
-    else txt=val.toFixed(1);
-    d.style.cssText='font-weight:700;font-size:13px';d.textContent=txt;
-    if(nota){const s=document.createElement('div');s.style.cssText='font-size:9px;color:#aaa;margin-top:1px';s.textContent=nota;d.appendChild(s);}
-    return d;
-  }
-
-  // Definición indicadores por producto
-  function getItems(){
-    const comun=[
-      {n:'Facturación',f:'Suma venta normalizada (escenario Actual)',src:'Google Drive · ventas',val:facUlt,fmt:'ars',nota:mesLbl},
-      {n:'Volumen',f:'Suma unidades del período',src:'Google Drive · ventas',val:volUlt,fmt:'num',nota:mesLbl},
-      {n:'Clientes activos',f:'Clientes distintos con venta > 0',src:'Google Drive · ventas',val:clisUlt.size,fmt:'num',nota:mesLbl},
-      {n:'Nuevos clientes',f:'Clientes sin actividad en mes anterior',src:'Google Drive · ventas',val:nuevos,fmt:'num',nota:mesLbl},
-      {n:'Bajas (Churn qty)',f:'Clientes del mes anterior sin actividad en mes actual',src:'Google Drive · ventas',val:bajas,fmt:'num',nota:mesLbl},
-      {n:'ARPU',f:'Facturación / Clientes activos del período',src:'Google Drive · ventas',val:arpu>0?arpu:null,fmt:'ars',nota:mesLbl},
-    ];
-    const slaItems=[
-      {n:'SLA',f:'Entregas / operaciones en plazo sobre total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
-      {n:'Efectividad',f:'Entregas exitosas sobre total de intentos × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
-      {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
-      {n:'Causas de no entrega',f:'Distribución % de motivos de fallo por categoría',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-      {n:'Errores / rechazos',f:'Operaciones con error o rechazo / Total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-    ];
-    const cliItems=[
-      {n:'NPS',f:'% Promotores − % Detractores (encuesta)',src:'Encuesta NPS',val:null,fmt:'num',nota:null},
-      {n:'Penalidades',f:'Monto total de penalidades aplicadas en el período',src:'Sistema contable',val:null,fmt:'ars',nota:null},
-    ];
-
-    const specific={
-      'Carta Documento Digital':[
-        {cat:'Performance del Negocio',color:'#97BF0D',items:comun},
-        {cat:'Operación',color:'#F29400',items:[
-          {n:'Tasa error operativo',f:'Cartas con problema de impresión / total cartas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-          {n:'Tiempo imposición (AWP→HFD)',f:'Promedio horas desde ingreso AWP hasta pase a HFD',src:'Google Drive · kpis_adicionales',val:tiempoAwpHfd,fmt:'num',nota:null},
-          {n:'Tiempo digitalización acuses',f:'Promedio horas entre entrega y digitalización de acuse (addoc)',src:'Sistema addoc',val:null,fmt:'num',nota:null},
-          {n:'Efectividad 1ra vuelta',f:'Cartas entregadas en 1ra visita / Total cartas × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
-          {n:'Efectividad general',f:'Total entregas exitosas (todas las vueltas) / Total cartas × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
-          {n:'SLA',f:'Cartas entregadas en plazo contractual / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
-        ]},
-        {cat:'Experiencia del Cliente',color:'#009CA3',items:[
-          ...cliItems,
-        ]},
-      ],
-      'Paqueteria E-Commerce B2C':[
-        {cat:'Performance del Negocio',color:'#97BF0D',items:comun},
-        {cat:'Colecta',color:'#E67E22',items:[
-          {n:'Tasa colectas fallidas',f:'Colectas donde no se retiró mercadería / total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-          {n:'Tiempo solicitud → colecta',f:'Promedio horas entre solicitud y ejecución de colecta',src:'Sistema operativo',val:null,fmt:'num',nota:null},
-        ]},
-        {cat:'Última Milla',color:'#009CA3',items:slaItems},
-        {cat:'Performance del Punto (Pick It)',color:'#C0392B',items:[
-          {n:'Tasa paquetes vencidos',f:'Paquetes sin retirar > plazo máximo / total en punto × 100',src:'Sistema Pick It',val:null,fmt:'pct',nota:null},
-          {n:'Incidentes en punto',f:'Cantidad de incidentes reportados en puntos de entrega',src:'Sistema Pick It',val:null,fmt:'num',nota:null},
-        ]},
-        {cat:'Experiencia del Cliente',color:'#1ABC9C',items:[
-          ...cliItems,
-          {n:'Tasa de retiro efectivo',f:'Paquetes retirados / total disponibles en punto × 100',src:'Sistema Pick It',val:null,fmt:'pct',nota:null},
-        ]},
-      ],
-      'Entrega en Punto Pickit':(()=>{
-        const MES_MAP={ene:'ENERO',feb:'FEBRERO',mar:'MARZO',abr:'ABRIL',may:'MAYO',jun:'JUNIO',jul:'JULIO',ago:'AGOSTO',sep:'SEPTIEMBRE',oct:'OCTUBRE',nov:'NOVIEMBRE',dic:'DICIEMBRE'};
-        const fMes=(document.getElementById('fMes')?.value||'').toUpperCase();
-        const fAnio=document.getElementById('fAnio')?.value||'';
-        const pvRows=allPickitVol.filter(r=>{
-          const m=String(r['Mes ']||r['Mes']||'').trim().toLowerCase();
-          if(!m||m==='total general') return false;
-          const mesNorm=MES_MAP[m]||m.toUpperCase();
-          if(fMes&&mesNorm!==fMes) return false;
-          return true;
-        });
-        const pickitVolTotal=pvRows.reduce((a,b)=>a+(Number(b['Volumen'])||0),0);
-        const pvAll=allPickitVol.filter(r=>{const m=String(r['Mes ']||r['Mes']||'').trim().toLowerCase();return m&&m!=='total general';});
-        const pvLast=pvAll[pvAll.length-1];
-        const pvLbl=pvLast?String(pvLast['Mes ']||pvLast['Mes']||'').trim():'';
-        const pickitVolDisp=pvRows.length>0?pickitVolTotal:(pvLast?Number(pvLast['Volumen'])||0:null);
-        // Efectividad en pp y vencidos desde sla_efectividad
-        const ppRows=slaP.filter(r=>r.efectividad_en_pp!=null&&r.efectividad_en_pp!=='');
-        const vcRows=slaP.filter(r=>r.vencidos_en_pp!=null&&r.vencidos_en_pp!=='');
-        const ppVal=ppRows.length?Number(ppRows[ppRows.length-1].efectividad_en_pp):null;
-        const ppLbl=ppRows.length?(ppRows[ppRows.length-1].mes.charAt(0)+ppRows[ppRows.length-1].mes.slice(1).toLowerCase()+' '+ppRows[ppRows.length-1].anio):'';
-        const vcVal=vcRows.length?Number(vcRows[vcRows.length-1].vencidos_en_pp):null;
-        const vcLbl=vcRows.length?(vcRows[vcRows.length-1].mes.charAt(0)+vcRows[vcRows.length-1].mes.slice(1).toLowerCase()+' '+vcRows[vcRows.length-1].anio):'';
-        return [
-        {cat:'Performance del Negocio',color:'#97BF0D',items:[
-          {n:'Volumen',f:'Envíos entregados en punto Pick It',src:'Google Drive · pickit_volumen',val:pickitVolDisp,fmt:'num',nota:pvLbl||mesLbl},
-        ]},
-        {cat:'Entrega en el Punto',color:'#009CA3',items:[
-          {n:'Efectividad',f:'Entregas exitosas en punto / Total envíos a punto × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
-          {n:'SLA',f:'Envíos entregados en plazo / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
-          {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
-        ]},
-        ];})(),
-      'Paqueteria E-Commerce B2C':[
-        {cat:'Performance del Negocio',color:'#97BF0D',items:[
-          {n:'Facturación',f:'Suma venta normalizada (escenario Actual)',src:'Google Drive · ventas',val:facUlt,fmt:'ars',nota:mesLbl},
-          {n:'Volumen',f:'Suma envíos del período',src:'Google Drive · ventas',val:volUlt,fmt:'num',nota:mesLbl},
-          {n:'Costo por envío',f:'Costo total / Total envíos',src:'ERP / Contable',val:null,fmt:'ars',nota:null},
-        ]},
-        {cat:'Clientes',color:'#2ECC71',items:[
-          {n:'Clientes activos',f:'Clientes con al menos un pedido en el período',src:'Google Drive · ventas',val:clisUlt.size,fmt:'num',nota:mesLbl},
-          {n:'Nuevos clientes',f:'Altas de nuevos clientes en el período',src:'Google Drive · ventas',val:nuevos,fmt:'num',nota:mesLbl},
-        ]},
-        {cat:'Colecta',color:'#E67E22',items:[
-          {n:'Tasa colectas fallidas',f:'Colectas sin retiro / total colectas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-          {n:'Tiempo solicitud → colecta',f:'Promedio horas entre solicitud y ejecución',src:'Sistema operativo',val:null,fmt:'num',nota:null},
-        ]},
-        {cat:'Última Milla',color:'#009CA3',items:[
-          {n:'SLA',f:'Envíos en plazo / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
-          {n:'Efectividad',f:'Entregas exitosas / Total × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
-          {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
-          {n:'Causas de no entrega',f:'Distribución % de motivos de fallo',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-        ]},
-        {cat:'Experiencia del Cliente',color:'#1ABC9C',items:[
-          {n:'NPS',f:'% Promotores − % Detractores',src:'Encuesta NPS',val:null,fmt:'num',nota:null},
-        ]},
-      ],
-      'Distribucion Consumo Masivo y Palletizado':[
-        {cat:'Performance del Negocio',color:'#97BF0D',items:[
-          {n:'Facturación',f:'Suma venta normalizada (escenario Actual)',src:'Google Drive · ventas',val:facUlt,fmt:'ars',nota:mesLbl},
-          {n:'Volumen',f:'Suma envíos del período',src:'Google Drive · ventas',val:volUlt,fmt:'num',nota:mesLbl},
-          {n:'Costo por envío',f:'Costo total / Total envíos',src:'ERP / Contable',val:null,fmt:'ars',nota:null},
-          {n:'Clientes activos',f:'Clientes distintos con venta > 0',src:'Google Drive · ventas',val:clisUlt.size,fmt:'num',nota:mesLbl},
-          {n:'Nuevos clientes',f:'Clientes sin actividad en mes anterior',src:'Google Drive · ventas',val:nuevos,fmt:'num',nota:mesLbl},
-        ]},
-        {cat:'Colecta',color:'#E67E22',items:[
-          {n:'SLA colecta',f:'Colectas en plazo / total colectas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-          {n:'Tasa rechazo de colecta',f:'Colectas rechazadas / total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-        ]},
-        {cat:'Cross Docking Molinos',color:'#F29400',items:[
-          {n:'SLA Molinos',f:'Operaciones Molinos en plazo / total × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-        ]},
-        {cat:'Última Milla',color:'#009CA3',items:[
-          {n:'SLA',f:'Entregas en plazo / Total × 100',src:'Google Drive · sla_efectividad',val:slaVal,fmt:'pct',nota:slaLbl},
-          {n:'Efectividad',f:'Entregas exitosas / Total × 100',src:'Google Drive · sla_efectividad',val:efeVal,fmt:'pct',nota:efeLbl},
-          {n:'Efectividad 1ra vuelta',f:'Entregas exitosas en 1er intento / Total × 100',src:'Google Drive · sla_efectividad',val:efec1Val,fmt:'pct',nota:efec1Lbl},
-        ]},
-        {cat:'Rechazos y Devoluciones',color:'#C0392B',items:[
-          {n:'Tasa de rechazo total',f:'Total rechazos / Total entregas × 100',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-          {n:'Penalidades por rechazos',f:'Monto total de penalidades asociadas a rechazos',src:'Sistema contable',val:null,fmt:'ars',nota:null},
-          {n:'Motivos de rechazo',f:'Distribución % por categoría de motivo',src:'Sistema operativo',val:null,fmt:'pct',nota:null},
-          {n:'Operación real vs diseño',f:'Desvíos por omisión de diseño, mala práctica o desconocimiento',src:'Operaciones',val:null,fmt:'pct',nota:null},
-          {n:'Diseño de distribución',f:'Análisis de Semis y Chasis: capacidad, ocupación y desvíos vs diseño',src:'Operaciones',val:null,fmt:'pct',nota:null},
-          {n:'Recursos: m2 y personas',f:'Superficie utilizada vs disponible y dotación real vs planificada',src:'Operaciones',val:null,fmt:'num',nota:null},
-          {n:'Insumos clave: Embalaje',f:'Consumo y disponibilidad de insumos de embalaje vs planificado',src:'Operaciones',val:null,fmt:'num',nota:null},
-          {n:'Costo operativo vs Facturación',f:'Costo total operativo / Facturación del período × 100',src:'ERP / Contable',val:null,fmt:'pct',nota:null},
-          {n:'Clientes clave',f:'Performance específica por cliente: Molinos, Mercedes, Renault',src:'Sistema operativo',val:null,fmt:'num',nota:null},
-        ]},
-      ],
-    };
-    if(specific[prod]) return specific[prod];
-    // Genérico para todos los demás
-    return [
-      {cat:'Performance del Negocio',color:'#97BF0D',items:comun},
-      {cat:'Operación / Última Milla',color:'#F29400',items:slaItems},
-      {cat:'Experiencia del Cliente',color:'#009CA3',items:cliItems},
-    ];
-  }
-
-  const secs=getItems();
-  const total=secs.reduce((a,s)=>a+s.items.length,0);
-  const conVal=secs.reduce((a,s)=>a+s.items.filter(i=>i.val!==null&&!isNaN(i.val)).length,0);
-
-  // ── Tarjetas resumen ──
-  function mkMC(label,val,sub,color){
-    const d=document.createElement('div');
-    d.style.cssText='background:#fff;border:1px solid rgba(0,156,163,.18);border-top:3px solid '+color+';border-radius:9px;padding:12px 14px;min-width:110px;';
-    const l=document.createElement('div');l.style.cssText='font-size:9.5px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px';l.textContent=label;
-    const v=document.createElement('div');v.style.cssText='font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:700;color:var(--black)';v.textContent=val;
-    const s=document.createElement('div');s.style.cssText='font-size:10px;color:var(--gray);margin-top:2px';s.textContent=sub;
-    d.appendChild(l);d.appendChild(v);d.appendChild(s);return d;
-  }
-  const rw=document.createElement('div');
-  rw.style.cssText='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;';
-  rw.appendChild(mkMC('Total indicadores',String(total),'definidos','#009CA3'));
-  rw.appendChild(mkMC('✅ Con valor',String(conVal),'calculados ahora','#97BF0D'));
-  rw.appendChild(mkMC('⏳ Sin fuente',String(total-conVal),'fuente externa','#ccc'));
-  if(ultM){const mc=mkMC('Período calculado',mesLbl,'último mes con datos','#009CA3');mc.querySelector('div:nth-child(2)').style.fontSize='14px';rw.appendChild(mc);}
-  pc.appendChild(rw);
-
-  // ── Tabla por sección ──
-  secs.forEach(function(sec){
-    // wrapper
-    const wrap=document.createElement('div');
-    wrap.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-bottom:8px;';
-
-    // header sección
-    const hd=document.createElement('div');
-    hd.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(0,0,0,.06);background:#fafafa;border-radius:10px 10px 0 0;';
-    const badge=document.createElement('span');
-    badge.style.cssText='font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:3px 10px;border-radius:4px;background:'+sec.color+'22;color:'+sec.color;
-    badge.textContent=sec.cat;
-    const cnt=document.createElement('span');
-    cnt.style.cssText='font-size:10px;color:var(--gray);margin-left:auto';
-    cnt.textContent=sec.items.filter(i=>i.val!==null&&!isNaN(i.val)).length+'/'+sec.items.length+' con valor';
-    hd.appendChild(badge);hd.appendChild(cnt);
-    wrap.appendChild(hd);
-
-    // tabla
-    const tbl=document.createElement('table');
-    tbl.style.cssText='width:100%;border-collapse:collapse;table-layout:fixed;';
-
-    // colgroup para anchos fijos
-    tbl.innerHTML='<colgroup>'+
-      '<col style="width:22%"><col style="width:40%">'+
-      '<col style="width:20%"><col style="width:9%"><col style="width:9%">'+
-      '</colgroup>';
-
-    // thead
-    const thead=tbl.createTHead();
-    const hr=thead.insertRow();
-    hr.style.cssText='background:#f5fafa;';
-    ['Indicador','Fórmula / Definición','Valor actual','Frec.','Estado'].forEach(function(txt,ci){
-      const th=document.createElement('th');
-      th.style.cssText='text-align:left;font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;border-bottom:1px solid rgba(0,0,0,.06);';
-      if(ci===2) th.style.textAlign='right';
-      if(ci===3) th.className='col-frec';
-      if(ci===4) th.className='col-resp';
-      th.textContent=txt;
-      hr.appendChild(th);
-    });
-
-    // tbody
-    const tbody=tbl.createTBody();
-    sec.items.forEach(function(item,i){
-      const tr=tbody.insertRow();
-      tr.style.cssText='border-bottom:'+(i<sec.items.length-1?'1px solid rgba(0,0,0,.04)':'none')+';';
-      tr.addEventListener('mouseover',function(){this.style.background='#f8fffe';});
-      tr.addEventListener('mouseout',function(){this.style.background='';});
-
-      const hasVal=item.val!==null&&item.val!==undefined&&!isNaN(item.val);
-
-      function mkTd(style){const td=tr.insertCell();td.style.cssText='padding:8px 10px;vertical-align:top;'+style;return td;}
-
-      // Col 1: nombre
-      const td1=mkTd('font-weight:600;font-size:12px;line-height:1.4;');
-      td1.textContent=item.n;
-
-      // Col 2: fórmula
-      const td2=mkTd('font-size:11px;color:#555;line-height:1.4;');
-      td2.textContent=item.f;
-
-      // Col 3: valor
-      const td4=mkTd('text-align:right;');
-      td4.appendChild(fv(item.val,item.fmt,item.nota));
-
-      // Col 4: frecuencia
-      const td5=mkTd('font-size:11px;color:var(--gray);');td5.className='col-frec';
-      td5.textContent='Mensual';
-
-      // Col 5: estado
-      const td6=mkTd('');td6.className='col-resp';
-      const stBadge=document.createElement('span');
-      stBadge.style.cssText='font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;'+
-        (hasVal?'background:rgba(151,191,13,.15);color:#4D7200':'background:rgba(177,177,177,.15);color:#888');
-      stBadge.textContent=hasVal?'✅ Activo':'⏳ Pendiente';
-      td6.appendChild(stBadge);
-    });
-
-    tbl.appendChild(tbody);
-    wrap.appendChild(tbl);
-    pc.appendChild(wrap);
-  });
-
-  // ── Gráficos Efectividad en Punto y Vencidos en Punto (solo Pickit) ──
-  if(prod==='Entrega en Punto Pickit'){
-    const fMesI=(document.getElementById('fMes')?.value||'').toUpperCase();
-    const fAnioI=document.getElementById('fAnio')?.value||'';
-    // slaP ya está filtrado por producto; aplicar filtro de mes/año si existe
-    const slaFilt=slaP.filter(r=>{
-      if(fMesI&&(r.mes||'').toUpperCase()!==fMesI) return false;
-      if(fAnioI&&String(r.anio)!==String(fAnioI)) return false;
-      return true;
-    });
-    const chartRows=slaFilt.length>0?slaFilt:slaP;
-    function mesShort(r){const m=(r.mes||'').charAt(0)+(r.mes||'').slice(1).toLowerCase();return m+' '+(r.anio||'');}
-    // Tabla estilo "Detalle mensual" para efectividad_en_pp y vencidos_en_pp
-    const ppTbl=document.createElement('div');ppTbl.className='ctb';
-    const ppRows=chartRows.filter(r=>r.efectividad_en_pp!=null&&r.efectividad_en_pp!=='');
-    const vcRows=chartRows.filter(r=>r.vencidos_en_pp!=null&&r.vencidos_en_pp!=='');
-    const hasPP=ppRows.length>0||vcRows.length>0;
-    ppTbl.innerHTML=`<h3>Efectividad en Punto · Vencidos en Punto · Fuente: Google Drive · sla_efectividad</h3>
-      <table class="ct"><thead><tr><th>Mes</th><th>Año</th><th style="text-align:right">Efectividad en Punto</th><th style="text-align:right">Vencidos en Punto</th></tr></thead>
-      <tbody>${chartRows.map(r=>{
-        const pp=r.efectividad_en_pp!=null&&r.efectividad_en_pp!==''?Number(r.efectividad_en_pp):null;
-        const vc=r.vencidos_en_pp!=null&&r.vencidos_en_pp!==''?Number(r.vencidos_en_pp):null;
-        const cPP=pp!==null?(pp>=90?'#97BF0D':pp>=80?'#F29400':'#E74C3C'):'#ccc';
-        const cVC=vc!==null?(vc<5?'#97BF0D':'#E74C3C'):'#ccc';
-        return `<tr><td>${(r.mes||'').charAt(0)+(r.mes||'').slice(1).toLowerCase()}</td><td>${r.anio}</td><td style="text-align:right;font-weight:600;color:${cPP}">${pp!==null?pp.toFixed(1)+'%':'—'}</td><td style="text-align:right;font-weight:600;color:${cVC}">${vc!==null?vc.toFixed(1)+'%':'—'}</td></tr>`;
-      }).join('')}</tbody></table>`;
-    if(hasPP) pc.appendChild(ppTbl);
-  }
-
-  // footer
-  const foot=document.createElement('div');
-  foot.style.cssText='background:#fff;border:1.5px solid rgba(0,156,163,.3);border-radius:10px;padding:9px 14px;font-size:11px;color:var(--gray);';
-  foot.innerHTML='<span>📋 Valores calculados desde <strong style="color:var(--teal)">Google Drive · ventas</strong> y <strong style="color:var(--teal)">sla_efectividad</strong> · Se actualizan al hacer clic en Actualizar</span>';
-  pc.appendChild(foot);
-
-  // ── Gráfico de torta: Causas de no entregado (desde Drive · motivos_noentrega) ──
-  {
-    const motivosRows=allMotivos.filter(r=>(r.producto||'').trim()===prod.trim());
-    if(motivosRows.length>0){
-      const PIE_COLORS=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7'];
-      const sorted=motivosRows.slice().sort((a,b)=>parseFloat(b.pct||0)-parseFloat(a.pct||0));
-      const box=document.createElement('div');
-      box.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-bottom:8px;padding:14px 16px;';
-      box.innerHTML=`
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:3px 10px;border-radius:4px;background:#E05A5A22;color:#E05A5A;display:inline-block;margin-bottom:10px">Causas de No Entregado</div>
-        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
-          <div style="flex:0 0 260px;height:260px;"><canvas id="ch-motivos-prod"></canvas></div>
-          <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:5px;justify-content:center;">
-            ${sorted.map((r,i)=>`
-              <div style="display:flex;align-items:center;gap:7px;font-size:11px;">
-                <span style="width:10px;height:10px;border-radius:2px;background:${PIE_COLORS[i%PIE_COLORS.length]};flex-shrink:0;display:inline-block"></span>
-                <span style="flex:1">${r.motivo}</span>
-                <strong style="color:${PIE_COLORS[i%PIE_COLORS.length]}">${parseFloat(r.pct||0).toFixed(1)}%</strong>
-              </div>`).join('')}
-          </div>
-        </div>`;
-      pc.appendChild(box);
-      requestAnimationFrame(()=>{
-        dc('ch-motivos-prod');
-        const el=document.getElementById('ch-motivos-prod');
-        if(!el)return;
-        const lbls=sorted.map(r=>r.motivo);
-        const vals=sorted.map(r=>parseFloat(r.pct||0));
-        CI['ch-motivos-prod']=new Chart(el.getContext('2d'),{
-          type:'doughnut',
-          data:{labels:lbls,datasets:[{data:vals,backgroundColor:PIE_COLORS.slice(0,sorted.length),borderWidth:2,borderColor:'#fff'}]},
-          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw.toFixed(1)}%`}}}}
-        });
-      });
-    }
-  }
-}
-
 
 // ── SLA & EFECTIVIDAD (desde Supabase) ──
 function renderSlaEfec(prod){
@@ -2335,6 +1938,43 @@ function renderSlaEfec(prod){
     className:'src-badge',
     innerHTML:`<span>📈 Fuente: <strong>Google Drive · sla_efectividad</strong> · ${rows.length} registros</span>`
   }));
+
+  // ── Gráfico de torta: Motivos de No Entrega (desde Drive · motivos_noentrega, en vivo) ──
+  {
+    const motivosRows=allMotivos.filter(r=>(r.producto||'').trim()===prod.trim());
+    if(motivosRows.length>0){
+      const PIE_COLORS=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7'];
+      const sorted=motivosRows.slice().sort((a,b)=>parseFloat(b.pct||0)-parseFloat(a.pct||0));
+      const box=document.createElement('div');
+      box.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-top:8px;padding:14px 16px;';
+      box.innerHTML=`
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:3px 10px;border-radius:4px;background:#E05A5A22;color:#E05A5A;display:inline-block;margin-bottom:10px">Motivos de No Entrega</div>
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="flex:0 0 260px;height:260px;"><canvas id="ch-motivos-prod"></canvas></div>
+          <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:5px;justify-content:center;">
+            ${sorted.map((r,i)=>`
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px;">
+                <span style="width:10px;height:10px;border-radius:2px;background:${PIE_COLORS[i%PIE_COLORS.length]};flex-shrink:0;display:inline-block"></span>
+                <span style="flex:1">${r.motivo}</span>
+                <strong style="color:${PIE_COLORS[i%PIE_COLORS.length]}">${parseFloat(r.pct||0).toFixed(1)}%</strong>
+              </div>`).join('')}
+          </div>
+        </div>`;
+      pc.appendChild(box);
+      requestAnimationFrame(()=>{
+        dc('ch-motivos-prod');
+        const el=document.getElementById('ch-motivos-prod');
+        if(!el)return;
+        const lbls=sorted.map(r=>r.motivo);
+        const vals=sorted.map(r=>parseFloat(r.pct||0));
+        CI['ch-motivos-prod']=new Chart(el.getContext('2d'),{
+          type:'doughnut',
+          data:{labels:lbls,datasets:[{data:vals,backgroundColor:PIE_COLORS.slice(0,sorted.length),borderWidth:2,borderColor:'#fff'}]},
+          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw.toFixed(1)}%`}}}}
+        });
+      });
+    }
+  }
 }
 
 // ── EXPERIENCIA DEL CLIENTE BI ──
