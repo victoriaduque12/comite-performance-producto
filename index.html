@@ -570,6 +570,15 @@ const RASH_VOL_SNAPSHOT={
     {label:'Colecta en punto – Entrega en punto c/aviso',pct:0.72}
   ]
 };
+const RASH_NPS_SNAPSHOT={
+  npsScore:6.7,
+  respuestas:12,
+  envios:311,
+  tasaRespuesta:3.9,
+  pctPromotor:53.3,
+  pctPasivo:0.0,
+  pctDetractor:46.7
+};
 
 // Histórico de Margen Bruto embebido desde Power BI (dataset "Rentabilidad por Cliente - IA").
 // Se actualiza mensualmente agregando filas nuevas — nunca se pisan las anteriores.
@@ -1695,6 +1704,7 @@ function renderResumen(prod,v,fac,vol,clis){
 
   if(prod==='Rash'){
     const rs=RASH_VOL_SNAPSHOT;
+    const nps=RASH_NPS_SNAPSHOT;
     const rd=document.createElement('div');rd.className='ctb';
     rd.innerHTML=`<h3>Volumen · Rash (portado de rash_kpi_dashboard.html)</h3>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
@@ -1706,6 +1716,17 @@ function renderResumen(prod,v,fac,vol,clis){
       ${rs.flujos.map(f=>`<tr><td>${f.label}</td><td style="text-align:right;font-weight:600;color:var(--teal)">${f.pct}%</td></tr>`).join('')}</tbody></table>
       <div class="pbi-note" style="margin-top:8px">Última fecha de solicitud: ${rs.fechaUltimaSolicitud} · SLA, Efectividad y Motivos de No Entrega: pendientes de sumar a las sheets del comité.</div>`;
     pc.appendChild(rd);
+
+    const npsDiv=document.createElement('div');npsDiv.className='ctb';
+    npsDiv.innerHTML=`<h3>NPS B2B · Rash (corte actual, captura manual Power BI)</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
+        <div class="pbi-mcard"><div class="pbi-mcard-lbl">NPS (experiencia)</div><div class="pbi-mcard-v">${nps.npsScore}%</div></div>
+        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Respuestas</div><div class="pbi-mcard-v">${nps.respuestas}</div></div>
+        <div class="pbi-mcard"><div class="pbi-mcard-lbl">% Promotor</div><div class="pbi-mcard-v" style="color:#5a9216">${nps.pctPromotor}%</div></div>
+        <div class="pbi-mcard"><div class="pbi-mcard-lbl">% Detractor</div><div class="pbi-mcard-v" style="color:#c23b3b">${nps.pctDetractor}%</div></div>
+      </div>
+      <div class="pbi-note">${nps.respuestas} respuestas sobre ${nps.envios} envíos (tasa de respuesta ${nps.tasaRespuesta}%). % Pasivo: ${nps.pctPasivo}%.</div>`;
+    pc.appendChild(npsDiv);
   }
 
   pc.appendChild(Object.assign(document.createElement('div'),{
