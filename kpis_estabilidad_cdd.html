@@ -215,7 +215,7 @@
 </head>
 <body>
 
-<header>
+<header style="display:none">
   <div class="brand">
     <span class="eyebrow">Carta Documento Digital · OCASA</span>
     <h1>Dashboard de Estabilidad de Plataforma</h1>
@@ -912,6 +912,7 @@ async function load(){
       "Datos al " + new Date().toLocaleString("es-AR", {dateStyle:"medium", timeStyle:"short"});
     loading.style.display = "none";
     app.style.display = "block";
+    notifyParentHeight();
   }catch(err){
     loading.style.display = "none";
     banner.style.display = "block";
@@ -924,6 +925,12 @@ async function load(){
 }
 
 document.getElementById("refresh-btn").addEventListener("click", load);
+
+function notifyParentHeight(){
+  const h = document.body.scrollHeight;
+  window.parent.postMessage({type:'cdd-kpis-height', height:h}, '*');
+}
+window.addEventListener('resize', notifyParentHeight);
 load();
 </script>
 </body>
