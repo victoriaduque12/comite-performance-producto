@@ -2427,11 +2427,20 @@ function renderIssues(){
   // Issues por semana desde el Go Live (agrupado por lunes de la semana de "Fecha de issue")
   function parseFechaDDMMYYYY(s){
     if(!s) return null;
-    const parts=String(s).trim().split('/');
-    if(parts.length!==3) return null;
-    const [d,m,y]=parts.map(Number);
-    if(!d||!m||!y) return null;
-    return new Date(y,m-1,d);
+    const str=String(s).trim();
+    // Formato gviz para columnas tipo Fecha: "Date(2026,5,9)" (mes 0-indexado)
+    const gvizMatch=str.match(/^Date\((\d+),(\d+),(\d+)/);
+    if(gvizMatch){
+      const [,y,m,d]=gvizMatch.map(Number);
+      return new Date(y,m,d);
+    }
+    // Formato texto DD/MM/YYYY
+    const parts=str.split('/');
+    if(parts.length===3){
+      const [d,m,y]=parts.map(Number);
+      if(d&&m&&y) return new Date(y,m-1,d);
+    }
+    return null;
   }
   function lunesDeLaSemana(d){
     const dd=new Date(d);
