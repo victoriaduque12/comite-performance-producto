@@ -783,6 +783,7 @@ const OWNERS={
   'Salud Distribucion':'German Gallarini','Carta Documento Digital':'Victoria Duque',
   'Logística a Punto Pickit (cliente Pickit)':'Victoria Duque','Entrega en Punto Pickit':'Victoria Duque','Paqueteria E-Commerce B2C':'Victoria Duque',
   'Distribucion Consumo Masivo y Palletizado':'German Gallarini',
+  'Rash':'Victoria Duque',
 };
 let META_NUMS={
   'Bonded Warehouse – Deposito Fiscal':'01',
@@ -873,7 +874,8 @@ let META_NUMS={
   'Colecta en Punto Drop off':'30',
   'Colecta en Punto Drop Off':'30',
   'Logística a Punto Pickit (cliente Pickit)':'31',
-  'Entrega en Punto Pickit':'25.1',
+  'Entrega en Punto Pickit':'25.2',
+  'Rash':'25.1',
   'Entrega en un Punto':'31',
   'Entrega en Un Punto':'31',
   'Cross Docking':'32',
@@ -1009,8 +1011,8 @@ function buildSidebar(mats){
   cont.innerHTML='';
 
   // Orden de UNs
-  const UN_ORDER=['Ultima Milla','Supply Chain','Cross Dock',
-    'Cross Border Transactions','Global Forwarding','Otros'];
+  const UN_ORDER=['Ultima Milla','Supply Chain','Global Forwarding',
+    'Cross Border Transactions','Cross Dock','Otros'];
 
   // Agrupar por producto y tomar la unidad_negocio más frecuente
   const prodMap={};
@@ -1039,7 +1041,12 @@ function buildSidebar(mats){
   // Rash: entrada sintética (cliente dentro de Paquetería E-Commerce B2C, pero se muestra aparte).
   // No viene de la sheet de materiales — se inyecta acá para no tocar esa planilla.
   unicos.push({producto:'Rash',unidad_negocio:'Ultima Milla'});
-  unicos.sort((a,b)=>facInterSB(b.producto)-facInterSB(a.producto));
+  const unOrderIdx=Object.fromEntries(UN_ORDER.map((u,i)=>[u,i]));
+  unicos.sort((a,b)=>{
+    const ua=unOrderIdx[a.unidad_negocio]??999, ub=unOrderIdx[b.unidad_negocio]??999;
+    if(ua!==ub) return ua-ub;
+    return facInterSB(b.producto)-facInterSB(a.producto);
+  });
 
   unicos.forEach(m=>{
     const un=m.unidad_negocio||'';
@@ -1429,6 +1436,9 @@ function go(id,el){
   document.querySelectorAll('.tab-full').forEach(p=>p.classList.remove('on'));
   document.querySelector('.tab-btn[data-tab="resumen"]').classList.add('on');
   document.getElementById('tab-resumen').classList.add('on');
+  // Ranking: no aplica para Rash (no tiene ventas propias para rankear clientes)
+  const rankBtn=document.querySelector('.tab-btn[data-tab="ranking"]');
+  if(rankBtn) rankBtn.style.display = (id==='Rash') ? 'none' : '';
   render(id);
 }
 
@@ -1460,7 +1470,7 @@ function render(prod){
   const v=gv().filter(x=>x.producto===prod);
   const isPickitVirtual=prod==='Entrega en Punto Pickit';
   const isRash=prod==='Rash';
-  const fac=isPickitVirtual?allPickitFac.reduce((a,b)=>a+b.monto,0):(isRash?0:v.reduce((a,b)=>a+(Number(b.venta_norm)||0),0));
+  const fac=isPickitVirtual?allPickitFac.reduce((a,b)=>a+b.monto,0):(isRash?MARGEN_HIST.filter(x=>x.producto==='Rash').reduce((a,b)=>a+b.venta,0):v.reduce((a,b)=>a+(Number(b.venta_norm)||0),0));
   const vol=isPickitVirtual?allPickitVol.reduce((a,b)=>Number(b['Volumen']||0)+a,0):(isRash?RASH_VOL_SNAPSHOT.solicitudes:v.reduce((a,b)=>a+(Number(b.cantidad)||0),0));
   const clis=isPickitVirtual?new Set(['Adidas']):(isRash?new Set(['Rash']):new Set(v.map(x=>x.cliente).filter(Boolean)));
   const maxAnio=v.length?Math.max(...v.map(x=>x.anio)):2025;
