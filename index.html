@@ -1972,7 +1972,7 @@ function renderSlaEfec(prod){
     const motivosRows=allMotivos.filter(r=>(r.producto||'').trim()===prod.trim());
     if(motivosRows.length>0){
       const PIE_COLORS=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7'];
-      const sorted=motivosRows.slice().sort((a,b)=>parseFloat(b.pct||0)-parseFloat(a.pct||0));
+      const sorted=motivosRows.slice().sort((a,b)=>parseFloat(b.porcentaje||0)-parseFloat(a.porcentaje||0));
       const box=document.createElement('div');
       box.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-top:8px;padding:14px 16px;';
       box.innerHTML=`
@@ -1984,7 +1984,7 @@ function renderSlaEfec(prod){
               <div style="display:flex;align-items:center;gap:7px;font-size:11px;">
                 <span style="width:10px;height:10px;border-radius:2px;background:${PIE_COLORS[i%PIE_COLORS.length]};flex-shrink:0;display:inline-block"></span>
                 <span style="flex:1">${r.motivo}</span>
-                <strong style="color:${PIE_COLORS[i%PIE_COLORS.length]}">${parseFloat(r.pct||0).toFixed(1)}%</strong>
+                <strong style="color:${PIE_COLORS[i%PIE_COLORS.length]}">${parseFloat(r.porcentaje||0).toFixed(1)}%</strong>
               </div>`).join('')}
           </div>
         </div>`;
@@ -1994,7 +1994,7 @@ function renderSlaEfec(prod){
         const el=document.getElementById('ch-motivos-prod');
         if(!el)return;
         const lbls=sorted.map(r=>r.motivo);
-        const vals=sorted.map(r=>parseFloat(r.pct||0));
+        const vals=sorted.map(r=>parseFloat(r.porcentaje||0));
         CI['ch-motivos-prod']=new Chart(el.getContext('2d'),{
           type:'doughnut',
           data:{labels:lbls,datasets:[{data:vals,backgroundColor:PIE_COLORS.slice(0,sorted.length),borderWidth:2,borderColor:'#fff'}]},
