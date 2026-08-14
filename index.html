@@ -484,6 +484,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-btn" data-tab="adopcion" style="display:none" onclick="switchTab('adopcion',this)">🌱 Adopción</div>
         <div class="tab-btn" data-tab="issues" style="display:none" onclick="switchTab('issues',this)">🐞 Issues</div>
         <div class="tab-btn" data-tab="nps" style="display:none" onclick="switchTab('nps',this)">💬 NPS</div>
+        <div class="tab-btn" data-tab="estabilidad" style="display:none" onclick="switchTab('estabilidad',this)">🛠️ KPIs Estabilidad</div>
       </div>
       <div class="ts">Última actualización: <span id="tsv">—</span></div>
       <div class="pcont">
@@ -496,6 +497,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-full"     id="tab-adopcion"><div class="pbi-full" id="adopcion-content"></div></div>
         <div class="tab-full"     id="tab-issues"><div class="pbi-full" id="issues-content"></div></div>
         <div class="tab-full"     id="tab-nps"><div class="pbi-full" id="nps-content"></div></div>
+        <div class="tab-full"     id="tab-estabilidad"><iframe src="kpis_estabilidad_cdd.html" style="width:100%;height:100%;border:none;min-height:900px" title="KPIs Estabilidad CDD"></iframe></div>
       </div>
     </div>
   </main>
@@ -1491,6 +1493,8 @@ function go(id,el){
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
     if(b) b.style.display = esRash ? '' : 'none';
   });
+  const estabBtn=document.querySelector('.tab-btn[data-tab="estabilidad"]');
+  if(estabBtn) estabBtn.style.display = (id==='Carta Documento Digital') ? '' : 'none';
   render(id);
 }
 
