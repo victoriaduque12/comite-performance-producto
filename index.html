@@ -478,13 +478,13 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-btn on"  data-tab="resumen"     onclick="switchTab('resumen',this)">📊 Resumen</div>
         <div class="tab-btn"     data-tab="slaefec"     onclick="switchTab('slaefec',this)">📈 SLA & Efectividad</div>
         <div class="tab-btn"     data-tab="comparativa" onclick="switchTab('comparativa',this)">📆 Comparativa</div>
-        <div class="tab-btn"     data-tab="ranking"     onclick="switchTab('ranking',this)">🏆 Ranking</div>
+        <div class="tab-btn"     data-tab="ranking"     onclick="switchTab('ranking',this)">🏆 Clientes</div>
         <div class="tab-btn"     data-tab="pbi"         onclick="switchTab('pbi',this)">💰 Margen Bruto BI</div>
-        <div class="tab-btn" data-tab="cxbi" onclick="switchTab('cxbi',this)">🎯 Experiencia del Cliente BI</div>
         <div class="tab-btn" data-tab="adopcion" style="display:none" onclick="switchTab('adopcion',this)">🌱 Adopción</div>
         <div class="tab-btn" data-tab="issues" style="display:none" onclick="switchTab('issues',this)">🐞 Issues</div>
         <div class="tab-btn" data-tab="nps" style="display:none" onclick="switchTab('nps',this)">💬 NPS</div>
         <div class="tab-btn" data-tab="estabilidad" style="display:none" onclick="switchTab('estabilidad',this)">🛠️ KPIs Estabilidad</div>
+        <div class="tab-btn" data-tab="cxbi" onclick="switchTab('cxbi',this)">🎯 Experiencia del Cliente BI</div>
       </div>
       <div class="ts">Última actualización: <span id="tsv">—</span></div>
       <div class="pcont">
@@ -497,7 +497,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-full"     id="tab-adopcion"><div class="pbi-full" id="adopcion-content"></div></div>
         <div class="tab-full"     id="tab-issues"><div class="pbi-full" id="issues-content"></div></div>
         <div class="tab-full"     id="tab-nps"><div class="pbi-full" id="nps-content"></div></div>
-        <div class="tab-full"     id="tab-estabilidad"><iframe id="ifr-estabilidad" src="kpis_estabilidad_cdd.html" style="width:100%;height:900px;border:none" title="KPIs Estabilidad CDD"></iframe></div>
+        <div class="tab-full"     id="tab-estabilidad"><iframe id="ifr-estabilidad" src="kpis_estabilidad_cdd.html?v=2" style="width:100%;height:900px;border:none" title="KPIs Estabilidad CDD"></iframe></div>
       </div>
     </div>
   </main>
@@ -1602,7 +1602,23 @@ function renderResumen(prod,v,fac,vol,clis){
   const slaLblCard=hasMesFilter?'SLA':'SLA';
   const slaSubCard=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Promedio histórico';
   const efecSubCard=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Promedio histórico';
-  const periodoLbl=hasMesFilter?(_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'')):'Total histórico (todos los meses)';
+  const MO_IDX_PL=Object.fromEntries(MO.map((m,i)=>[m,i]));
+  function mesCap(m){return m?m.charAt(0)+m.slice(1).toLowerCase():'';}
+  let periodoLbl;
+  if(hasMesFilter){
+    periodoLbl=_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'');
+  } else {
+    const mesesOrd=[...new Set(v.map(x=>x.anio+'|'+x.mes))]
+      .sort((a,b)=>{const[ya,ma]=a.split('|');const[yb,mb]=b.split('|');
+        return ya!==yb?Number(ya)-Number(yb):(MO_IDX_PL[ma]||0)-(MO_IDX_PL[mb]||0);});
+    if(mesesOrd.length){
+      const[minY,minM]=mesesOrd[0].split('|');
+      const[maxY,maxM]=mesesOrd[mesesOrd.length-1].split('|');
+      periodoLbl=(minY===maxY&&minM===maxM)
+        ?('Total histórico · '+mesCap(minM)+' '+minY)
+        :('Total histórico ('+mesCap(minM)+' '+minY+' – '+mesCap(maxM)+' '+maxY+')');
+    } else periodoLbl='Total histórico';
+  }
 
   const top1=Object.entries(v.reduce((a,b)=>{if(!b.cliente)return a;a[b.cliente]=(a[b.cliente]||0)+(Number(b.venta_norm)||0);return a;},{})).sort((a,b)=>b[1]-a[1])[0];
 
@@ -2309,12 +2325,19 @@ function renderComparativa(prod){
   const v=allVentas.filter(x=>x.producto===prod&&x.escenario==='Actual'&&(!cliActual||x.cliente===cliActual));
   if(!v.length){pc.innerHTML='<div class="nodatabadge">Sin datos.</div>';return;}
 
-  // Calcular dinámicamente el último mes disponible en 2026
+  // Meses disponibles ordenados cronológicamente (todos los años, no solo 2026)
+  // El servicio arrancó recién en sep/oct 2025 para varios productos, así que
+  // la comparación interanual (mismo mes año anterior) no siempre tiene sentido.
+  // En su lugar: comparamos meses consecutivos.
   const MO_IC=Object.fromEntries(MO.map((m,i)=>[m,i]));
-  const meses26c=[...new Set(v.filter(x=>x.anio===2026).map(x=>x.mes))]
-    .sort((a,b)=>(MO_IC[a]||0)-(MO_IC[b]||0));
-  const ultM=meses26c[meses26c.length-1]||null;
-  const antM=meses26c[meses26c.length-2]||null;
+  const mesesOrdC=[...new Set(v.map(x=>x.anio+'|'+x.mes))]
+    .sort((a,b)=>{const[ya,ma]=a.split('|');const[yb,mb]=b.split('|');
+      return ya!==yb?Number(ya)-Number(yb):(MO_IC[ma]||0)-(MO_IC[mb]||0);});
+  const nC=mesesOrdC.length;
+  function splitK(k){if(!k)return[null,null];const[y,m]=k.split('|');return[Number(y),m];}
+  const [ultY,ultMc]=splitK(mesesOrdC[nC-1]||null);
+  const [antY,antMc]=splitK(mesesOrdC[nC-2]||null);
+  const [ant2Y,ant2Mc]=splitK(mesesOrdC[nC-3]||null);
 
   function facMesComp(anio,mes){
     return v.filter(x=>x.anio===anio&&x.mes===mes).reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
@@ -2327,49 +2350,52 @@ function renderComparativa(prod){
     return '<span style="font-size:13px;font-weight:700;color:'+col+'">'+(p>=0?'+':'')+p.toFixed(1)+'%</span>';
   }
 
-  const f26=ultM?facMesComp(2026,ultM):0;
-  const f25=ultM?facMesComp(2025,ultM):0;
-  const fAnt=antM?facMesComp(2026,antM):0;
+  const fUlt=ultMc?facMesComp(ultY,ultMc):0;
+  const fAnt=antMc?facMesComp(antY,antMc):0;
+  const fAnt2=ant2Mc?facMesComp(ant2Y,ant2Mc):0;
 
-  // ── Tarjeta 1: último mes 2026 vs mismo mes 2025 ──
+  // ── Tarjeta 1: 2 meses atrás vs mes anterior ──
   const card1=document.createElement('div');
-  card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct(f26,f25)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
-  card1.innerHTML=
+  const hayCard1=!!(antMc&&ant2Mc);
+  card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(hayCard1&&pct(fAnt,fAnt2)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
+  card1.innerHTML=hayCard1?(
     '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">'+
-      mesLbl(ultM)+' 2026 vs '+mesLbl(ultM)+' 2025'+
+      mesLbl(ant2Mc)+' '+ant2Y+' vs '+mesLbl(antMc)+' '+antY+
     '</div>'+
     '<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">'+
       '<div>'+
-        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultM)+' 2026</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(f26)+'</div>'+
-      '</div>'+
-      '<div style="font-size:20px;color:#ccc;padding-bottom:4px">↔</div>'+
-      '<div>'+
-        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultM)+' 2025</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#F29400">'+fmtARS(f25)+'</div>'+
-      '</div>'+
-    '</div>'+
-    '<div>'+pctHtml(pct(f26,f25))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación interanual</span></div>';
-
-  // ── Tarjeta 2: último mes 2026 vs mes anterior 2026 ──
-  const card2=document.createElement('div');
-  card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(antM&&pct(f26,fAnt)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
-  card2.innerHTML=
-    '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">'+
-      mesLbl(antM)+' 2026 vs '+mesLbl(ultM)+' 2026'+
-    '</div>'+
-    '<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">'+
-      '<div>'+
-        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(antM)+' 2026</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(fAnt)+'</div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ant2Mc)+' '+ant2Y+'</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#F29400">'+fmtARS(fAnt2)+'</div>'+
       '</div>'+
       '<div style="font-size:20px;color:#ccc;padding-bottom:4px">→</div>'+
       '<div>'+
-        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultM)+' 2026</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(f26)+'</div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(antMc)+' '+antY+'</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(fAnt)+'</div>'+
       '</div>'+
     '</div>'+
-    (antM?'<div>'+pctHtml(pct(f26,fAnt))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación mensual</span></div>':'<div style="font-size:11px;color:var(--gray)">Solo un mes disponible en 2026</div>');
+    '<div>'+pctHtml(pct(fAnt,fAnt2))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación mensual</span></div>'
+  ):'<div style="font-size:11px;color:var(--gray)">Todavía no hay suficientes meses para esta comparación.</div>';
+
+  // ── Tarjeta 2: mes anterior vs mes actual ──
+  const card2=document.createElement('div');
+  const hayCard2=!!(ultMc&&antMc);
+  card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(hayCard2&&pct(fUlt,fAnt)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
+  card2.innerHTML=
+    '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">'+
+      mesLbl(antMc)+' '+antY+' vs '+mesLbl(ultMc)+' '+ultY+
+    '</div>'+
+    '<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(antMc)+' '+antY+'</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#F29400">'+fmtARS(fAnt)+'</div>'+
+      '</div>'+
+      '<div style="font-size:20px;color:#ccc;padding-bottom:4px">→</div>'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultMc)+' '+ultY+'</div>'+
+        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(fUlt)+'</div>'+
+      '</div>'+
+    '</div>'+
+    (hayCard2?'<div>'+pctHtml(pct(fUlt,fAnt))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación mensual</span></div>':'<div style="font-size:11px;color:var(--gray)">Solo un mes disponible.</div>');
 
   const row=document.createElement('div');
   row.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:14px;';
