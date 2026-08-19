@@ -1543,7 +1543,7 @@ function render(prod){
   const isPickitVirtual=prod==='Entrega en Punto Pickit';
   const isRash=prod==='Rash';
   const fac=isPickitVirtual?allPickitFac.reduce((a,b)=>a+b.monto,0):(isRash?MARGEN_HIST.filter(x=>x.producto==='Rash').reduce((a,b)=>a+b.venta,0):v.reduce((a,b)=>a+(Number(b.venta_norm)||0),0));
-  const vol=isPickitVirtual?allPickitVol.reduce((a,b)=>Number(b['Volumen']||0)+a,0):(isRash?RASH_VOL_SNAPSHOT.solicitudes:v.reduce((a,b)=>a+(Number(b.cantidad)||0),0));
+  const vol=isPickitVirtual?allPickitVol.filter(b=>!/total/i.test(String(b['Mes']||b['Mes ']||''))).reduce((a,b)=>Number(b['Volumen']||0)+a,0):(isRash?RASH_VOL_SNAPSHOT.solicitudes:v.reduce((a,b)=>a+(Number(b.cantidad)||0),0));
   const clis=isPickitVirtual?new Set(['Adidas']):(isRash?new Set(['Rash']):new Set(v.map(x=>x.cliente).filter(Boolean)));
   const maxAnio=v.length?Math.max(...v.map(x=>x.anio)):2025;
   const owner=OWNERS[prod]||'—';
@@ -1888,22 +1888,42 @@ function renderSlaEfec(prod){
   const avgPP=ppRows.length?ppRows.reduce((a,b)=>a+Number(b.efectividad_en_pp),0)/ppRows.length:null;
   const avgVC=vcRows.length?vcRows.reduce((a,b)=>a+Number(b.vencidos_en_pp),0)/vcRows.length:null;
   const minSla=hasSla?Math.min(...slaRows.map(r=>Number(r.sla_pct))):null;
+  const tiRows=rows.filter(r=>r.tasa_de_puntos_inactivos!=null&&r.tasa_de_puntos_inactivos!==''&&!isNaN(parseFloat(r.tasa_de_puntos_inactivos)));
+  const trRows=rows.filter(r=>r.tasa_de_rechazo_en_punto!=null&&r.tasa_de_rechazo_en_punto!==''&&!isNaN(parseFloat(r.tasa_de_rechazo_en_punto)));
+  const lastTI=tiRows.length?Number(tiRows[tiRows.length-1].tasa_de_puntos_inactivos):null;
+  const lastTR=trRows.length?Number(trRows[trRows.length-1].tasa_de_rechazo_en_punto):null;
   function mesLbl2(arr){const r=arr[arr.length-1];return r.mes.charAt(0)+r.mes.slice(1).toLowerCase()+' '+r.anio;}
 
-  // KPIs
+  // KPIs generales — SLA y Efectividad
+  const kpisTitle=document.createElement('div');
+  kpisTitle.style.cssText='font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin:2px 0 8px;';
+  kpisTitle.textContent='SLA y Efectividad';
+  pc.appendChild(kpisTitle);
+
   const kpis=document.createElement('div');kpis.className='sla-kpis';
   if(lastSla!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">SLA último mes</div><div class="sla-kv" style="color:${slaColor(lastSla)}">${lastSla.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(slaRows)}</div></div>`;
   if(avgSla!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">SLA promedio</div><div class="sla-kv" style="color:${slaColor(avgSla)}">${avgSla.toFixed(1)}%</div><div class="sla-kt">${slaRows.length} meses</div></div>`;
-  if(minSla!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">SLA mínimo</div><div class="sla-kv" style="color:${slaColor(minSla)}">${minSla.toFixed(1)}%</div><div class="sla-kt">peor mes</div></div>`;
   if(lastEfec!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad último mes</div><div class="sla-kv" style="color:${slaColor(lastEfec)}">${lastEfec.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(efecRows)}</div></div>`;
   if(avgEfec!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad promedio</div><div class="sla-kv" style="color:${slaColor(avgEfec)}">${avgEfec.toFixed(1)}%</div><div class="sla-kt">${efecRows.length} meses</div></div>`;
   if(lastEfec1!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad 1ª vuelta último mes</div><div class="sla-kv" style="color:${slaColor(lastEfec1)}">${lastEfec1.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(efec1Rows)}</div></div>`;
-  if(avgEfec1!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad 1ª vuelta promedio</div><div class="sla-kv" style="color:${slaColor(avgEfec1)}">${avgEfec1.toFixed(1)}%</div><div class="sla-kt">${efec1Rows.length} meses</div></div>`;
-  if(lastPP!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad en punto</div><div class="sla-kv" style="color:${slaColor(lastPP)}">${lastPP.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(ppRows)}</div></div>`;
-  if(avgPP!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad en punto promedio</div><div class="sla-kv" style="color:${slaColor(avgPP)}">${avgPP.toFixed(1)}%</div><div class="sla-kt">${ppRows.length} meses</div></div>`;
-  if(lastVC!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Vencidos en punto</div><div class="sla-kv" style="color:${slaColor(100-lastVC)}">${lastVC.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(vcRows)}</div></div>`;
-  if(avgVC!==null) kpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Vencidos en punto promedio</div><div class="sla-kv" style="color:${slaColor(100-avgVC)}">${avgVC.toFixed(1)}%</div><div class="sla-kt">${vcRows.length} meses</div></div>`;
   pc.appendChild(kpis);
+
+  // Performance Punto — solo si hay datos de punto (hoy: Entrega en Punto Pickit)
+  if(ppRows.length||vcRows.length||tiRows.length||trRows.length){
+    const ppTitle=document.createElement('div');
+    ppTitle.style.cssText='font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin:16px 0 8px;';
+    ppTitle.textContent='Performance Punto';
+    pc.appendChild(ppTitle);
+
+    const ppKpis=document.createElement('div');ppKpis.className='sla-kpis';
+    if(lastPP!==null) ppKpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Efectividad en punto (tasa de retiro)</div><div class="sla-kv" style="color:${slaColor(lastPP)}">${lastPP.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(ppRows)}</div></div>`;
+    if(lastVC!==null) ppKpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Vencidos en punto</div><div class="sla-kv" style="color:${slaColor(100-lastVC)}">${lastVC.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(vcRows)}</div></div>`;
+    if(lastTI!==null) ppKpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Tasa de puntos inactivos</div><div class="sla-kv" style="color:${slaColor(100-lastTI)}">${lastTI.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(tiRows)}</div></div>`;
+    else ppKpis.innerHTML+=`<div class="sla-k" style="opacity:.55"><div class="sla-kl">Tasa de puntos inactivos</div><div class="sla-kv" style="color:var(--gray);font-size:16px">— pendiente</div><div class="sla-kt">Falta agregar columna a la sheet</div></div>`;
+    if(lastTR!==null) ppKpis.innerHTML+=`<div class="sla-k"><div class="sla-kl">Tasa de rechazo en punto</div><div class="sla-kv" style="color:${slaColor(100-lastTR)}">${lastTR.toFixed(1)}%</div><div class="sla-kt">${mesLbl2(trRows)}</div></div>`;
+    else ppKpis.innerHTML+=`<div class="sla-k" style="opacity:.55"><div class="sla-kl">Tasa de rechazo en punto</div><div class="sla-kv" style="color:var(--gray);font-size:16px">— pendiente</div><div class="sla-kt">Falta agregar columna a la sheet</div></div>`;
+    pc.appendChild(ppKpis);
+  }
 
   // Gráfico SLA
   if(hasSla){
