@@ -1058,8 +1058,18 @@ function buildSidebar(mats){
   cont.innerHTML='';
 
   // Orden de UNs
-  const UN_ORDER=['Ultima Milla','Supply Chain','Global Forwarding',
-    'Cross Border Transactions','Cross Dock','Otros'];
+  const UN_ORDER=['Ultima Milla','Supply Chain','Cross Border Transactions',
+    'Global Forwarding','Cross Dock','Otros'];
+
+  // Orden manual dentro de cada UN (los que no están acá se ordenan por facturación, al final)
+  const PROD_PRIORITY={
+    'Carta Documento Digital':0,
+    'Entrega en Punto Pickit':1,
+    'Rash':2,
+    'Distribución de Tarjetas Valoradas':3,
+    'Distribucion Consumo Masivo y Palletizado':0,
+    'Courier Personas (Customs Clearance)':0,
+  };
 
   // Agrupar por producto y tomar la unidad_negocio más frecuente
   const prodMap={};
@@ -1092,6 +1102,8 @@ function buildSidebar(mats){
   unicos.sort((a,b)=>{
     const ua=unOrderIdx[a.unidad_negocio]??999, ub=unOrderIdx[b.unidad_negocio]??999;
     if(ua!==ub) return ua-ub;
+    const pa=PROD_PRIORITY[a.producto]??999, pb=PROD_PRIORITY[b.producto]??999;
+    if(pa!==pb) return pa-pb;
     return facInterSB(b.producto)-facInterSB(a.producto);
   });
 
