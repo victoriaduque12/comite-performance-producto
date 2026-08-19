@@ -2419,8 +2419,8 @@ function renderPBI(prod){
         y:{position:'left',ticks:{callback:v=>'$'+(v/1e6).toFixed(0)+'M'},title:{display:true,text:'ARS'}},
         y1:{position:'right',grid:{drawOnChartArea:false},ticks:{
           callback:v=>v+'%',
-          color:ctx=>{const v=ctx.tick.value; return v<0?'#C0392B':(v>=20?'#4D7200':'#6b7680');},
-          font:ctx=>{const v=ctx.tick.value; return (v<0||v>=20)?{weight:'bold'}:{weight:'normal'};}
+          color:ctx=>{const v=ctx.tick&&ctx.tick.value; if(v==null)return '#6b7680'; return v<0?'#C0392B':(v>=20?'#4D7200':'#6b7680');},
+          font:ctx=>{const v=ctx.tick&&ctx.tick.value; const bold=(v!=null&&(v<0||v>=20)); return {weight:bold?'bold':'normal'};}
         },title:{display:true,text:'Margen %'}}
       }
     }
