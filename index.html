@@ -579,6 +579,18 @@ const ID_RASH_ISSUES='1k6tXmQJtodeTLzhFCyBr4fG4TyH1Hz3vGwZVp2zpzIE';
 const PBI_REPORT_URL='https://app.powerbi.com/groups/me/reports/2ea1b575-1feb-4464-8a24-dac0ac0387e1/d050495042d3d060d741?ctid=91a5b5c8-673e-4a80-871c-5ed3412dd451&experience=power-bi';
 // Rash: snapshot de Volumen portado desde rash_kpi_dashboard.html (dashboard que se va a eliminar).
 // Pendiente: SLA, Efectividad y Motivos de No Entrega — todavía no están en las sheets del comité.
+const RASH_FLUJOS_HIST=[
+  {mes:'JUNIO',anio:2026,flujos:[
+    {label:'Colecta domicilio – Entrega a Domicilio c/aviso',pct:98.53},
+    {label:'Colecta en punto – Entrega Domicilio c/aviso',pct:0.74},
+    {label:'Colecta en punto – Entrega en punto c/aviso',pct:0.74}
+  ]},
+  {mes:'JULIO',anio:2026,flujos:[
+    {label:'Colecta domicilio – Entrega a Domicilio c/aviso',pct:78.36},
+    {label:'Colecta en punto – Entrega Domicilio c/aviso',pct:19.4},
+    {label:'Colecta en punto – Entrega en punto c/aviso',pct:2.24}
+  ]},
+];
 const RASH_VOL_SNAPSHOT={
   fechaUltimaSolicitud:'06/07/2026',
   solicitudes:138,
@@ -1845,19 +1857,22 @@ function renderResumen(prod,v,fac,vol,clis){
   }
 
   if(prod==='Rash'){
-    const rs=RASH_VOL_SNAPSHOT;
     const rd=document.createElement('div');rd.className='ctb';
-    rd.innerHTML=`<h3>Volumen · Rash (portado de rash_kpi_dashboard.html)</h3>
-      <div class="pbi-note" style="margin-bottom:10px">Estos 3 números son de <b>junio 2026</b> (mes con datos completos). Más abajo, "Última fecha de solicitud" es un dato puntual, no del mismo período.</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Solicitudes · Jun 2026</div><div class="pbi-mcard-v">${rs.solicitudes}</div></div>
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">Impuestos · Jun 2026</div><div class="pbi-mcard-v">${rs.impuestos}</div></div>
-        <div class="pbi-mcard"><div class="pbi-mcard-lbl">% Impuestos · Jun 2026</div><div class="pbi-mcard-v">${rs.pctImpuestos}%</div></div>
-      </div>
-      <table class="ct"><thead><tr><th>Flujo (junio 2026)</th><th style="text-align:right">%</th></tr></thead><tbody>
-      ${rs.flujos.map(f=>`<tr><td>${f.label}</td><td style="text-align:right;font-weight:600;color:var(--teal)">${f.pct}%</td></tr>`).join('')}</tbody></table>
-      <div class="pbi-note" style="margin-top:8px">📅 Última fecha de solicitud registrada: <b>${rs.fechaUltimaSolicitud}</b> (dato puntual, no de junio) · Ver solapas "Adopción" e "Issues" para el detalle semanal/actualizado · SLA, Efectividad y Motivos de No Entrega: pendientes de sumar a las sheets del comité.</div>`;
+    rd.innerHTML=`<h3>Apertura por Flujos · Rash</h3>
+      <div class="pbi-note" style="margin-bottom:10px">% de envíos por flujo, mes a mes.</div>
+      <div class="cw" style="height:260px"><canvas id="cf-rash-flujos"></canvas></div>`;
     pc.appendChild(rd);
+    requestAnimationFrame(()=>{
+      const meses=RASH_FLUJOS_HIST.map(m=>m.mes.slice(0,3)+' '+m.anio);
+      const labels=RASH_FLUJOS_HIST[0].flujos.map(f=>f.label);
+      const colores=['#009CA3','#97BF0D','#F29400','#E05A5A'];
+      const datasets=labels.map((lbl,i)=>({
+        label:lbl,
+        data:RASH_FLUJOS_HIST.map(m=>{const f=m.flujos.find(x=>x.label===lbl);return f?f.pct:0;}),
+        backgroundColor:colores[i%colores.length]
+      }));
+      mkChart('cf-rash-flujos','bar',meses,datasets,{leg:true,yf:v=>v+'%',ex:{scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+    });
   }
 
   pc.appendChild(Object.assign(document.createElement('div'),{
