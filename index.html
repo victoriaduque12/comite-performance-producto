@@ -1614,6 +1614,7 @@ function render(prod){
 function renderResumen(prod,v,fac,vol,clis){
   const pc=document.getElementById('tab-resumen');
   pc.innerHTML='';
+  const isRash=prod==='Rash';
 
   // SLA & Efec filtrado por mes/año activo
   const _fMesR=(document.getElementById('fMes')?.value||'').toUpperCase();
