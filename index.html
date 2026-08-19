@@ -1526,7 +1526,7 @@ function go(id,el){
     if(b) b.style.display = (esRash||esPickitAdidas) ? 'none' : '';
   });
   const compBtn=document.querySelector('.tab-btn[data-tab="comparativa"]');
-  if(compBtn) compBtn.style.display = esPickitAdidas ? 'none' : '';
+  if(compBtn) compBtn.style.display = (esPickitAdidas||esRash) ? 'none' : '';
   ['adopcion','issues','nps'].forEach(t=>{
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
     if(b) b.style.display = esRash ? '' : 'none';
@@ -1589,7 +1589,7 @@ function render(prod){
   document.getElementById('pmeta').innerHTML=`
     <div class="mi"><div class="mv">${fmtARS(fac)}</div><div class="ml">Facturación</div></div>
     <div class="ms"></div><div class="mi"><div class="mv">${Math.round(vol).toLocaleString()}</div><div class="ml">Volumen</div></div>
-    <div class="ms"></div><div class="mi"><div class="mv">${clis.size}</div><div class="ml">Clientes</div></div>
+    ${isRash?'':'<div class="ms"></div><div class="mi"><div class="mv">'+clis.size+'</div><div class="ml">Clientes</div></div>'}
     <div class="ms"></div><div class="mi"><div class="mv" style="font-size:12px">${owner}</div><div class="ml">Owner</div></div>`;
 
   // kstrip — primeras categorías del plan de indicadores
