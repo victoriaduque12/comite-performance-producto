@@ -2416,7 +2416,11 @@ function renderPBI(prod){
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:14}}},
       scales:{
         y:{position:'left',ticks:{callback:v=>'$'+(v/1e6).toFixed(0)+'M'},title:{display:true,text:'ARS'}},
-        y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'},title:{display:true,text:'Margen %'}}
+        y1:{position:'right',grid:{drawOnChartArea:false},ticks:{
+          callback:v=>v+'%',
+          color:ctx=>{const v=ctx.tick.value; return v<0?'#C0392B':(v>=20?'#4D7200':'#6b7680');},
+          font:ctx=>{const v=ctx.tick.value; return (v<0||v>=20)?{weight:'bold'}:{weight:'normal'};}
+        },title:{display:true,text:'Margen %'}}
       }
     }
   });
