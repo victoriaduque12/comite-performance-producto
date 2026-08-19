@@ -1642,6 +1642,14 @@ function renderResumen(prod,v,fac,vol,clis){
   let periodoLbl;
   if(hasMesFilter){
     periodoLbl=_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'');
+  } else if(isRash){
+    const rashMeses=MARGEN_HIST.filter(x=>x.producto==='Rash').sort((a,b)=>a.anio!==b.anio?a.anio-b.anio:MO_IDX_PL[a.mes]-MO_IDX_PL[b.mes]);
+    if(rashMeses.length){
+      const first=rashMeses[0], last=rashMeses[rashMeses.length-1];
+      periodoLbl=(first.mes===last.mes&&first.anio===last.anio)
+        ?(mesCap(first.mes)+' '+first.anio)
+        :(mesCap(first.mes)+' '+first.anio+' – '+mesCap(last.mes)+' '+last.anio);
+    } else periodoLbl='Sin datos';
   } else {
     const mesesOrd=[...new Set(v.map(x=>x.anio+'|'+x.mes))]
       .sort((a,b)=>{const[ya,ma]=a.split('|');const[yb,mb]=b.split('|');
