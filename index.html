@@ -485,6 +485,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-btn" data-tab="nps" style="display:none" onclick="switchTab('nps',this)">💬 NPS</div>
         <div class="tab-btn" data-tab="estabilidad" style="display:none" onclick="switchTab('estabilidad',this)">🛠️ KPIs Estabilidad</div>
         <div class="tab-btn" data-tab="cxbi" onclick="switchTab('cxbi',this)">🎯 Experiencia del Cliente BI</div>
+        <div class="tab-btn" data-tab="inversa" style="display:none" onclick="switchTab('inversa',this)">↩️ Inversa</div>
       </div>
       <div class="ts">Última actualización: <span id="tsv">—</span></div>
       <div class="pcont">
@@ -494,6 +495,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-panel"    id="tab-ranking"></div>
         <div class="tab-full"     id="tab-pbi"><div class="pbi-full" id="pbi-content"></div></div>
         <div class="tab-full"     id="tab-cxbi"><div class="pbi-full" id="cxbi-content"></div></div>
+        <div class="tab-full"     id="tab-inversa"><div class="pbi-full" id="inversa-content"></div></div>
         <div class="tab-full"     id="tab-adopcion"><div class="pbi-full" id="adopcion-content"></div></div>
         <div class="tab-full"     id="tab-issues"><div class="pbi-full" id="issues-content"></div></div>
         <div class="tab-full"     id="tab-nps"><div class="pbi-full" id="nps-content"></div></div>
@@ -1287,6 +1289,7 @@ function filterAndRender(){
     else if(activeTab==='adopcion') renderAdopcion();
     else if(activeTab==='issues') renderIssues();
     else if(activeTab==='nps') renderNPS();
+    else if(activeTab==='inversa') renderInversa();
     else render(cur);
   }
 }
@@ -1493,16 +1496,21 @@ function go(id,el){
   document.getElementById('tab-resumen').classList.add('on');
   // Rash tiene su propia estructura de solapas: sin Indicadores/Ranking, con Adopción/Issues/NPS
   const esRash = id==='Rash';
+  const esPickitAdidas = id==='Entrega en Punto Pickit';
   ['ranking','cxbi'].forEach(t=>{
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
-    if(b) b.style.display = esRash ? 'none' : '';
+    if(b) b.style.display = (esRash||esPickitAdidas) ? 'none' : '';
   });
+  const compBtn=document.querySelector('.tab-btn[data-tab="comparativa"]');
+  if(compBtn) compBtn.style.display = esPickitAdidas ? 'none' : '';
   ['adopcion','issues','nps'].forEach(t=>{
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
     if(b) b.style.display = esRash ? '' : 'none';
   });
   const estabBtn=document.querySelector('.tab-btn[data-tab="estabilidad"]');
   if(estabBtn) estabBtn.style.display = (id==='Carta Documento Digital') ? '' : 'none';
+  const inversaBtn=document.querySelector('.tab-btn[data-tab="inversa"]');
+  if(inversaBtn) inversaBtn.style.display = esPickitAdidas ? '' : 'none';
   render(id);
 }
 
@@ -1527,6 +1535,9 @@ function switchTab(tab,el){
   } else if(tab==='nps'){
     document.getElementById('tab-nps').classList.add('on');
     renderNPS();
+  } else if(tab==='inversa'){
+    document.getElementById('tab-inversa').classList.add('on');
+    renderInversa();
   } else {
     const panel=document.getElementById('tab-'+tab);
     if(panel){ panel.classList.add('on'); }
@@ -2206,7 +2217,21 @@ function renderNPS(){
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},title:{display:true,text:'Motivos de inconveniente (Pareto)'}}}});
 }
 
-// ── PERFORMANCE BI ──
+// ── ENTREGA EN PUNTO PICKIT: INVERSA (pendiente — falta armar la sheet) ──
+function renderInversa(){
+  const cont=document.getElementById('inversa-content');
+  cont.innerHTML=
+    '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">↩️</span> Inversa · Entrega en Punto Pickit</div></div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Logística Inversa</div><div class="pbi-bigtitle" style="font-size:19px">SLA, Efectividad y Volumen</div></div>'+
+      '<div class="pbi-alert" style="max-width:900px">Todavía no está armada la sheet de Inversa — esta solapa va a quedar en "— pendiente" hasta que la conectes.</div>'+
+      '<div class="pbi-cards5">'+
+        '<div class="pbi-mcard" style="opacity:.55"><div class="pbi-mcard-v" style="color:var(--gray);font-size:16px">— pendiente</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">SLA</div><div class="pbi-mcard-sub">Falta sheet de Inversa</div></div>'+
+        '<div class="pbi-mcard" style="opacity:.55"><div class="pbi-mcard-v" style="color:var(--gray);font-size:16px">— pendiente</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Efectividad</div><div class="pbi-mcard-sub">Falta sheet de Inversa</div></div>'+
+        '<div class="pbi-mcard" style="opacity:.55"><div class="pbi-mcard-v" style="color:var(--gray);font-size:16px">— pendiente</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Volumen</div><div class="pbi-mcard-sub">Falta sheet de Inversa</div></div>'+
+      '</div>'+
+    '</div>';
+}
 let pbiChartInstance=null;
 const MARGEN_CONSULTADO='14/08/2026';
 
