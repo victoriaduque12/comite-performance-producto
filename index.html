@@ -476,7 +476,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
       <div class="kstrip" id="ks"></div>
       <div class="tabs-bar">
         <div class="tab-btn on"  data-tab="resumen"     onclick="switchTab('resumen',this)">📊 Resumen</div>
-        <div class="tab-btn"     data-tab="slaefec"     onclick="switchTab('slaefec',this)">📈 SLA & Efectividad</div>
+        <div class="tab-btn"     data-tab="slaefec"     onclick="switchTab('slaefec',this)">📈 <span id="lbl-slaefec">SLA & Efectividad</span></div>
         <div class="tab-btn"     data-tab="comparativa" onclick="switchTab('comparativa',this)">📆 Comparativa</div>
         <div class="tab-btn"     data-tab="ranking"     onclick="switchTab('ranking',this)">🏆 Clientes</div>
         <div class="tab-btn" data-tab="inversa" style="display:none" onclick="switchTab('inversa',this)">↩️ Inversa</div>
@@ -952,7 +952,7 @@ let META_NUMS={
 };
 
 // ── STATE ──
-let allVentas=[], allSlaEfec=[], allKpisAd=[], allMotivos=[], allPickitVol=[], allPickitFac=[], allRashIssues=[], cur='overview', prodActual='', allProductos=[], cliActual='', allClientes=[];
+let allVentas=[], allSlaEfec=[], allKpisAd=[], allMotivos=[], allPickitVol=[], allPickitFac=[], allRashIssues=[], allCourierSla=[], cur='overview', prodActual='', allProductos=[], cliActual='', allClientes=[];
 
 // Normaliza: minúsculas, sin tildes, espacios colapsados, trim
 function norm(s){
@@ -1005,7 +1005,7 @@ function slaColor(v){
 
 // ── GOOGLE SHEETS JSONP FETCH (sin CORS) ──
 let _jsonpIdx=0;
-function sheetFetch(sheetId,name){
+function sheetFetch(sheetId,name,sheetName){
   return new Promise((resolve,reject)=>{
     const cb='_gviz'+(_jsonpIdx++);
     const timeout=setTimeout(()=>{
@@ -1037,7 +1037,7 @@ function sheetFetch(sheetId,name){
       delete window[cb];
       reject(new Error('Error de red ('+name+'): archivo no público o ID incorrecto'));
     };
-    s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb+'&tq=select+*';
+    s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb+'&tq=select+*'+(sheetName?'&sheet='+encodeURIComponent(sheetName):'');
     document.head.appendChild(s);
   });
 }
@@ -1230,6 +1230,13 @@ async function loadAll(){
     }
     catch(e){ console.warn('rash_issues error:',e.message,'– Verificar que la hoja esté compartida públicamente ("Cualquier persona con el enlace")'); }
 
+    let courierSlaData=[];
+    try{
+      courierSlaData=await sheetFetch(ID_SLA,'sla_courier','Courier');
+      console.log('sla_courier cargado: '+courierSlaData.length+' filas');
+    }
+    catch(e){ console.warn('sla_courier error:',e.message); }
+
     const PROD_ALIAS={
       'Entrega en un Punto':'Logística a Punto Pickit (cliente Pickit)',
       'Entrega en Un Punto':'Logística a Punto Pickit (cliente Pickit)',
@@ -1271,6 +1278,7 @@ async function loadAll(){
     allPickitVol=pickitVolData;
     allPickitFac=pickitFacData;
     allRashIssues=rashIssuesData;
+    allCourierSla=courierSlaData;
     allProductos=[...new Set(ventas.map(v=>v.producto).filter(p=>p&&p!=='Otros'))].sort();
     allClientes=[...new Set(ventas.map(v=>v.cliente).filter(Boolean))].sort();
     buildSidebar(mats);
@@ -1546,6 +1554,8 @@ function go(id,el){
   if(estabBtn) estabBtn.style.display = (id==='Carta Documento Digital') ? '' : 'none';
   const inversaBtn=document.querySelector('.tab-btn[data-tab="inversa"]');
   if(inversaBtn) inversaBtn.style.display = esPickitAdidas ? '' : 'none';
+  const lblSla=document.getElementById('lbl-slaefec');
+  if(lblSla) lblSla.textContent = (id==='Courier Personas (Customs Clearance)') ? 'SLA' : 'SLA & Efectividad';
   render(id);
 }
 
@@ -1906,9 +1916,74 @@ function renderResumen(prod,v,fac,vol,clis){
 
 
 // ── SLA & EFECTIVIDAD (desde Supabase) ──
+// ── SLA Courier (MELI CC): varios tipos de SLA, medidos por semana ──
+let courierSlaChartInstance=null;
+function renderSlaCourier(pc){
+  if(courierSlaChartInstance){courierSlaChartInstance.destroy();courierSlaChartInstance=null;}
+  const rows=allCourierSla.filter(r=>(r['producto']||'').trim()==='Courier Personas (Customs Clearance)');
+  const tipos=['SLA Transito a Aduana','SLA Declaración y Liberación','SLA Traslado al CAD'];
+  const parseNum=v=>{
+    if(v===null||v===undefined||v==='') return null;
+    const n=parseFloat(String(v).replace(',','.'));
+    return isNaN(n)?null:n;
+  };
+  const conDatos=rows.filter(r=>tipos.some(t=>parseNum(r[t])!==null))
+    .sort((a,b)=>Number(a.anio)-Number(b.anio)||Number(a.semana)-Number(b.semana));
+
+  if(!conDatos.length){
+    pc.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">📈</span> SLA · Courier Personas (Customs Clearance)</div></div>'+
+      '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin datos todavía</div>'+
+      '<div class="pbi-card-sub">No se pudo cargar la hoja "Courier" (revisar que el sheet esté compartido como "Cualquier persona con el enlace").</div></div></div>';
+    return;
+  }
+
+  const ult=conDatos[conDatos.length-1];
+  const cards=tipos.map(t=>{
+    const v=parseNum(ult[t]);
+    return v===null?'':`<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:${slaColor(v)}">${v.toFixed(1)}%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">${t.replace('SLA ','')}</div><div class="pbi-mcard-sub">Semana ${ult.semana} (${ult.mes} ${ult.anio})</div></div>`;
+  }).join('');
+
+  const pc2=document.getElementById('tab-slaefec');
+  pc2.innerHTML=
+    '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">📈</span> SLA · Courier Personas (Customs Clearance)</div></div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Primera Milla · MELI CC</div><div class="pbi-bigtitle" style="font-size:19px">SLA por tipo (detalle semanal)</div>'+
+      '<div class="pbi-subdate">Este producto solo mide primera milla — no se calcula Efectividad acá.</div></div>'+
+      '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div>'+
+      '<div class="pbi-chartwrap"><canvas id="courierSlaCanvas"></canvas></div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
+    '</div>';
+
+  const labels=conDatos.map(r=>'S'+r.semana);
+  const colors=['#009CA3','#F29400','#97BF0D'];
+  const datasets=tipos.map((t,i)=>({
+    label:t.replace('SLA ',''),
+    data:conDatos.map(r=>parseNum(r[t])),
+    borderColor:colors[i],
+    backgroundColor:colors[i],
+    tension:.3,
+    spanGaps:true
+  }));
+  const ctx=document.getElementById('courierSlaCanvas').getContext('2d');
+  courierSlaChartInstance=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets},
+    options:{responsive:true,plugins:{legend:{position:'bottom'}},
+      scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}
+  });
+}
+
 function renderSlaEfec(prod){
   const pc=document.getElementById('tab-slaefec');
   pc.innerHTML='';
+
+  // Courier Personas (Customs Clearance) / MELI: tiene varios tipos de SLA propios,
+  // medidos por semana, y no se mide Efectividad (solo primera milla / aduana).
+  if(prod==='Courier Personas (Customs Clearance)'){
+    renderSlaCourier(pc);
+    return;
+  }
+
   // Debug: log en consola para verificar datos
   console.log('[SLA] prod buscado:', JSON.stringify(prod));
   console.log('[SLA] allSlaEfec total filas:', allSlaEfec.length);
