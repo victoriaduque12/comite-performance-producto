@@ -2369,7 +2369,7 @@ function renderPBI(prod){
   const negs=mesesNegativos(hist);
   const alertHtml = negs.length
     ? '<div class="pbi-alert"><b>'+negs.length+' mes'+(negs.length>1?'es':'')+' con margen negativo:</b> '+listaConY(negs)+
-      ' tuvo'+(negs.length>1?'ieron':'') +' costo mayor a la venta en este producto.</div>'
+      ' '+(negs.length>1?'tuvieron':'tuvo')+' costo mayor a la venta en este producto.</div>'
     : '';
 
   cont.innerHTML=
