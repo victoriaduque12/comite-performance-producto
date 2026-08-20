@@ -579,6 +579,11 @@ const ID_RASH_ISSUES='1k6tXmQJtodeTLzhFCyBr4fG4TyH1Hz3vGwZVp2zpzIE';
 const PBI_REPORT_URL='https://app.powerbi.com/groups/me/reports/2ea1b575-1feb-4464-8a24-dac0ac0387e1/d050495042d3d060d741?ctid=91a5b5c8-673e-4a80-871c-5ed3412dd451&experience=power-bi';
 // Rash: snapshot de Volumen portado desde rash_kpi_dashboard.html (dashboard que se va a eliminar).
 // Pendiente: SLA, Efectividad y Motivos de No Entrega — todavía no están en las sheets del comité.
+// Productos cuya Facturación y Volumen del Resumen se toman de Power BI (MARGEN_HIST)
+// en vez de la sheet de ventas — porque no tienen filas propias ahí (Rash) o porque
+// se decidió que el dato de Rentabilidad es más confiable (Consumo Masivo).
+const PBI_FAC_VOL_PRODUCTS=['Rash','Distribucion Consumo Masivo y Palletizado'];
+
 const RASH_FLUJOS_HIST=[
   {mes:'JUNIO',anio:2026,flujos:[
     {label:'Colecta domicilio – Entrega a Domicilio c/aviso',pct:98.53},
@@ -1577,8 +1582,9 @@ function render(prod){
   const v=gv().filter(x=>x.producto===prod);
   const isPickitVirtual=prod==='Entrega en Punto Pickit';
   const isRash=prod==='Rash';
-  const fac=isPickitVirtual?allPickitFac.reduce((a,b)=>a+b.monto,0):(isRash?MARGEN_HIST.filter(x=>x.producto==='Rash').reduce((a,b)=>a+b.venta,0):v.reduce((a,b)=>a+(Number(b.venta_norm)||0),0));
-  const vol=isPickitVirtual?allPickitVol.filter(b=>!/total/i.test(String(b['Mes']||b['Mes ']||''))).reduce((a,b)=>Number(b['Volumen']||0)+a,0):(isRash?RASH_VOL_SNAPSHOT.solicitudes:v.reduce((a,b)=>a+(Number(b.cantidad)||0),0));
+  const usaPBIFacVol=PBI_FAC_VOL_PRODUCTS.includes(prod);
+  const fac=isPickitVirtual?allPickitFac.reduce((a,b)=>a+b.monto,0):(usaPBIFacVol?MARGEN_HIST.filter(x=>x.producto===prod).reduce((a,b)=>a+b.venta,0):v.reduce((a,b)=>a+(Number(b.venta_norm)||0),0));
+  const vol=isPickitVirtual?allPickitVol.filter(b=>!/total/i.test(String(b['Mes']||b['Mes ']||''))).reduce((a,b)=>Number(b['Volumen']||0)+a,0):(isRash?RASH_VOL_SNAPSHOT.solicitudes:(usaPBIFacVol?MARGEN_HIST.filter(x=>x.producto===prod).reduce((a,b)=>a+b.volumen,0):v.reduce((a,b)=>a+(Number(b.cantidad)||0),0)));
   const clis=isPickitVirtual?new Set(['Adidas']):(isRash?new Set(['Rash']):new Set(v.map(x=>x.cliente).filter(Boolean)));
   const maxAnio=v.length?Math.max(...v.map(x=>x.anio)):2025;
   const owner=OWNERS[prod]||'—';
@@ -1643,10 +1649,10 @@ function renderResumen(prod,v,fac,vol,clis){
   let periodoLbl;
   if(hasMesFilter){
     periodoLbl=_fMesR.charAt(0)+_fMesR.slice(1).toLowerCase()+(_fAnioR?' '+_fAnioR:'');
-  } else if(isRash){
-    const rashMeses=MARGEN_HIST.filter(x=>x.producto==='Rash').sort((a,b)=>a.anio!==b.anio?a.anio-b.anio:MO_IDX_PL[a.mes]-MO_IDX_PL[b.mes]);
-    if(rashMeses.length){
-      const first=rashMeses[0], last=rashMeses[rashMeses.length-1];
+  } else if(PBI_FAC_VOL_PRODUCTS.includes(prod)){
+    const pbiMeses=MARGEN_HIST.filter(x=>x.producto===prod).sort((a,b)=>a.anio!==b.anio?a.anio-b.anio:MO_IDX_PL[a.mes]-MO_IDX_PL[b.mes]);
+    if(pbiMeses.length){
+      const first=pbiMeses[0], last=pbiMeses[pbiMeses.length-1];
       periodoLbl=(first.mes===last.mes&&first.anio===last.anio)
         ?(mesCap(first.mes)+' '+first.anio)
         :(mesCap(first.mes)+' '+first.anio+' – '+mesCap(last.mes)+' '+last.anio);
