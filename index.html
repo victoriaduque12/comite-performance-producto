@@ -1944,18 +1944,6 @@ function renderSlaCourier(pc){
     return v===null?'':`<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:${slaColor(v)}">${v.toFixed(1)}%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">${t.replace('SLA ','')}</div><div class="pbi-mcard-sub">Semana ${ult.semana} (${ult.mes} ${ult.anio})</div></div>`;
   }).join('');
 
-  // Nota: qué mes corresponde cada rango de semanas (ej. "S27-S31: Julio 2026")
-  const mesesPorSemana=[];
-  let grupoActual=null;
-  conDatos.forEach(r=>{
-    const key=r.mes+' '+r.anio;
-    if(!grupoActual||grupoActual.key!==key){
-      grupoActual={key,mes:r.mes,anio:r.anio,desde:r.semana,hasta:r.semana};
-      mesesPorSemana.push(grupoActual);
-    } else grupoActual.hasta=r.semana;
-  });
-  const notaMeses=mesesPorSemana.map(g=>(g.desde===g.hasta?'S'+g.desde:'S'+g.desde+'-S'+g.hasta)+': '+g.mes+' '+g.anio).join(' · ');
-
   const pc2=document.getElementById('tab-slaefec');
   pc2.innerHTML=
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">📈</span> SLA · Courier Personas (Customs Clearance)</div></div>'+
@@ -1965,10 +1953,10 @@ function renderSlaCourier(pc){
       '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Evolución semanal por tipo de SLA</div></div>'+
       '<div class="pbi-chartwrap"><canvas id="courierSlaCanvas"></canvas></div>'+
-      '<div class="pbi-note" style="width:100%;max-width:900px">📅 '+notaMeses+' · Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
     '</div>';
 
-  const labels=conDatos.map(r=>'S'+r.semana);
+  const labels=conDatos.map(r=>['S'+r.semana,r.mes.slice(0,3)]);
   const colors=['#009CA3','#F29400','#97BF0D'];
   const datasets=tipos.map((t,i)=>({
     label:t.replace('SLA ',''),
