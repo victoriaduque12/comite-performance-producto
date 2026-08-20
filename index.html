@@ -1611,7 +1611,7 @@ function render(prod){
   document.getElementById('pmeta').innerHTML=`
     <div class="mi"><div class="mv">${fmtARS(fac)}</div><div class="ml">Facturación</div></div>
     <div class="ms"></div><div class="mi"><div class="mv">${Math.round(vol).toLocaleString()}</div><div class="ml">Volumen</div></div>
-    ${isRash?'':'<div class="ms"></div><div class="mi"><div class="mv">'+clis.size+'</div><div class="ml">Clientes</div></div>'}
+    ${usaPBIFacVol?'':'<div class="ms"></div><div class="mi"><div class="mv">'+clis.size+'</div><div class="ml">Clientes</div></div>'}
     <div class="ms"></div><div class="mi"><div class="mv" style="font-size:12px">${owner}</div><div class="ml">Owner</div></div>`;
 
   // kstrip — primeras categorías del plan de indicadores
@@ -1637,6 +1637,7 @@ function renderResumen(prod,v,fac,vol,clis){
   const pc=document.getElementById('tab-resumen');
   pc.innerHTML='';
   const isRash=prod==='Rash';
+  const usaPBIFacVol=PBI_FAC_VOL_PRODUCTS.includes(prod);
 
   // SLA & Efec filtrado por mes/año activo
   const _fMesR=(document.getElementById('fMes')?.value||'').toUpperCase();
@@ -1749,10 +1750,10 @@ function renderResumen(prod,v,fac,vol,clis){
   mrow.innerHTML=`
     <div class="mc"><div class="mc-l">Facturación</div><div class="mc-v">${fmtARS(fac)}</div><div class="mc-s">Venta normalizada · ${periodoLbl}</div></div>
     <div class="mc"><div class="mc-l">Volumen</div><div class="mc-v">${Math.round(vol).toLocaleString()}</div><div class="mc-s">Unidades · ${periodoLbl}</div></div>
-    ${isRash?'':'<div class="mc"><div class="mc-l">Clientes activos</div><div class="mc-v">'+clis.size+'</div><div class="mc-s">Con facturación · '+periodoLbl+'</div></div>'}
+    ${usaPBIFacVol?'':'<div class="mc"><div class="mc-l">Clientes activos</div><div class="mc-v">'+clis.size+'</div><div class="mc-s">Con facturación · '+periodoLbl+'</div></div>'}
     ${slaDisp!==null?`<div class="mc" style="border-top-color:${slaColor(slaDisp)}"><div class="mc-l">SLA</div><div class="mc-v" style="color:${slaColor(slaDisp)}">${slaDisp.toFixed(1)}%</div><div class="mc-s">${slaSubCard}</div></div>`:''}
     ${efecDisp!==null?`<div class="mc" style="border-top-color:${slaColor(efecDisp)}"><div class="mc-l">Efectividad</div><div class="mc-v" style="color:${slaColor(efecDisp)}">${efecDisp.toFixed(1)}%</div><div class="mc-s">${efecSubCard}</div></div>`:''}
-    ${top1?`<div class="mc"><div class="mc-l">Top cliente</div><div class="mc-v" style="font-size:15px">${fmtARS(top1[1])}</div><div class="mc-s">${top1[0]} · ${periodoLbl}</div></div>`:''}`;
+    ${(top1&&!usaPBIFacVol)?`<div class="mc"><div class="mc-l">Top cliente</div><div class="mc-v" style="font-size:15px">${fmtARS(top1[1])}</div><div class="mc-s">${top1[0]} · ${periodoLbl}</div></div>`:''}`;
   }
   pc.appendChild(mrow);
 
@@ -1881,7 +1882,7 @@ function renderResumen(prod,v,fac,vol,clis){
   const byC={};
   v.forEach(x=>{if(!x.cliente)return;const cn=CLI_ALIAS[x.cliente]||x.cliente;byC[cn]=(byC[cn]||0)+(Number(x.venta_norm)||0);});
   const topC=Object.entries(byC).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  if(topC.length){
+  if(topC.length&&!usaPBIFacVol){
     const ct=document.createElement('div');ct.className='ctb';
     const pickitFacTot=isPickit?allPickitFac.reduce((a,b)=>a+b.monto,0):0;
     ct.innerHTML=`<h3>Top Clientes</h3><table class="ct"><thead><tr><th>Cliente</th><th style="text-align:right">Facturación</th></tr></thead><tbody>
@@ -1943,15 +1944,28 @@ function renderSlaCourier(pc){
     return v===null?'':`<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:${slaColor(v)}">${v.toFixed(1)}%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">${t.replace('SLA ','')}</div><div class="pbi-mcard-sub">Semana ${ult.semana} (${ult.mes} ${ult.anio})</div></div>`;
   }).join('');
 
+  // Nota: qué mes corresponde cada rango de semanas (ej. "S27-S31: Julio 2026")
+  const mesesPorSemana=[];
+  let grupoActual=null;
+  conDatos.forEach(r=>{
+    const key=r.mes+' '+r.anio;
+    if(!grupoActual||grupoActual.key!==key){
+      grupoActual={key,mes:r.mes,anio:r.anio,desde:r.semana,hasta:r.semana};
+      mesesPorSemana.push(grupoActual);
+    } else grupoActual.hasta=r.semana;
+  });
+  const notaMeses=mesesPorSemana.map(g=>(g.desde===g.hasta?'S'+g.desde:'S'+g.desde+'-S'+g.hasta)+': '+g.mes+' '+g.anio).join(' · ');
+
   const pc2=document.getElementById('tab-slaefec');
   pc2.innerHTML=
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">📈</span> SLA · Courier Personas (Customs Clearance)</div></div>'+
     '<div class="pbi-body">'+
-      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Primera Milla · MELI CC</div><div class="pbi-bigtitle" style="font-size:19px">SLA por tipo (detalle semanal)</div>'+
+      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">MELI CC</div><div class="pbi-bigtitle" style="font-size:19px">SLA por tipo (detalle semanal)</div>'+
       '<div class="pbi-subdate">Este producto solo mide primera milla — no se calcula Efectividad acá.</div></div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Evolución semanal por tipo de SLA</div></div>'+
       '<div class="pbi-chartwrap"><canvas id="courierSlaCanvas"></canvas></div>'+
-      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">📅 '+notaMeses+' · Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
     '</div>';
 
   const labels=conDatos.map(r=>'S'+r.semana);
@@ -1968,7 +1982,10 @@ function renderSlaCourier(pc){
   courierSlaChartInstance=new Chart(ctx,{
     type:'line',
     data:{labels,datasets},
-    options:{responsive:true,plugins:{legend:{position:'bottom'}},
+    options:{responsive:true,plugins:{
+      legend:{position:'bottom'},
+      title:{display:true,text:'SLA por tipo · Courier Personas (MELI CC)',font:{size:13}}
+    },
       scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}
   });
 }
