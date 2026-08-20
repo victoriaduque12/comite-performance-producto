@@ -1798,28 +1798,28 @@ function renderResumen(prod,v,fac,vol,clis){
 
   // Gráficos fac + vol
   const isPickit=prod==='Entrega en Punto Pickit';
-  const isRashChart=prod==='Rash';
+  const isPBIChart=PBI_FAC_VOL_PRODUCTS.includes(prod);
   const byAM={};
-  if(!isPickit&&!isRashChart) v.forEach(x=>{const k=x.anio+'|'+(x.mes||'').toUpperCase();byAM[k]=(byAM[k]||0)+(Number(x.venta_norm)||0);});
+  if(!isPickit&&!isPBIChart) v.forEach(x=>{const k=x.anio+'|'+(x.mes||'').toUpperCase();byAM[k]=(byAM[k]||0)+(Number(x.venta_norm)||0);});
   const sorted=Object.entries(byAM).map(([k,val])=>({anio:parseInt(k),mes:k.split('|')[1],val})).filter(x=>MO.includes(x.mes)).sort((a,b)=>a.anio!==b.anio?a.anio-b.anio:MO.indexOf(a.mes)-MO.indexOf(b.mes));
 
-  if(isRashChart){
-    // Rash: facturación y volumen desde Power BI (MARGEN_HIST, cliente 102005295), desde junio 2026
-    const rashHist=MARGEN_HIST.filter(x=>x.producto==='Rash').sort((a,b)=>{
+  if(isPBIChart){
+    // Fac/Vol desde Power BI (MARGEN_HIST) — Rash, Consumo Masivo, Courier (MELI)
+    const pbiHist=MARGEN_HIST.filter(x=>x.producto===prod).sort((a,b)=>{
       if(a.anio!==b.anio) return a.anio-b.anio;
       return MO.indexOf(a.mes)-MO.indexOf(b.mes);
     });
-    if(rashHist.length){
+    if(pbiHist.length){
       const cg=document.createElement('div');cg.className='cgrid';
-      cg.innerHTML=`<div class="cb"><div class="cb-t">Facturación mensual</div><div class="cb-s">ARS · Rash (Power BI, cliente 102005295)</div><div class="cw"><canvas id="cf-rash"></canvas></div></div>
-        <div class="cb"><div class="cb-t">Volumen mensual</div><div class="cb-s">Envíos Rash</div><div class="cw"><canvas id="cv-rash"></canvas></div></div>`;
+      cg.innerHTML=`<div class="cb"><div class="cb-t">Facturación mensual</div><div class="cb-s">ARS · Power BI (Rentabilidad)</div><div class="cw"><canvas id="cf-pbi"></canvas></div></div>
+        <div class="cb"><div class="cb-t">Volumen mensual</div><div class="cb-s">Power BI (Rentabilidad)</div><div class="cw"><canvas id="cv-pbi"></canvas></div></div>`;
       pc.appendChild(cg);
       requestAnimationFrame(()=>{
-        const rLbls=rashHist.map(x=>MS[MO.indexOf(x.mes)]+"'"+String(x.anio).slice(-2));
-        const rFac=rashHist.map(x=>+(x.venta/1e6).toFixed(2));
-        const rVol=rashHist.map(x=>x.volumen);
-        mkChart('cf-rash','bar',rLbls,[{data:rFac,backgroundColor:'rgba(151,191,13,.8)',borderRadius:4}],{yf:v=>'$'+v+'M'});
-        mkChart('cv-rash','line',rLbls,[{data:rVol,borderColor:T,backgroundColor:'rgba(0,156,163,.08)',tension:.4,fill:true,pointRadius:3}],{yf:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'K':v});
+        const rLbls=pbiHist.map(x=>MS[MO.indexOf(x.mes)]+"'"+String(x.anio).slice(-2));
+        const rFac=pbiHist.map(x=>+(x.venta/1e6).toFixed(2));
+        const rVol=pbiHist.map(x=>x.volumen);
+        mkChart('cf-pbi','bar',rLbls,[{data:rFac,backgroundColor:'rgba(151,191,13,.8)',borderRadius:4}],{yf:v=>'$'+v+'M'});
+        mkChart('cv-pbi','line',rLbls,[{data:rVol,borderColor:T,backgroundColor:'rgba(0,156,163,.08)',tension:.4,fill:true,pointRadius:3}],{yf:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'K':v});
       });
     }
   } else if(isPickit){
@@ -2442,7 +2442,8 @@ function renderPBI(prod){
 function renderComparativa(prod){
   const pc=document.getElementById('tab-comparativa');
   if(prod==='Entrega en Punto Pickit'){pc.innerHTML='<div class="nodatabadge">Sin datos de facturación para comparativa.</div>';return;}
-  const v=allVentas.filter(x=>x.producto===prod&&x.escenario==='Actual'&&(!cliActual||x.cliente===cliActual));
+  const usaPBIComp=PBI_FAC_VOL_PRODUCTS.includes(prod);
+  const v=usaPBIComp?MARGEN_HIST.filter(x=>x.producto===prod):allVentas.filter(x=>x.producto===prod&&x.escenario==='Actual'&&(!cliActual||x.cliente===cliActual));
   if(!v.length){pc.innerHTML='<div class="nodatabadge">Sin datos.</div>';return;}
 
   // Meses disponibles ordenados cronológicamente (todos los años, no solo 2026)
@@ -2460,6 +2461,7 @@ function renderComparativa(prod){
   const [ant2Y,ant2Mc]=splitK(mesesOrdC[nC-3]||null);
 
   function facMesComp(anio,mes){
+    if(usaPBIComp) return v.filter(x=>x.anio===anio&&x.mes===mes).reduce((a,b)=>a+(Number(b.venta)||0),0);
     return v.filter(x=>x.anio===anio&&x.mes===mes).reduce((a,b)=>a+(Number(b.venta_norm)||0),0);
   }
   function mesLbl(m){return m?m.charAt(0)+m.slice(1).toLowerCase():'—';}
@@ -2525,7 +2527,7 @@ function renderComparativa(prod){
 
   // ── Gráfico anual completo ──
   const byAM={};
-  v.forEach(x=>{const k=x.anio+'|'+(x.mes||'').toUpperCase();byAM[k]=(byAM[k]||0)+(Number(x.venta_norm)||0);});
+  v.forEach(x=>{const k=x.anio+'|'+(x.mes||'').toUpperCase();byAM[k]=(byAM[k]||0)+(Number(usaPBIComp?x.venta:x.venta_norm)||0);});
   const years=[...new Set(v.map(x=>x.anio))].sort();
   const yr1=years[0],yr2=years[years.length-1];
   const d1=MO.map(m=>byAM[yr1+'|'+m]||0);
