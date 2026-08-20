@@ -1531,9 +1531,10 @@ function go(id,el){
   // Rash tiene su propia estructura de solapas: sin Indicadores/Ranking, con Adopción/Issues/NPS
   const esRash = id==='Rash';
   const esPickitAdidas = id==='Entrega en Punto Pickit';
+  const esUnSoloCliente = esRash||esPickitAdidas||id==='Courier Personas (Customs Clearance)';
   ['ranking','cxbi'].forEach(t=>{
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
-    if(b) b.style.display = (esRash||esPickitAdidas) ? 'none' : '';
+    if(b) b.style.display = esUnSoloCliente ? 'none' : '';
   });
   const compBtn=document.querySelector('.tab-btn[data-tab="comparativa"]');
   if(compBtn) compBtn.style.display = (esPickitAdidas||esRash) ? 'none' : '';
@@ -1746,7 +1747,9 @@ function renderResumen(prod,v,fac,vol,clis){
   pc.appendChild(mrow);
 
   // ── Tarjetas comparativas ──
-  if(prod!=='Entrega en Punto Pickit'&&(fUlt26!==null||fMismo25!==null||fAnt26!==null)){
+  // No aplica para productos que se calculan desde Power BI (Rash, Consumo Masivo, MELI CC):
+  // este bloque usa la sheet de ventas vieja (mix de clientes), ya no es la fuente correcta acá.
+  if(prod!=='Entrega en Punto Pickit'&&!PBI_FAC_VOL_PRODUCTS.includes(prod)&&(fUlt26!==null||fMismo25!==null||fAnt26!==null)){
     const compRow=document.createElement('div');
     compRow.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:12px;';
 
