@@ -169,8 +169,9 @@ function paintSlaEfecCharts(idPrefix,sla,target){
     slaDs.push({type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
     efecDs.push({type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
   }
-  mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2]),max:100,ticks:{callback:v=>v+'%'}}}}});
-  mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  const sharedMin=pctMin(sla,[2,3,4]);
+  mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
+  mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
 }
 Chart.register(ChartDataLabels);
 Chart.defaults.set('plugins.datalabels',{
