@@ -1013,6 +1013,10 @@ function slaColor(v){
   if(v===null||v===undefined)return '#ccc';
   return v>=95?'#4D7200':v>=80?'#A06800':'#C0392B';
 }
+function adopColor(v){
+  if(v===null||v===undefined)return '#ccc';
+  return v>=50?'#0099A8':'#F6A945';
+}
 
 // ── GOOGLE SHEETS JSONP FETCH (sin CORS) ──
 let _jsonpIdx=0;
@@ -2237,10 +2241,10 @@ function renderAdopcion(){
       '<div class="pbi-note" style="width:100%;max-width:900px">Se actualiza manualmente con datos nuevos. Corte actual: <b>'+a.fechaCorte+'</b>.</div>'+
       '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Adopción</div><div class="pbi-bigtitle" style="font-size:18px">Altas de clientes — detalle semanal (corte actual)</div></div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(4,1fr)">'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas totales (desde '+a.altasDesde+')</div><div class="pbi-mcard-v">'+a.altasTotales+'</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas última semana completa ('+a.altasUltSemanaRango+')</div><div class="pbi-mcard-v">'+a.altasUltSemana+'</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Variación semana vs. anterior</div><div class="pbi-mcard-v" style="color:'+(a.variacionSemanal>=0?'#5a9216':'#c23b3b')+'">'+a.variacionSemanal+'%</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Semana en curso ('+a.altasEnCursoRango+')</div><div class="pbi-mcard-v">'+a.altasEnCurso+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v">'+a.altasTotales+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Altas totales (desde '+a.altasDesde+')</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v">'+a.altasUltSemana+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Altas última semana completa ('+a.altasUltSemanaRango+')</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:'+(a.variacionSemanal>=0?'#5a9216':'#c23b3b')+'">'+a.variacionSemanal+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Variación semana vs. anterior</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v">'+a.altasEnCurso+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Semana en curso ('+a.altasEnCursoRango+')</div></div>'+
       '</div>'+
       '<div class="pbi-note" style="width:100%;max-width:900px">'+a.altasNota+' · Variación: '+a.variacionDetalle+'</div>'+
       '<div class="pbi-chartwrap"><canvas id="adopcionChartCanvas"></canvas></div>'+
@@ -2260,10 +2264,10 @@ function renderAdopcion(){
       '</div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">De registrado a cliente activo (corte actual)</div></div>'+
       '<div class="pbi-cards5">'+
-        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+slaColor(a.tasaFinalizacion)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+slaColor(a.tasaFinalizacion)+'">'+a.tasaFinalizacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de finalización de onboarding</div><div class="pbi-mcard-sub">'+a.tasaFinalizacionDetalle+'</div></div>'+
-        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+slaColor(a.tasaActivacion)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+slaColor(a.tasaActivacion)+'">'+a.tasaActivacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de activación</div><div class="pbi-mcard-sub">'+a.tasaActivacionDetalle+'<em>Qué % de los que se registraron llegó a usar Rash de verdad (hizo al menos un envío)</em></div></div>'+
-        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+slaColor(100-a.zombiesPct)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+slaColor(100-a.zombiesPct)+'">'+a.zombies+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Clientes "zombie" (0 envíos)</div><div class="pbi-mcard-sub">'+a.zombiesPct+'% de los Activos</div></div>'+
-        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+slaColor(a.pctRecurrentes)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+slaColor(a.pctRecurrentes)+'">'+a.pctRecurrentes+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">% Recurrentes (≥2 envíos)</div><div class="pbi-mcard-sub">'+a.pctRecurrentesDetalle+'<em>De los que ya usaron Rash una vez, qué % volvió a enviar (no fue algo puntual)</em></div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+adopColor(a.tasaFinalizacion)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+adopColor(a.tasaFinalizacion)+'">'+a.tasaFinalizacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de finalización de onboarding</div><div class="pbi-mcard-sub">'+a.tasaFinalizacionDetalle+'</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+adopColor(a.tasaActivacion)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+adopColor(a.tasaActivacion)+'">'+a.tasaActivacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de activación</div><div class="pbi-mcard-sub">'+a.tasaActivacionDetalle+'<em>Qué % de los que se registraron llegó a usar Rash de verdad (hizo al menos un envío)</em></div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+adopColor(100-a.zombiesPct)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+adopColor(100-a.zombiesPct)+'">'+a.zombies+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Clientes "zombie" (0 envíos)</div><div class="pbi-mcard-sub">'+a.zombiesPct+'% de los Activos</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:'+adopColor(a.pctRecurrentes)+'"><div class="pbi-mcard-v" style="font-size:24px;color:'+adopColor(a.pctRecurrentes)+'">'+a.pctRecurrentes+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">% Recurrentes (≥2 envíos)</div><div class="pbi-mcard-sub">'+a.pctRecurrentesDetalle+'<em>De los que ya usaron Rash una vez, qué % volvió a enviar (no fue algo puntual)</em></div></div>'+
         '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#0099A8"><div class="pbi-mcard-v" style="font-size:24px">'+a.enviosPromedio.toFixed(1)+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Envíos promedio por cliente activado</div><div class="pbi-mcard-sub">'+a.enviosPromedioDetalle+'</div></div>'+
       '</div>'+
       '<div class="pbi-alert" style="max-width:900px"><b>Base chica:</b> '+a.nota+'</div>'+
