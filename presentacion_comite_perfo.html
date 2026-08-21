@@ -241,8 +241,8 @@ function buildMargenChart(idPrefix,periodo){
 function paintMargenChart(idPrefix,rows){
   const labels=rows.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2));
   mkChart(idPrefix+'-margen',{data:{labels,datasets:[
-    {type:'bar',label:'Venta',data:rows.map(r=>r.venta),backgroundColor:'#003E51',order:2,yAxisID:'y'},
-    {type:'bar',label:'Costo',data:rows.map(r=>r.costo),backgroundColor:'#c9d3d6',order:2,yAxisID:'y'},
+    {type:'bar',label:'Venta',data:rows.map(r=>r.venta),backgroundColor:'#003E51',order:2,yAxisID:'y',datalabels:{color:'#fff',anchor:'center',align:'center',font:{size:10,weight:'700'}}},
+    {type:'bar',label:'Costo',data:rows.map(r=>r.costo),backgroundColor:'#c9d3d6',order:2,yAxisID:'y',datalabels:{color:'#003E51',anchor:'center',align:'center',font:{size:10,weight:'700'}}},
     {type:'line',label:'Margen %',data:rows.map(r=>r.venta?(r.margen/r.venta*100):0),borderColor:'#97BF0D',backgroundColor:'#97BF0D',borderWidth:2.5,tension:.35,yAxisID:'y1',order:1,pointRadius:4}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},
     scales:{
@@ -385,8 +385,8 @@ function renderRash(){
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
-    {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y',datalabels:{formatter:cnt}},
-    {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',tension:.3,yAxisID:'y1',datalabels:{formatter:cnt,align:'top'}}
+    {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y',datalabels:{display:false}},
+    {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',tension:.3,yAxisID:'y1',datalabels:{display:false}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false}}}}});
   mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[{data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
@@ -421,9 +421,9 @@ function renderPickit(){
   paintFacVolCharts('pickit',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('pickit-sla',{data:{labels,datasets:[
-    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
-    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3,datalabels:{display:false}},
+    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3,datalabels:{display:false}},
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3,datalabels:{display:false}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('pickit-pp',{data:{labels,datasets:[
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#009CA3',tension:.3},
