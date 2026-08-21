@@ -215,7 +215,11 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   "enviosPromedio":8.29,
   "b2bPct":28.2,"b2cPct":71.8,"b2bCount":105,"b2cCount":268,
   "segConEnvios":14,"segSinEnvios":359,"segSinOnboarding":250
-}
+},
+"rashFlujos":[
+  {"mes":"Junio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",98.53],["Colecta en punto – Entrega Domicilio c/aviso",0.74],["Colecta en punto – Entrega en punto c/aviso",0.74]]},
+  {"mes":"Julio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",78.36],["Colecta en punto – Entrega Domicilio c/aviso",19.4],["Colecta en punto – Entrega en punto c/aviso",2.24]]}
+]
 };
 
 const CHART_INSTANCES={};
@@ -372,6 +376,7 @@ function renderRash(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA & Efectividad</div>
     ${buildSlaEfecCharts('rash','Junio → Agosto 2026')}
+    <div class="chart-box"><h3>Apertura por Flujos · Rash</h3><div class="note">% de envíos por flujo, mes a mes</div><canvas id="rash-flujos"></canvas></div>
 
     <div class="section-title">🛠️ Indicadores de plataforma</div>
     <div class="section-sub">Issues técnicos reportados</div>
@@ -395,15 +400,18 @@ function renderRash(){
       <div class="chart-box"><h3>Altas por semana</h3><div class="note">Detalle semanal</div><canvas id="rash-altas-sem"></canvas></div>
       <div class="chart-box"><h3>Altas por mes</h3><div class="note">Junio → Agosto (parcial)</div><canvas id="rash-altas-mes"></canvas></div>
     </div>
-    <div class="cards-row" style="grid-template-columns:repeat(2,1fr)">
+    <div class="section-title">Base de usuarios</div>
+    <div class="chart-box" style="margin-bottom:14px"><h3 style="margin-bottom:10px">B2C vs. B2B (sobre Activos)</h3>
+    <div class="cards-row" style="grid-template-columns:repeat(2,1fr);margin-bottom:0">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="val" style="font-size:22px">${a.b2cPct}%</div><div class="lbl">B2C (personas)</div><div class="sub">${a.b2cCount} de ${a.altasTotales} Activos</div></div>
       <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:22px">${a.b2bPct}%</div><div class="lbl">B2B (empresas)</div><div class="sub">${a.b2bCount} de ${a.altasTotales} Activos</div></div>
-    </div>
-    <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
+    </div></div>
+    <div class="chart-box"><h3 style="margin-bottom:10px">Reporte usuarios</h3>
+    <div class="cards-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
       <div class="kcard"><div class="val" style="color:var(--teal)">${a.segConEnvios}</div><div class="lbl">Usuarios con envíos realizados</div></div>
       <div class="kcard"><div class="val" style="color:var(--teal)">${a.segSinEnvios}</div><div class="lbl">Usuarios activos sin envíos</div></div>
       <div class="kcard"><div class="val" style="color:var(--teal)">${a.segSinOnboarding}</div><div class="lbl">Usuarios sin finalizar onboarding</div></div>
-    </div>
+    </div></div>
     <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
       <div class="kcard" style="border-top-color:${adopColor(a.tasaFinalizacion)}"><div class="val" style="font-size:22px;color:${adopColor(a.tasaFinalizacion)}">${a.tasaFinalizacion}%</div><div class="lbl">Tasa de finalización onboarding</div><div class="sub">${a.tasaFinalizacionDetalle}</div></div>
       <div class="kcard" style="border-top-color:${adopColor(a.tasaActivacion)}"><div class="val" style="font-size:22px;color:${adopColor(a.tasaActivacion)}">${a.tasaActivacion}%</div><div class="lbl">Tasa de activación</div><div class="sub">${a.tasaActivacionDetalle}</div></div>
@@ -414,6 +422,12 @@ function renderRash(){
   paintMargenChart('rash',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('rash',sla,true);
+  const flujosLabels=DATA.rashFlujos.map(m=>m.mes);
+  const flujosNombres=DATA.rashFlujos[0].flujos.map(f=>f[0]);
+  const flujosColores=['#009CA3','#97BF0D','#F29400'];
+  mkChart('rash-flujos',{type:'bar',data:{labels:flujosLabels,datasets:flujosNombres.map((n,i)=>({
+    label:n,data:DATA.rashFlujos.map(m=>m.flujos.find(f=>f[0]===n)[1]),backgroundColor:flujosColores[i]
+  }))},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
