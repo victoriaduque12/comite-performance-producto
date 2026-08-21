@@ -195,6 +195,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "consumoSla":[["ENERO",2026,81.2,98.9,96.4],["FEBRERO",2026,90.3,99.2,96.8],["MARZO",2026,80.1,99.7,96.8],["ABRIL",2026,82.6,99.5,97.3],["MAYO",2026,84.3,97.4,95.8]],
 "courierSla":[["Julio",27,2026,27.9,96.8,100],["Julio",28,2026,35.9,73.3,98.1],["Julio",29,2026,19.2,67,100],["Julio",30,2026,33.8,77.1,100],["Julio",31,2026,8,55.9,100],["Agosto",32,2026,9,55.8,100],["Agosto",33,2026,0,68.3,100]],
 "motivosCdd":[["No responde",25.19],["Titular Desconocido",22.05],["Entregado",21.65],["No se ubica domicilio",10.77],["Se mudó",7.69],["Zona Peligrosa",5.98],["Domicilio incompleto",2.05],["Domicilio inexistente",1.65],["Requisitos incompletos",0.8],["Rechazado",0.63],["Fallecido",0.85],["Persona no habilitada",0.34],["Sin Definir",0.23],["Difiere Entrega",0.11]],
+"cddSlaSemanal":[["Semana del 2",89],["Semana del 10",94.8],["Semana del 17",98.1]],
 "kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
 "consumoClientes":[["MOLINOS RIO DE LA PLATA S.A.",162078806.87],["PROCTER & GAMBLE ARGENTINA S.R.L.",25840246.58],["BAT OPERACIONES S.A.U.",11850362.21],["TOYOTA MHM LTDA",4649704],["DIRECTV ARGENTINA SOCIEDAD ANONIMA",2293150.35],["GRIMBERG DENTALES S.A.",440395.77],["DEPORSUR S.A.",3994.7]],
 "kpisEstabMensual":[["ABRIL",2026,5,4],["MAYO",2026,7,6],["JUNIO",2026,9,10],["JULIO",2026,1,2],["AGOSTO",2026,2,2]],
@@ -321,6 +322,8 @@ function renderCDD(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
     ${buildSlaEfecCharts('cdd','Octubre 2025 → Agosto 2026')}
+    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">Reactivación comercial del servicio 10/08 — desglosado por semana en agosto</div>
+    <div class="chart-box"><h3>SLA · Detalle semanal Agosto 2026</h3><div class="note">Corte parcial, se ajusta el próximo lunes de ser necesario</div><canvas id="cdd-sla-semanal"></canvas></div>
     <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Julio 2026</div>
       <div style="display:flex;gap:16px;align-items:center">
         <div style="flex:0 0 220px;height:220px"><canvas id="cdd-motivos"></canvas></div>
@@ -341,6 +344,8 @@ function renderCDD(){
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('cdd',sla,true);
+  mkChart('cdd-sla-semanal',{type:'bar',data:{labels:DATA.cddSlaSemanal.map(r=>r[0]),datasets:[{data:DATA.cddSlaSemanal.map(r=>r[1]),backgroundColor:'#009CA3',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:50,max:100,ticks:{callback:v=>v+'%'}}}}});
   const colors=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7','#5D6D7E','#C39BD3'];
   mkChart('cdd-motivos',{type:'doughnut',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
