@@ -653,10 +653,10 @@ const RASH_ADOPCION_SNAPSHOT={
   segConEnvios:14,
   segSinEnvios:359,
   segSinOnboarding:250,
-  b2bCount:108,
-  b2cCount:519,
-  b2bPct:17.2,
-  b2cPct:82.8
+  b2bCount:105,
+  b2cCount:268,
+  b2bPct:28.2,
+  b2cPct:71.8
 };
 
 // Histórico de Margen Bruto embebido desde Power BI (dataset "Rentabilidad por Cliente - IA").
@@ -2247,10 +2247,10 @@ function renderAdopcion(){
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Altas por mes (junio a agosto)</div></div>'+
       '<div class="pbi-chartwrap"><canvas id="adopcionMesChartCanvas"></canvas></div>'+
       '<div class="pbi-note" style="width:100%;max-width:900px">*Agosto está parcial (corte al '+a.fechaCorte+', no es el mes completo).</div>'+
-      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Base de usuarios</div><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">B2C vs. B2B (todos los registrados)</div></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Base de usuarios</div><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">B2C vs. B2B (sobre Activos)</div></div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(2,1fr)">'+
-        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#0099A8"><div class="pbi-mcard-v" style="font-size:22px">'+a.b2cPct+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">B2C (personas)</div><div class="pbi-mcard-sub">'+a.b2cCount+' de '+(a.b2cCount+a.b2bCount)+' registrados</div></div>'+
-        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#F6A945"><div class="pbi-mcard-v" style="font-size:22px">'+a.b2bPct+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">B2B (empresas)</div><div class="pbi-mcard-sub">'+a.b2bCount+' de '+(a.b2cCount+a.b2bCount)+' registrados</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#0099A8"><div class="pbi-mcard-v" style="font-size:22px">'+a.b2cPct+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">B2C (personas)</div><div class="pbi-mcard-sub">'+a.b2cCount+' de '+a.altasTotales+' Activos</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#F6A945"><div class="pbi-mcard-v" style="font-size:22px">'+a.b2bPct+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">B2B (empresas)</div><div class="pbi-mcard-sub">'+a.b2bCount+' de '+a.altasTotales+' Activos</div></div>'+
       '</div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Activación · Engagement</div><div class="pbi-bigtitle" style="font-size:18px">Indicadores | Usuarios</div></div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+
