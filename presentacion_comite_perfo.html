@@ -152,6 +152,26 @@ function pctMin(rows,idxs){
   const lo=Math.min(...vals);
   return lo>=50?50:(lo>=20?20:0);
 }
+function buildSlaEfecCharts(idPrefix,periodo){
+  return `<div class="two-col">
+    <div class="chart-box"><h3>Evolución de SLA</h3><div class="note">${periodo}</div><canvas id="${idPrefix}-sla"></canvas></div>
+    <div class="chart-box"><h3>Evolución de Efectividad</h3><div class="note">${periodo}</div><canvas id="${idPrefix}-efec"></canvas></div>
+  </div>`;
+}
+function paintSlaEfecCharts(idPrefix,sla,target){
+  const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
+  const slaDs=[{type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3}];
+  const efecDs=[
+    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+  ];
+  if(target){
+    slaDs.push({type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
+    efecDs.push({type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
+  }
+  mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
+}
 Chart.register(ChartDataLabels);
 Chart.defaults.set('plugins.datalabels',{
   display:true,
@@ -295,7 +315,7 @@ function renderCDD(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
-    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Octubre 2025 → Agosto 2026</div><canvas id="cdd-sla"></canvas></div>
+    ${buildSlaEfecCharts('cdd','Octubre 2025 → Agosto 2026')}
     <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Julio 2026</div>
       <div style="display:flex;gap:16px;align-items:center">
         <div style="flex:0 0 220px;height:220px"><canvas id="cdd-motivos"></canvas></div>
@@ -315,12 +335,7 @@ function renderCDD(){
   paintFacVolCharts('cdd',rows);
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  mkChart('cdd-sla',{data:{labels,datasets:[
-    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
-    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3},
-    {type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  paintSlaEfecCharts('cdd',sla,true);
   const colors=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7','#5D6D7E','#C39BD3'];
   mkChart('cdd-motivos',{type:'doughnut',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
@@ -356,7 +371,7 @@ function renderRash(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA & Efectividad</div>
-    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Junio → Agosto 2026</div><canvas id="rash-sla"></canvas></div>
+    ${buildSlaEfecCharts('rash','Junio → Agosto 2026')}
 
     <div class="section-title">🛠️ Indicadores de plataforma</div>
     <div class="section-sub">Issues técnicos reportados</div>
@@ -398,12 +413,7 @@ function renderRash(){
   paintFacVolCharts('rash',rows);
   paintMargenChart('rash',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  mkChart('rash-sla',{data:{labels,datasets:[
-    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
-    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3},
-    {type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  paintSlaEfecCharts('rash',sla,true);
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
@@ -440,15 +450,11 @@ function renderPickit(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y Performance Punto</div>
-    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Enero → Agosto 2026</div><canvas id="pickit-sla"></canvas></div>
+    ${buildSlaEfecCharts('pickit','Enero → Agosto 2026')}
     <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
   paintFacVolCharts('pickit',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  mkChart('pickit-sla',{data:{labels,datasets:[
-    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3,datalabels:{display:false}},
-    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3,datalabels:{display:false}},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3,datalabels:{display:false}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  paintSlaEfecCharts('pickit',sla,false);
   mkChart('pickit-pp',{data:{labels,datasets:[
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#009CA3',tension:.3},
     {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
@@ -479,15 +485,11 @@ function renderConsumo(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA & Efectividad</div>
-    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)</div><canvas id="consumo-sla"></canvas></div>`;
+    ${buildSlaEfecCharts('consumo','Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)')}`;
   paintFacVolCharts('consumo',rows);
   paintMargenChart('consumo',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  mkChart('consumo-sla',{data:{labels,datasets:[
-    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
-    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  paintSlaEfecCharts('consumo',sla,false);
 }
 
 // ── COURIER (MELI CC) ──
