@@ -146,6 +146,12 @@ function fmtARS(n){
 function slaColor(v){ if(v==null) return '#ccc'; return v>=95?'#4D7200':v>=80?'#A06800':'#C0392B'; }
 function adopColor(v){ if(v==null) return '#ccc'; return v>=50?'#0099A8':'#F6A945'; }
 function cnt(v){ return Math.round(v); }
+function pctMin(rows,idxs){
+  const vals=idxs.flatMap(i=>rows.map(r=>r[i])).filter(v=>typeof v==='number');
+  if(!vals.length) return 0;
+  const lo=Math.min(...vals);
+  return lo>=50?50:(lo>=20?20:0);
+}
 Chart.register(ChartDataLabels);
 Chart.defaults.set('plugins.datalabels',{
   display:true,
@@ -247,7 +253,11 @@ function paintMargenChart(idPrefix,rows){
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},
     scales:{
       y:{position:'left',ticks:{callback:v=>fmtARS(v)},title:{display:true,text:'ARS'}},
-      y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(2)+'%'},title:{display:true,text:'Margen %'}}
+      y1:{position:'right',grid:{drawOnChartArea:false},ticks:{
+        callback:v=>v.toFixed(2)+'%',
+        color:ctx=>{const v=ctx.tick&&ctx.tick.value;if(v==null)return '#6b7680';return v>=0?'#4D7200':'#C0392B';},
+        font:ctx=>({weight:'bold'})
+      },title:{display:true,text:'Margen %'}}
     }}});
 }
 
@@ -299,7 +309,7 @@ function renderCDD(){
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
     {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
   const colors=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7','#5D6D7E','#C39BD3'];
   mkChart('cdd-motivos',{type:'doughnut',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
@@ -325,7 +335,7 @@ function renderRash(){
     <div class="eyebrow">Última Milla</div>
     <div class="bigtitle">Rash</div>
     <div class="subdate">Plataforma de autogestión logística para pymes/emprendedores. Lanzó 15/06/2026.</div>
-    <div class="note-box">Producto recién lanzado — solo hay 1 mes de margen cargado (Junio 2026) y 3 de SLA/Efectividad (Jun-Ago). No hay suficiente historia todavía para una evolución larga.</div>
+    <div class="note-box">Producto lanzado en junio — solo hay 1 mes de margen (Junio 2026). No hay suficiente historia todavía para una evolución larga.</div>
 
     <div class="section-title">📊 Indicadores de negocio</div>
     <div class="section-sub">Venta, margen, volumen y facturación</div>
@@ -381,7 +391,7 @@ function renderRash(){
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
     {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
@@ -404,7 +414,7 @@ function renderPickit(){
     <div class="eyebrow">Última Milla</div>
     <div class="bigtitle">Entrega en Punto Pickit</div>
     <div class="subdate">Entrega en puntos Pick It para paquetería B2C (Adidas).</div>
-    <div class="note-box">Este producto no tiene margen calculado en Power BI todavía (solo venta y volumen, vía sheet manual). No se muestran tarjetas de Margen Bruto.</div>
+    
 
     <div class="section-title">📊 Indicadores de negocio</div>
     <div class="section-sub">Facturación y volumen · Cliente: Adidas</div>
@@ -424,11 +434,11 @@ function renderPickit(){
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3,datalabels:{display:false}},
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3,datalabels:{display:false}},
     {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3,datalabels:{display:false}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('pickit-pp',{data:{labels,datasets:[
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#009CA3',tension:.3},
     {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[5,6]),max:100,ticks:{callback:v=>v+'%'}}}}});
 }
 
 // ── CONSUMO MASIVO ──
@@ -463,7 +473,7 @@ function renderConsumo(){
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
     {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
 }
 
 // ── COURIER (MELI CC) ──
@@ -491,7 +501,7 @@ function renderCourier(){
     {label:'Tránsito a Aduana',data:sla.map(r=>r[3]),borderColor:'#009CA3',tension:.3,spanGaps:true},
     {label:'Declaración y Liberación',data:sla.map(r=>r[4]),borderColor:'#F29400',tension:.3,spanGaps:true},
     {label:'Traslado al CAD',data:sla.map(r=>r[5]),borderColor:'#97BF0D',tension:.3,spanGaps:true}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[3,4,5]),max:100,ticks:{callback:v=>v+'%'}}}}});
 }
 </script>
 </body>
