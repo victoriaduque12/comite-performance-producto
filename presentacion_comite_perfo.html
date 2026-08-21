@@ -237,9 +237,11 @@ function buildKpiCards(rows){
   </div>`;
 }
 function buildFacVolCharts(idPrefix,rows,volLabel){
+  const ult=rows[rows.length-1], ant=rows.length>=2?rows[rows.length-2]:null;
+  const volVar=ant?varHtml(ult.volumen,ant.volumen):'';
   return `<div class="two-col">
     <div class="chart-box"><h3>Evolución de Facturación</h3><div class="note">ARS por mes</div><canvas id="${idPrefix}-fac"></canvas></div>
-    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">${volLabel||'Unidades por mes'}</div><canvas id="${idPrefix}-vol"></canvas></div>
+    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · ${volLabel||'unidades por mes'}</div><canvas id="${idPrefix}-vol"></canvas>${volVar}</div>
   </div>`;
 }
 function paintFacVolCharts(idPrefix,rows){
