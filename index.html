@@ -624,28 +624,39 @@ const RASH_NPS_SNAPSHOT={
 };
 // Adopción: portado de rash_kpi_dashboard.html (corte semana del 03/08/2026, parcial)
 const RASH_ADOPCION_SNAPSHOT={
-  fechaCorte:'03/08/2026 (semana parcial)',
-  altasTotales:254,
+  fechaCorte:'21/08/2026',
+  altasTotales:373,
   altasDesde:'13/05/2026',
-  altasNota:'Solo clientes que terminaron onboarding (Activo). Excluye 45 cuentas de prueba y 198 con registro pendiente.',
-  altasUltSemana:34,
-  altasUltSemanaRango:'27/07 al 02/08',
-  variacionSemanal:-15.0,
-  variacionDetalle:'34 vs. 40 (semana del 20/07)',
-  altasLabels:['11/05','18/05','01/06','08/06','15/06','22/06','29/06','06/07','13/07','20/07','27/07','03/08*'],
-  altasSemana:[4,2,3,2,30,37,27,31,39,40,34,5],
-  altasAcum:[4,6,9,11,41,78,105,136,175,215,249,254],
-  tasaFinalizacion:56.2,
-  tasaFinalizacionDetalle:'254 Activos / 452 (Activos + Pendientes)',
-  tasaActivacion:5.1,
-  tasaActivacionDetalle:'13 con ≥1 envío / 254 Activos',
-  zombies:241,
-  zombiesPct:94.9,
-  pctRecurrentes:53.8,
-  pctRecurrentesDetalle:'7 de los 13 clientes activados',
-  enviosPromedio:8.2,
-  enviosPromedioDetalle:'Sobre los 13 con ≥1 envío',
-  nota:'Base muy chica todavía (13 clientes activados sobre 254 altas) — cualquier variación porcentual acá puede ser ruido, no tendencia. A monitorear, no a accionar todavía.'
+  altasNota:'Solo clientes que terminaron onboarding (Activo). Excluye 49 cuentas de prueba, 250 con registro pendiente y 4 en otros estados (facturas vencidas / eliminado / bloqueado).',
+  altasUltSemana:54,
+  altasUltSemanaRango:'10/08 al 16/08 (última semana completa)',
+  variacionSemanal:58.8,
+  variacionDetalle:'54 vs. 34 (semana del 03/08)',
+  altasEnCurso:32,
+  altasEnCursoRango:'17/08 al 21/08 (semana en curso, parcial)',
+  altasLabels:['11/05','18/05','25/05','01/06','08/06','15/06','22/06','29/06','06/07','13/07','20/07','27/07','03/08','10/08','17/08*'],
+  altasSemana:[4,2,0,3,2,30,38,29,31,39,41,34,34,54,32],
+  altasAcum:[4,6,6,9,11,41,79,108,139,178,219,253,287,341,373],
+  altasMesLabels:['Junio','Julio','Agosto*'],
+  altasMesData:[82,165,120],
+  tasaFinalizacion:59.9,
+  tasaFinalizacionDetalle:'373 Activos / 623 (Activos + Pendientes)',
+  tasaActivacion:3.8,
+  tasaActivacionDetalle:'14 con ≥1 envío / 373 Activos',
+  zombies:359,
+  zombiesPct:96.2,
+  pctRecurrentes:57.1,
+  pctRecurrentesDetalle:'8 de los 14 clientes activados',
+  enviosPromedio:8.29,
+  enviosPromedioDetalle:'Sobre los 14 con ≥1 envío',
+  nota:'Base todavía chica (14 clientes activados con envíos sobre 373 altas) — cualquier variación porcentual acá puede ser ruido, no tendencia. A monitorear, no a accionar todavía.',
+  segConEnvios:14,
+  segSinEnvios:359,
+  segSinOnboarding:250,
+  b2bCount:108,
+  b2cCount:519,
+  b2bPct:17.2,
+  b2cPct:82.8
 };
 
 // Histórico de Margen Bruto embebido desde Power BI (dataset "Rentabilidad por Cliente - IA").
@@ -2214,30 +2225,46 @@ function renderCXBI(prod){
 }
 
 // ── RASH: ADOPCIÓN (manual, portado de rash_kpi_dashboard.html) ──
-let adopcionChartInstance=null;
+let adopcionChartInstance=null, adopcionMesChartInstance=null;
 function renderAdopcion(){
   const cont=document.getElementById('adopcion-content');
   const a=RASH_ADOPCION_SNAPSHOT;
   if(adopcionChartInstance){adopcionChartInstance.destroy();adopcionChartInstance=null;}
+  if(adopcionMesChartInstance){adopcionMesChartInstance.destroy();adopcionMesChartInstance=null;}
   cont.innerHTML=
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🌱</span> Adopción · Rash</div></div>'+
     '<div class="pbi-body">'+
       '<div class="pbi-note" style="width:100%;max-width:900px">Se actualiza manualmente con datos nuevos. Corte actual: <b>'+a.fechaCorte+'</b>.</div>'+
       '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Adopción</div><div class="pbi-bigtitle" style="font-size:18px">Altas de clientes — detalle semanal (corte actual)</div></div>'+
-      '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+
+      '<div class="pbi-cards5" style="grid-template-columns:repeat(4,1fr)">'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas totales (desde '+a.altasDesde+')</div><div class="pbi-mcard-v">'+a.altasTotales+'</div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas última semana ('+a.altasUltSemanaRango+')</div><div class="pbi-mcard-v">'+a.altasUltSemana+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Altas última semana completa ('+a.altasUltSemanaRango+')</div><div class="pbi-mcard-v">'+a.altasUltSemana+'</div></div>'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Variación semana vs. anterior</div><div class="pbi-mcard-v" style="color:'+(a.variacionSemanal>=0?'#5a9216':'#c23b3b')+'">'+a.variacionSemanal+'%</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Semana en curso ('+a.altasEnCursoRango+')</div><div class="pbi-mcard-v">'+a.altasEnCurso+'</div></div>'+
       '</div>'+
       '<div class="pbi-note" style="width:100%;max-width:900px">'+a.altasNota+' · Variación: '+a.variacionDetalle+'</div>'+
       '<div class="pbi-chartwrap"><canvas id="adopcionChartCanvas"></canvas></div>'+
-      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Activación · Engagement</div><div class="pbi-bigtitle" style="font-size:18px">De registrado a cliente activo (corte actual)</div></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Altas por mes (junio a agosto)</div></div>'+
+      '<div class="pbi-chartwrap"><canvas id="adopcionMesChartCanvas"></canvas></div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">*Agosto está parcial (corte al '+a.fechaCorte+', no es el mes completo).</div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Base de usuarios</div><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">B2C vs. B2B (todos los registrados)</div></div>'+
+      '<div class="pbi-cards5" style="grid-template-columns:repeat(2,1fr)">'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#0099A8"><div class="pbi-mcard-v" style="font-size:22px">'+a.b2cPct+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">B2C (personas)</div><div class="pbi-mcard-sub">'+a.b2cCount+' de '+(a.b2cCount+a.b2bCount)+' registrados</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#F6A945"><div class="pbi-mcard-v" style="font-size:22px">'+a.b2bPct+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">B2B (empresas)</div><div class="pbi-mcard-sub">'+a.b2bCount+' de '+(a.b2cCount+a.b2bCount)+' registrados</div></div>'+
+      '</div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Activación · Engagement</div><div class="pbi-bigtitle" style="font-size:18px">Indicadores | Usuarios</div></div>'+
+      '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#009CA3">'+a.segConEnvios+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios <b>con envíos realizados</b></div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#009CA3">'+a.segSinEnvios+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios activos <b>sin envíos</b></div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#009CA3">'+a.segSinOnboarding+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios <b>sin finalizar onboarding</b></div></div>'+
+      '</div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">De registrado a cliente activo (corte actual)</div></div>'+
       '<div class="pbi-cards5">'+
         '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#0099A8"><div class="pbi-mcard-v" style="font-size:24px">'+a.tasaFinalizacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de finalización de onboarding</div><div class="pbi-mcard-sub">'+a.tasaFinalizacionDetalle+'</div></div>'+
         '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#F6A945"><div class="pbi-mcard-v" style="font-size:24px">'+a.tasaActivacion+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Tasa de activación</div><div class="pbi-mcard-sub">'+a.tasaActivacionDetalle+'<em>Qué % de los que se registraron llegó a usar Rash de verdad (hizo al menos un envío)</em></div></div>'+
         '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#e0574c"><div class="pbi-mcard-v" style="font-size:24px">'+a.zombies+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Clientes "zombie" (0 envíos)</div><div class="pbi-mcard-sub">'+a.zombiesPct+'% de los Activos</div></div>'+
         '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#8FBF4C"><div class="pbi-mcard-v" style="font-size:24px">'+a.pctRecurrentes+'%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">% Recurrentes (≥2 envíos)</div><div class="pbi-mcard-sub">'+a.pctRecurrentesDetalle+'<em>De los que ya usaron Rash una vez, qué % volvió a enviar (no fue algo puntual)</em></div></div>'+
-        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#8FBF4C"><div class="pbi-mcard-v" style="font-size:24px">'+a.enviosPromedio+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Envíos promedio por cliente activado</div><div class="pbi-mcard-sub">'+a.enviosPromedioDetalle+'</div></div>'+
+        '<div class="pbi-mcard pbi-mcard-top" style="border-top-color:#8FBF4C"><div class="pbi-mcard-v" style="font-size:24px">'+a.enviosPromedio.toFixed(1)+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">Envíos promedio por cliente activado</div><div class="pbi-mcard-sub">'+a.enviosPromedioDetalle+'</div></div>'+
       '</div>'+
       '<div class="pbi-alert" style="max-width:900px"><b>Base chica:</b> '+a.nota+'</div>'+
     '</div>';
@@ -2247,8 +2274,14 @@ function renderAdopcion(){
       {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y'},
       {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',backgroundColor:'#F6A945',tension:.3,yAxisID:'y1'}
     ]},
-    options:{responsive:true,plugins:{legend:{position:'bottom'}},
+    options:{responsive:true,plugins:{legend:{position:'bottom'},title:{display:true,text:'Altas por semana (Activo)',font:{size:13}}},
       scales:{y:{position:'left',title:{display:true,text:'Altas por semana'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Acumulado'}}}}
+  });
+  const ctxMes=document.getElementById('adopcionMesChartCanvas').getContext('2d');
+  adopcionMesChartInstance=new Chart(ctxMes,{
+    type:'bar',
+    data:{labels:a.altasMesLabels,datasets:[{label:'Altas por mes',data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Altas por mes (Activo)',font:{size:13}}}}
   });
 }
 
