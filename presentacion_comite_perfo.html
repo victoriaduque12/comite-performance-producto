@@ -37,6 +37,9 @@ body{font-family:'Barlow',sans-serif;background:var(--surface);color:var(--black
 .chart-box .note{font-size:11px;color:var(--gray);margin-bottom:10px;}
 .chart-box canvas{max-height:280px;}
 .two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;color:var(--navy);margin:28px 0 4px;padding-top:16px;border-top:2px solid #e4eaec;}
+.section-title:first-of-type{margin-top:0;padding-top:0;border-top:none;}
+.section-sub{font-size:12px;color:var(--gray);margin-bottom:14px;}
 .legend-list{display:flex;flex-direction:column;gap:6px;justify-content:center;}
 .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;}
 .legend-item .dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
@@ -150,7 +153,9 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "consumoSla":[["ENERO",2026,81.2,98.9,96.4],["FEBRERO",2026,90.3,99.2,96.8],["MARZO",2026,80.1,99.7,96.8],["ABRIL",2026,82.6,99.5,97.3],["MAYO",2026,84.3,97.4,95.8]],
 "courierSla":[["Julio",27,2026,27.9,96.8,100],["Julio",28,2026,35.9,73.3,98.1],["Julio",29,2026,19.2,67,100],["Julio",30,2026,33.8,77.1,100],["Julio",31,2026,8,55.9,100],["Agosto",32,2026,9,55.8,100],["Agosto",33,2026,0,68.3,100]],
 "motivosCdd":[["No responde",25.19],["Titular Desconocido",22.05],["Entregado",21.65],["No se ubica domicilio",10.77],["Se mudó",7.69],["Zona Peligrosa",5.98],["Domicilio incompleto",2.05],["Domicilio inexistente",1.65],["Requisitos incompletos",0.8],["Rechazado",0.63],["Fallecido",0.85],["Persona no habilitada",0.34],["Sin Definir",0.23],["Difiere Entrega",0.11]],
-"kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7}
+"kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
+"kpisEstabMensual":[["ABRIL",2026,5,4],["MAYO",2026,7,6],["JUNIO",2026,9,10],["JULIO",2026,1,2],["AGOSTO",2026,2,2]],
+"cddTopCliente":{"nombre":"GOBIERNO CIUDAD BS AS","monto":106300000,"periodo":"Total histórico"}
 };
 
 const CHART_INSTANCES={};
@@ -216,30 +221,42 @@ function paintMargenChart(idPrefix,rows){
 function renderCDD(){
   const rows=DATA.margen.filter(r=>r.producto==='Carta Documento Digital').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
   const sla=DATA.cddSla;
+  const km=DATA.kpisEstabMensual;
+  const tc=DATA.cddTopCliente;
   const pc=document.getElementById('panel-cdd');
   pc.innerHTML=`
     <div class="eyebrow">Última Milla</div>
     <div class="bigtitle">Carta Documento Digital</div>
     <div class="subdate">Cartas documento emitidas y distribuidas físicamente, digitalizando la trazabilidad.</div>
+
+    <div class="section-title">📊 Indicadores de negocio</div>
+    <div class="section-sub">Venta, margen, volumen y facturación</div>
     ${buildKpiCards(rows)}
+    <div class="kcard" style="border-top-color:var(--teal);margin-bottom:20px;max-width:340px">
+      <div class="lbl">Top Cliente (${tc.periodo})</div><div class="val" style="font-size:22px">${fmtARS(tc.monto)}</div>
+      <div class="sub">${tc.nombre}</div>
+    </div>
     ${buildMargenChart('cdd','Enero → Junio 2026')}
     ${buildFacVolCharts('cdd',rows)}
+
+    <div class="section-title">⚙️ Indicadores operativos</div>
+    <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
     <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Octubre 2025 → Agosto 2026</div><canvas id="cdd-sla"></canvas></div>
+    <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Julio 2026</div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <div style="flex:0 0 220px;height:220px"><canvas id="cdd-motivos"></canvas></div>
+        <div class="legend-list" id="cdd-motivos-legend"></div>
+      </div>
+    </div>
+
+    <div class="section-title">🛠️ Indicadores de plataforma</div>
+    <div class="section-sub">KPIs de estabilidad técnica</div>
+    <div class="cards-row" style="grid-template-columns:1fr">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Incidentes totales (histórico)</div><div class="val">${DATA.kpisEstab.total}</div><div class="sub">${DATA.kpisEstab.corregidos} corregidos · ${DATA.kpisEstab.abiertos} abiertos · MTTR promedio ${DATA.kpisEstab.mttr_prom} días</div></div>
+    </div>
     <div class="two-col">
-      <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Acumulado histórico</div>
-        <div style="display:flex;gap:16px;align-items:center">
-          <div style="flex:0 0 220px;height:220px"><canvas id="cdd-motivos"></canvas></div>
-          <div class="legend-list" id="cdd-motivos-legend"></div>
-        </div>
-      </div>
-      <div class="chart-box"><h3>KPIs de Estabilidad de Plataforma</h3><div class="note">Registro de incidentes técnicos</div>
-        <div class="cards-row" style="grid-template-columns:1fr 1fr;margin-bottom:0">
-          <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Issues totales</div><div class="val" style="font-size:24px">${DATA.kpisEstab.total}</div></div>
-          <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Corregidos</div><div class="val" style="font-size:24px;color:#4D7200">${DATA.kpisEstab.corregidos}</div></div>
-          <div class="kcard" style="border-top-color:var(--gray)"><div class="lbl">Abiertos</div><div class="val" style="font-size:24px">${DATA.kpisEstab.abiertos}</div></div>
-          <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">MTTR promedio (días)</div><div class="val" style="font-size:24px">${DATA.kpisEstab.mttr_prom}</div></div>
-        </div>
-      </div>
+      <div class="chart-box"><h3>Incidentes reportados por mes</h3><div class="note">Abril → Agosto 2026</div><canvas id="cdd-inc-mes"></canvas></div>
+      <div class="chart-box"><h3>Reportados vs. Resueltos</h3><div class="note">Por mes</div><canvas id="cdd-inc-vs"></canvas></div>
     </div>`;
   paintFacVolCharts('cdd',rows);
   paintMargenChart('cdd',rows);
@@ -254,6 +271,13 @@ function renderCDD(){
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
   document.getElementById('cdd-motivos-legend').innerHTML=DATA.motivosCdd.slice(0,6).map((m,i)=>
     `<div class="legend-item"><span class="dot" style="background:${colors[i]}"></span>${m[0]}<span class="pct" style="color:${colors[i]}">${m[1].toFixed(1)}%</span></div>`).join('');
+  const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
+  mkChart('cdd-inc-mes',{type:'bar',data:{labels:incLabels,datasets:[{label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#009CA3',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('cdd-inc-vs',{type:'bar',data:{labels:incLabels,datasets:[
+    {label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#009CA3',borderRadius:4},
+    {label:'Resueltos',data:km.map(r=>r[3]),backgroundColor:'#4D7200',borderRadius:4}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 }
 
 // ── RASH ──
