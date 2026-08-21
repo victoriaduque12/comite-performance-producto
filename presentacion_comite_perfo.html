@@ -143,6 +143,7 @@ function fmtARS(n){
   return s;
 }
 function slaColor(v){ if(v==null) return '#ccc'; return v>=95?'#4D7200':v>=80?'#A06800':'#C0392B'; }
+function adopColor(v){ if(v==null) return '#ccc'; return v>=50?'#0099A8':'#F6A945'; }
 
 const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":"ENERO","venta":18259848,"costo":8650513.95,"margen":9609334.05,"volumen":1556},{"producto":"Carta Documento Digital","anio":2026,"mes":"FEBRERO","venta":4752987.4,"costo":9406954.1,"margen":-4653966.7,"volumen":392},{"producto":"Carta Documento Digital","anio":2026,"mes":"MARZO","venta":32780164.34,"costo":24248539.17,"margen":8531625.17,"volumen":3681},{"producto":"Carta Documento Digital","anio":2026,"mes":"ABRIL","venta":7535836.82,"costo":11747814.64,"margen":-4211977.82,"volumen":840},{"producto":"Carta Documento Digital","anio":2026,"mes":"MAYO","venta":22604343.76,"costo":16906060.79,"margen":5698282.97,"volumen":2651},{"producto":"Carta Documento Digital","anio":2026,"mes":"JUNIO","venta":29247864.54,"costo":21173654.63,"margen":8074209.91,"volumen":2853},{"producto":"Courier Personas (Customs Clearance)","anio":2026,"mes":"JUNIO","venta":199640125.09,"costo":167898714.96,"margen":31741410.13,"volumen":0},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ENERO","venta":179099785.81,"costo":307874246.78,"margen":-128774460.97,"volumen":1092},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"FEBRERO","venta":188140353.31,"costo":243073513.3,"margen":-54933159.99,"volumen":532},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MARZO","venta":212916674.23,"costo":299430542.28,"margen":-86513868.05,"volumen":2889},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ABRIL","venta":261932663.52,"costo":320906037.78,"margen":-58973374.26,"volumen":3913},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MAYO","venta":181885328.33,"costo":297633458.46,"margen":-115748130.13,"volumen":4455},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"JUNIO","venta":207152205.15,"costo":243945264.06,"margen":-36793058.91,"volumen":2599},{"producto":"Rash","anio":2026,"mes":"JUNIO","venta":2575383.03,"costo":2933286.37,"margen":-357903.34,"volumen":138}],
 "pickitVol":[["ENERO",21],["FEBRERO",489],["MARZO",16000],["ABRIL",13635],["MAYO",23504],["JUNIO",17235],["JULIO",22148]],
@@ -154,8 +155,27 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "courierSla":[["Julio",27,2026,27.9,96.8,100],["Julio",28,2026,35.9,73.3,98.1],["Julio",29,2026,19.2,67,100],["Julio",30,2026,33.8,77.1,100],["Julio",31,2026,8,55.9,100],["Agosto",32,2026,9,55.8,100],["Agosto",33,2026,0,68.3,100]],
 "motivosCdd":[["No responde",25.19],["Titular Desconocido",22.05],["Entregado",21.65],["No se ubica domicilio",10.77],["Se mudó",7.69],["Zona Peligrosa",5.98],["Domicilio incompleto",2.05],["Domicilio inexistente",1.65],["Requisitos incompletos",0.8],["Rechazado",0.63],["Fallecido",0.85],["Persona no habilitada",0.34],["Sin Definir",0.23],["Difiere Entrega",0.11]],
 "kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
+"consumoClientes":[["MOLINOS RIO DE LA PLATA S.A.",162078806.87],["PROCTER & GAMBLE ARGENTINA S.R.L.",25840246.58],["BAT OPERACIONES S.A.U.",11850362.21],["TOYOTA MHM LTDA",4649704],["DIRECTV ARGENTINA SOCIEDAD ANONIMA",2293150.35],["GRIMBERG DENTALES S.A.",440395.77],["DEPORSUR S.A.",3994.7]],
 "kpisEstabMensual":[["ABRIL",2026,5,4],["MAYO",2026,7,6],["JUNIO",2026,9,10],["JULIO",2026,1,2],["AGOSTO",2026,2,2]],
-"cddTopCliente":{"nombre":"GOBIERNO CIUDAD BS AS","monto":106300000,"periodo":"Total histórico"}
+"cddTopCliente":{"nombre":"GOBIERNO CIUDAD BS AS","monto":106300000,"periodo":"Total histórico"},
+"rashIssues":{"total":15,"bugs":10,"mejoras":5,"resueltos":15,"abiertos":0,"mttr_prom":2.0,
+  "porSemana":[["08/06",3],["15/06",3],["22/06",2],["29/06",3],["06/07",1],["13/07",1],["20/07",1],["17/08",1]]},
+"rashAdopcion":{
+  "fechaCorte":"21/08/2026","altasTotales":373,"altasDesde":"13/05/2026",
+  "altasUltSemana":54,"altasUltSemanaRango":"10/08 al 16/08","variacionSemanal":58.8,
+  "altasEnCurso":32,"altasEnCursoRango":"17/08 al 21/08 (parcial)",
+  "altasLabels":["11/05","18/05","25/05","01/06","08/06","15/06","22/06","29/06","06/07","13/07","20/07","27/07","03/08","10/08","17/08*"],
+  "altasSemana":[4,2,0,3,2,30,38,29,31,39,41,34,34,54,32],
+  "altasAcum":[4,6,6,9,11,41,79,108,139,178,219,253,287,341,373],
+  "altasMesLabels":["Junio","Julio","Agosto*"],"altasMesData":[82,165,120],
+  "tasaFinalizacion":59.9,"tasaFinalizacionDetalle":"373 Activos / 623 (Activos+Pendientes)",
+  "tasaActivacion":3.8,"tasaActivacionDetalle":"14 con ≥1 envío / 373 Activos",
+  "zombies":359,"zombiesPct":96.2,
+  "pctRecurrentes":57.1,"pctRecurrentesDetalle":"8 de los 14 activados",
+  "enviosPromedio":8.29,
+  "b2bPct":28.2,"b2cPct":71.8,"b2bCount":105,"b2cCount":268,
+  "segConEnvios":14,"segSinEnvios":359,"segSinOnboarding":250
+}
 };
 
 const CHART_INSTANCES={};
@@ -284,16 +304,62 @@ function renderCDD(){
 function renderRash(){
   const rows=DATA.margen.filter(r=>r.producto==='Rash').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
   const sla=DATA.rashSla;
+  const ri=DATA.rashIssues;
+  const a=DATA.rashAdopcion;
   const pc=document.getElementById('panel-rash');
   pc.innerHTML=`
     <div class="eyebrow">Última Milla</div>
     <div class="bigtitle">Rash</div>
     <div class="subdate">Plataforma de autogestión logística para pymes/emprendedores. Lanzó 15/06/2026.</div>
     <div class="note-box">Producto recién lanzado — solo hay 1 mes de margen cargado (Junio 2026) y 3 de SLA/Efectividad (Jun-Ago). No hay suficiente historia todavía para una evolución larga.</div>
+
+    <div class="section-title">📊 Indicadores de negocio</div>
+    <div class="section-sub">Venta, margen, volumen y facturación</div>
     ${buildKpiCards(rows)}
     ${buildMargenChart('rash','Junio 2026')}
     ${buildFacVolCharts('rash',rows,'Envíos por mes')}
-    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Junio → Agosto 2026</div><canvas id="rash-sla"></canvas></div>`;
+
+    <div class="section-title">⚙️ Indicadores operativos</div>
+    <div class="section-sub">SLA & Efectividad</div>
+    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Junio → Agosto 2026</div><canvas id="rash-sla"></canvas></div>
+
+    <div class="section-title">🛠️ Indicadores de plataforma</div>
+    <div class="section-sub">Issues técnicos reportados</div>
+    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Issues totales</div><div class="val" style="font-size:24px">${ri.total}</div></div>
+      <div class="kcard" style="border-top-color:#C0392B"><div class="lbl">Bugs</div><div class="val" style="font-size:24px;color:#C0392B">${ri.bugs}</div></div>
+      <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Resueltos</div><div class="val" style="font-size:24px;color:#4D7200">${ri.resueltos}</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">MTTR promedio (días)</div><div class="val" style="font-size:24px">${ri.mttr_prom}</div></div>
+    </div>
+    <div class="chart-box"><h3>Issues reportados por semana</h3><div class="note">Desde el Go Live</div><canvas id="rash-issues"></canvas></div>
+
+    <div class="section-title">🌱 Indicadores de adopción</div>
+    <div class="section-sub">Altas, activación/engagement y base B2C/B2B — corte manual al ${a.fechaCorte}</div>
+    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${a.altasTotales}</div><div class="lbl">Altas totales (desde ${a.altasDesde})</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${a.altasUltSemana}</div><div class="lbl">Última semana completa (${a.altasUltSemanaRango})</div></div>
+      <div class="kcard" style="border-top-color:${a.variacionSemanal>=0?'#4D7200':'#C0392B'}"><div class="val" style="color:${a.variacionSemanal>=0?'#4D7200':'#C0392B'}">${a.variacionSemanal}%</div><div class="lbl">Variación vs. semana anterior</div></div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="val">${a.altasEnCurso}</div><div class="lbl">Semana en curso (${a.altasEnCursoRango})</div></div>
+    </div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Altas por semana</h3><div class="note">Detalle semanal</div><canvas id="rash-altas-sem"></canvas></div>
+      <div class="chart-box"><h3>Altas por mes</h3><div class="note">Junio → Agosto (parcial)</div><canvas id="rash-altas-mes"></canvas></div>
+    </div>
+    <div class="cards-row" style="grid-template-columns:repeat(2,1fr)">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="val" style="font-size:22px">${a.b2cPct}%</div><div class="lbl">B2C (personas)</div><div class="sub">${a.b2cCount} de ${a.altasTotales} Activos</div></div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:22px">${a.b2bPct}%</div><div class="lbl">B2B (empresas)</div><div class="sub">${a.b2bCount} de ${a.altasTotales} Activos</div></div>
+    </div>
+    <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kcard"><div class="val" style="color:var(--teal)">${a.segConEnvios}</div><div class="lbl">Usuarios con envíos realizados</div></div>
+      <div class="kcard"><div class="val" style="color:var(--teal)">${a.segSinEnvios}</div><div class="lbl">Usuarios activos sin envíos</div></div>
+      <div class="kcard"><div class="val" style="color:var(--teal)">${a.segSinOnboarding}</div><div class="lbl">Usuarios sin finalizar onboarding</div></div>
+    </div>
+    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kcard" style="border-top-color:${adopColor(a.tasaFinalizacion)}"><div class="val" style="font-size:22px;color:${adopColor(a.tasaFinalizacion)}">${a.tasaFinalizacion}%</div><div class="lbl">Tasa de finalización onboarding</div><div class="sub">${a.tasaFinalizacionDetalle}</div></div>
+      <div class="kcard" style="border-top-color:${adopColor(a.tasaActivacion)}"><div class="val" style="font-size:22px;color:${adopColor(a.tasaActivacion)}">${a.tasaActivacion}%</div><div class="lbl">Tasa de activación</div><div class="sub">${a.tasaActivacionDetalle}</div></div>
+      <div class="kcard" style="border-top-color:${adopColor(100-a.zombiesPct)}"><div class="val" style="font-size:22px;color:${adopColor(100-a.zombiesPct)}">${a.zombies}</div><div class="lbl">Clientes "zombie" (0 envíos)</div><div class="sub">${a.zombiesPct}% de los Activos</div></div>
+      <div class="kcard" style="border-top-color:${adopColor(a.pctRecurrentes)}"><div class="val" style="font-size:22px;color:${adopColor(a.pctRecurrentes)}">${a.pctRecurrentes}%</div><div class="lbl">% Recurrentes (≥2 envíos)</div><div class="sub">${a.pctRecurrentesDetalle}</div></div>
+    </div>`;
   paintFacVolCharts('rash',rows);
   paintMargenChart('rash',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
@@ -302,6 +368,14 @@ function renderRash(){
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
     {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
+    {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y'},
+    {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',tension:.3,yAxisID:'y1'}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false}}}}});
+  mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[{data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
 }
 
 // ── ENTREGA EN PUNTO PICKIT ──
@@ -317,11 +391,17 @@ function renderPickit(){
     <div class="bigtitle">Entrega en Punto Pickit</div>
     <div class="subdate">Entrega en puntos Pick It para paquetería B2C (Adidas).</div>
     <div class="note-box">Este producto no tiene margen calculado en Power BI todavía (solo venta y volumen, vía sheet manual). No se muestran tarjetas de Margen Bruto.</div>
+
+    <div class="section-title">📊 Indicadores de negocio</div>
+    <div class="section-sub">Facturación y volumen · Cliente: Adidas</div>
     <div class="cards-row" style="grid-template-columns:1fr 1fr">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(ultFac.mes)} ${ultFac.anio}</div><div class="val">${fmtARS(ultFac.venta)}</div></div>
       <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(rows[rows.length-1].mes)} ${rows[rows.length-1].anio}</div><div class="val">${rows[rows.length-1].volumen.toLocaleString()}</div></div>
     </div>
     ${buildFacVolCharts('pickit',rows,'Envíos en punto Pick It')}
+
+    <div class="section-title">⚙️ Indicadores operativos</div>
+    <div class="section-sub">SLA, Efectividad y Performance Punto</div>
     <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Enero → Agosto 2026</div><canvas id="pickit-sla"></canvas></div>
     <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
   paintFacVolCharts('pickit',rows);
@@ -341,15 +421,26 @@ function renderPickit(){
 function renderConsumo(){
   const rows=DATA.margen.filter(r=>r.producto==='Distribucion Consumo Masivo y Palletizado').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
   const sla=DATA.consumoSla;
+  const cli=DATA.consumoClientes;
+  const totCli=cli.reduce((a,c)=>a+c[1],0);
   const pc=document.getElementById('panel-consumo');
   pc.innerHTML=`
     <div class="eyebrow">Supply Chain</div>
     <div class="bigtitle">Distribución Consumo Masivo y Paletizados</div>
-    <div class="subdate">Distribución a comercios y cadenas. Clientes: Molinos, Procter & Gamble, BAT, DirecTV, Toyota.</div>
+    <div class="subdate">Distribución a comercios y cadenas.</div>
+
+    <div class="section-title">📊 Indicadores de negocio</div>
+    <div class="section-sub">Venta, margen, volumen, facturación y ranking de clientes</div>
     ${buildKpiCards(rows)}
     <div class="note-box"><b>${rows.filter(r=>r.margen<0).length} de ${rows.length} meses con margen negativo</b> — costo consistentemente por encima de la venta en todo el período cargado.</div>
     ${buildMargenChart('consumo','Enero → Junio 2026')}
     ${buildFacVolCharts('consumo',rows)}
+    <div class="chart-box"><h3>Ranking de Clientes</h3><div class="note">Junio 2026 · Facturación</div>
+      ${cli.map(([n,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eef2f3;font-size:13px"><span>${n}</span><span style="font-weight:700;color:var(--teal)">${fmtARS(v)}</span></div>`).join('')}
+    </div>
+
+    <div class="section-title">⚙️ Indicadores operativos</div>
+    <div class="section-sub">SLA & Efectividad</div>
     <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)</div><canvas id="consumo-sla"></canvas></div>`;
   paintFacVolCharts('consumo',rows);
   paintMargenChart('consumo',rows);
@@ -371,8 +462,14 @@ function renderCourier(){
     <div class="bigtitle">Courier Personas <span style="color:var(--gray);font-weight:400">(MELI Customs Clearance)</span></div>
     <div class="subdate">Solo cliente MELI (Mercado Créditos SRL). Este producto no mide Efectividad, solo primera milla.</div>
     <div class="note-box">Solo hay <b>1 mes de margen</b> (Junio 2026) para este cliente — no hay evolución mensual para graficar todavía.</div>
+
+    <div class="section-title">📊 Indicadores de negocio</div>
+    <div class="section-sub">Venta y margen · Cliente: MELI (Mercado Créditos SRL)</div>
     ${buildKpiCards(rows)}
     ${buildMargenChart('courier','Junio 2026')}
+
+    <div class="section-title">⚙️ Indicadores operativos</div>
+    <div class="section-sub">SLA por tipo (no aplica Efectividad en este producto)</div>
     <div class="chart-box"><h3>Evolución de SLA por tipo (detalle semanal)</h3><div class="note">Julio → Agosto 2026, Primera Milla</div><canvas id="courier-sla"></canvas></div>`;
   paintMargenChart('courier',rows);
   const labels=sla.map(r=>['S'+r[1],r[0].slice(0,3)]);
