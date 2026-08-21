@@ -474,7 +474,6 @@ function renderPickit(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y Performance Punto</div>
     ${buildSlaEfecCharts('pickit','Enero → Agosto 2026')}
-    <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>
     <div class="two-col">
       <div class="chart-box"><h3>Motivos de No Entrega · Julio 2026</h3><div class="note">Motivo final</div><canvas id="pickit-motivos-jul"></canvas>
         <div class="note-box-info" style="margin-top:10px">Creció "No responde al Llamado" porque es, junto con "Rechazado", el único motivo de no entrega que hoy tenemos mapeado con Pickit.</div>
@@ -482,7 +481,8 @@ function renderPickit(){
       <div class="chart-box"><h3>Motivos de No Entrega · Agosto 2026</h3><div class="note">Motivo final</div><canvas id="pickit-motivos-ago"></canvas>
         <div class="note-box-info" style="margin-top:10px">El motivo principal en agosto es "Solicitada por Cliente" — son los rescates que pidió Adidas (cancelaciones solicitadas por el cliente).</div>
       </div>
-    </div>`;
+    </div>
+    <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
   paintFacVolCharts('pickit',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('pickit',sla,false);
