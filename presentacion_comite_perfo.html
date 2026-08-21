@@ -6,6 +6,7 @@
 <title>Comité de Performance de Producto · Presentación Ejecutiva · OCASA</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
 :root{
   --teal:#009CA3; --teal2:#1DB4C2; --navy:#002639; --navy2:#003E51;
@@ -144,6 +145,19 @@ function fmtARS(n){
 }
 function slaColor(v){ if(v==null) return '#ccc'; return v>=95?'#4D7200':v>=80?'#A06800':'#C0392B'; }
 function adopColor(v){ if(v==null) return '#ccc'; return v>=50?'#0099A8':'#F6A945'; }
+function cnt(v){ return Math.round(v); }
+Chart.register(ChartDataLabels);
+Chart.defaults.set('plugins.datalabels',{
+  display:true,
+  align:'top',
+  anchor:'end',
+  color:'#333',
+  font:{size:9,weight:'600',family:"'Barlow',sans-serif"},
+  formatter:v=>{
+    if(typeof v!=='number') return v;
+    return Math.abs(v)<=100 ? (Number.isInteger(v)?v:v.toFixed(1))+'%' : fmtARS(v);
+  }
+});
 
 const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":"ENERO","venta":18259848,"costo":8650513.95,"margen":9609334.05,"volumen":1556},{"producto":"Carta Documento Digital","anio":2026,"mes":"FEBRERO","venta":4752987.4,"costo":9406954.1,"margen":-4653966.7,"volumen":392},{"producto":"Carta Documento Digital","anio":2026,"mes":"MARZO","venta":32780164.34,"costo":24248539.17,"margen":8531625.17,"volumen":3681},{"producto":"Carta Documento Digital","anio":2026,"mes":"ABRIL","venta":7535836.82,"costo":11747814.64,"margen":-4211977.82,"volumen":840},{"producto":"Carta Documento Digital","anio":2026,"mes":"MAYO","venta":22604343.76,"costo":16906060.79,"margen":5698282.97,"volumen":2651},{"producto":"Carta Documento Digital","anio":2026,"mes":"JUNIO","venta":29247864.54,"costo":21173654.63,"margen":8074209.91,"volumen":2853},{"producto":"Courier Personas (Customs Clearance)","anio":2026,"mes":"JUNIO","venta":199640125.09,"costo":167898714.96,"margen":31741410.13,"volumen":0},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ENERO","venta":179099785.81,"costo":307874246.78,"margen":-128774460.97,"volumen":1092},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"FEBRERO","venta":188140353.31,"costo":243073513.3,"margen":-54933159.99,"volumen":532},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MARZO","venta":212916674.23,"costo":299430542.28,"margen":-86513868.05,"volumen":2889},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ABRIL","venta":261932663.52,"costo":320906037.78,"margen":-58973374.26,"volumen":3913},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MAYO","venta":181885328.33,"costo":297633458.46,"margen":-115748130.13,"volumen":4455},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"JUNIO","venta":207152205.15,"costo":243945264.06,"margen":-36793058.91,"volumen":2599},{"producto":"Rash","anio":2026,"mes":"JUNIO","venta":2575383.03,"costo":2933286.37,"margen":-357903.34,"volumen":138}],
 "pickitVol":[["ENERO",21],["FEBRERO",489],["MARZO",16000],["ABRIL",13635],["MAYO",23504],["JUNIO",17235],["JULIO",22148]],
@@ -218,7 +232,7 @@ function paintFacVolCharts(idPrefix,rows){
   const labels=rows.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2));
   mkChart(idPrefix+'-fac',{type:'bar',data:{labels,datasets:[{data:rows.map(r=>r.venta),backgroundColor:'#009CA3',borderRadius:4}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtARS(v)}}}}});
-  mkChart(idPrefix+'-vol',{type:'line',data:{labels,datasets:[{data:rows.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3}]},
+  mkChart(idPrefix+'-vol',{type:'line',data:{labels,datasets:[{data:rows.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 }
 function buildMargenChart(idPrefix,periodo){
@@ -292,11 +306,11 @@ function renderCDD(){
   document.getElementById('cdd-motivos-legend').innerHTML=DATA.motivosCdd.slice(0,6).map((m,i)=>
     `<div class="legend-item"><span class="dot" style="background:${colors[i]}"></span>${m[0]}<span class="pct" style="color:${colors[i]}">${m[1].toFixed(1)}%</span></div>`).join('');
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  mkChart('cdd-inc-mes',{type:'bar',data:{labels:incLabels,datasets:[{label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#009CA3',borderRadius:4}]},
+  mkChart('cdd-inc-mes',{type:'bar',data:{labels:incLabels,datasets:[{label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('cdd-inc-vs',{type:'bar',data:{labels:incLabels,datasets:[
-    {label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#009CA3',borderRadius:4},
-    {label:'Resueltos',data:km.map(r=>r[3]),backgroundColor:'#4D7200',borderRadius:4}
+    {label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}},
+    {label:'Resueltos',data:km.map(r=>r[3]),backgroundColor:'#4D7200',borderRadius:4,datalabels:{formatter:cnt}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 }
 
@@ -368,13 +382,13 @@ function renderRash(){
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
     {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
-  mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4}]},
+  mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
-    {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y'},
-    {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',tension:.3,yAxisID:'y1'}
+    {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y',datalabels:{formatter:cnt}},
+    {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',tension:.3,yAxisID:'y1',datalabels:{formatter:cnt,align:'top'}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false}}}}});
-  mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[{data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4}]},
+  mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[{data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 }
 
