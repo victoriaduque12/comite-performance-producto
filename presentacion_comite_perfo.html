@@ -219,13 +219,21 @@ function switchTab(tab,el){
 }
 
 // ── Helper: tarjetas Venta/Margen $/Margen % + gráficos Fac/Vol, a partir de filas MARGEN_HIST ──
+function varHtml(actual,anterior){
+  if(anterior==null||anterior===0) return '';
+  const p=(actual-anterior)/Math.abs(anterior)*100;
+  const col=p>=0?'#4D7200':'#C0392B';
+  return `<div style="font-size:11px;font-weight:700;color:${col};margin-top:4px">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}% vs. mes anterior</div>`;
+}
 function buildKpiCards(rows){
   const ult=rows[rows.length-1];
+  const ant=rows.length>=2?rows[rows.length-2]:null;
   const pct=ult.venta?(ult.margen/ult.venta*100):0;
+  const pctAnt=ant&&ant.venta?(ant.margen/ant.venta*100):null;
   return `<div class="cards-row">
-    <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta · ${cap(ult.mes)} ${ult.anio}</div><div class="val">${fmtARS(ult.venta)}</div></div>
-    <div class="kcard" style="border-top-color:${ult.margen>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto $</div><div class="val" style="color:${ult.margen>=0?'#4D7200':'#C0392B'}">${fmtARS(ult.margen)}</div></div>
-    <div class="kcard" style="border-top-color:${pct>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto %</div><div class="val" style="color:${pct>=0?'#4D7200':'#C0392B'}">${pct.toFixed(1)}%</div></div>
+    <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta · ${cap(ult.mes)} ${ult.anio}</div><div class="val">${fmtARS(ult.venta)}</div>${ant?varHtml(ult.venta,ant.venta):''}</div>
+    <div class="kcard" style="border-top-color:${ult.margen>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto $</div><div class="val" style="color:${ult.margen>=0?'#4D7200':'#C0392B'}">${fmtARS(ult.margen)}</div>${ant?varHtml(ult.margen,ant.margen):''}</div>
+    <div class="kcard" style="border-top-color:${pct>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto %</div><div class="val" style="color:${pct>=0?'#4D7200':'#C0392B'}">${pct.toFixed(1)}%</div>${(ant&&pctAnt!=null)?varHtml(pct,pctAnt):''}</div>
   </div>`;
 }
 function buildFacVolCharts(idPrefix,rows,volLabel){
@@ -410,7 +418,9 @@ function renderPickit(){
   const facMap=Object.fromEntries(DATA.pickitFac.map(([m,v])=>[m.toUpperCase(),v]));
   const rows=volRows.map(([m,v])=>({mes:m,anio:2026,volumen:v,venta:facMap[m]||0}));
   const sla=DATA.pickitSla;
-  const ultFac=rows.filter(r=>r.venta).slice(-1)[0]||rows[rows.length-1];
+  const facRows=rows.filter(r=>r.venta);
+  const ultFac=facRows.slice(-1)[0]||rows[rows.length-1];
+  const facAnt=facRows.length>=2?facRows[facRows.length-2]:null;
   const pc=document.getElementById('panel-pickit');
   pc.innerHTML=`
     <div class="eyebrow">Última Milla</div>
@@ -421,8 +431,8 @@ function renderPickit(){
     <div class="section-title">📊 Indicadores de negocio</div>
     <div class="section-sub">Facturación y volumen · Cliente: Adidas</div>
     <div class="cards-row" style="grid-template-columns:1fr 1fr">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(ultFac.mes)} ${ultFac.anio}</div><div class="val">${fmtARS(ultFac.venta)}</div></div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(rows[rows.length-1].mes)} ${rows[rows.length-1].anio}</div><div class="val">${rows[rows.length-1].volumen.toLocaleString()}</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(ultFac.mes)} ${ultFac.anio}</div><div class="val">${fmtARS(ultFac.venta)}</div>${facAnt?varHtml(ultFac.venta,facAnt.venta):''}</div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(rows[rows.length-1].mes)} ${rows[rows.length-1].anio}</div><div class="val">${rows[rows.length-1].volumen.toLocaleString()}</div>${rows.length>=2?varHtml(rows[rows.length-1].volumen,rows[rows.length-2].volumen):''}</div>
     </div>
     ${buildFacVolCharts('pickit',rows,'Envíos en punto Pick It')}
 
