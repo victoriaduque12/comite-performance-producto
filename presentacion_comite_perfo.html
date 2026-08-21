@@ -308,7 +308,8 @@ function renderCDD(){
   mkChart('cdd-sla',{data:{labels,datasets:[
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3},
+    {type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
   const colors=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7','#5D6D7E','#C39BD3'];
   mkChart('cdd-motivos',{type:'doughnut',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
@@ -390,7 +391,8 @@ function renderRash(){
   mkChart('rash-sla',{data:{labels,datasets:[
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3},
+    {type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[2,3,4]),max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
