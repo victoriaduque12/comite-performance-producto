@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comité de Performance de Producto · Presentación Ejecutiva · OCASA</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --teal:#009CA3; --teal2:#1DB4C2; --navy:#002639; --navy2:#003E51;
+  --orange:#FFAB40; --green:#97BF0D; --red:#C0392B; --gray:#8a97a0;
+  --black:#0C0B0B; --surface:#F5F8F9;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;background:var(--surface);color:var(--black);}
+.topbar{background:var(--navy);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+.topbar .brand{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.5px;}
+.topbar .brand span{color:var(--teal2);}
+.topbar .sub{font-size:12px;color:#9fb0b8;}
+.tabs-nav{display:flex;gap:4px;background:#fff;padding:0 16px;border-bottom:2px solid #e4eaec;overflow-x:auto;}
+.tab-btn{padding:14px 16px;font-size:13px;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:.15s;}
+.tab-btn:hover{color:var(--navy);}
+.tab-btn.on{color:var(--teal);border-bottom-color:var(--teal);}
+.panel{display:none;padding:24px;max-width:1200px;margin:0 auto;}
+.panel.on{display:block;}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--teal);text-transform:uppercase;margin-bottom:4px;}
+.bigtitle{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.subdate{font-size:12px;color:var(--gray);margin-bottom:18px;}
+.cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.kcard{background:#fff;border-radius:10px;border-top:4px solid var(--teal);padding:16px 18px;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+.kcard .lbl{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.kcard .val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;color:var(--navy);}
+.kcard .sub{font-size:11px;color:var(--gray);margin-top:4px;}
+.chart-box{background:#fff;border-radius:10px;padding:18px;margin-bottom:20px;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+.chart-box h3{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.chart-box .note{font-size:11px;color:var(--gray);margin-bottom:10px;}
+.chart-box canvas{max-height:280px;}
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;}
+.legend-list{display:flex;flex-direction:column;gap:6px;justify-content:center;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;}
+.legend-item .dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.legend-item .pct{margin-left:auto;font-weight:700;}
+.note-box{background:#FDEDED;border:1px solid #f3b9b9;border-radius:8px;padding:10px 14px;font-size:12px;color:#8a2c2c;margin-bottom:16px;}
+.info-box{background:#EAF6F2;border:1px solid #b9e0d3;border-radius:8px;padding:10px 14px;font-size:12px;color:#1b5e42;margin-bottom:16px;}
+/* Portada / roadmap */
+.roadmap-title{background:var(--teal2);color:#fff;padding:20px 24px;font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;}
+.roadmap-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:24px;max-width:1200px;margin:0 auto;}
+.stage-title{background:#3f7186;color:#fff;font-size:12px;font-weight:700;letter-spacing:.5px;padding:6px 12px;border-radius:3px;margin:14px 0 8px;text-transform:uppercase;}
+.stage-title.muted{background:#8a97a0;}
+.prod-item{font-size:14px;font-weight:600;color:var(--navy);padding:4px 0;}
+.prod-item span{font-weight:400;color:var(--gray);}
+.prod-item.hl{color:var(--teal);}
+@media(max-width:800px){
+  .cards-row{grid-template-columns:1fr;}
+  .roadmap-grid{grid-template-columns:1fr;}
+  .two-col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">OCASA <span>·</span> Comité de Performance de Producto</div>
+  <div class="sub">Presentación Ejecutiva</div>
+</div>
+
+<div class="tabs-nav">
+  <div class="tab-btn on" data-tab="portada" onclick="switchTab('portada',this)">Plan de Etapas</div>
+  <div class="tab-btn" data-tab="cdd" onclick="switchTab('cdd',this)">Carta Documento Digital</div>
+  <div class="tab-btn" data-tab="rash" onclick="switchTab('rash',this)">Rash</div>
+  <div class="tab-btn" data-tab="pickit" onclick="switchTab('pickit',this)">Entrega en Punto Pickit</div>
+  <div class="tab-btn" data-tab="consumo" onclick="switchTab('consumo',this)">Consumo Masivo</div>
+  <div class="tab-btn" data-tab="courier" onclick="switchTab('courier',this)">Courier (MELI CC)</div>
+</div>
+
+<!-- PORTADA: Plan de etapas -->
+<div class="panel on" id="panel-portada">
+  <div class="roadmap-title">Plan de etapas | Productos por etapa</div>
+  <div class="roadmap-grid">
+    <div>
+      <div class="stage-title">Kick Off Comité</div>
+      <div class="prod-item hl">Carta Documento Digital <span>— Última Milla</span></div>
+      <div class="prod-item hl">Entrega en Punto Pickit <span>— Última Milla</span></div>
+      <div class="prod-item hl">Distribución Consumo Masivo y Paletizado <span>— Supply Chain</span></div>
+      <div class="prod-item">Distribución de Tarjetas Valoradas (Postal a paquetería) <span>— Última Milla</span></div>
+
+      <div class="stage-title">Etapa 1 · MVP</div>
+      <div class="prod-item hl">Paquetería ecommerce B2C: Rash <span>— Última Milla</span></div>
+      <div class="prod-item hl">Courier Personas (Meli Customs / Cainiao) <span>— CBT+GF</span></div>
+
+      <div class="stage-title">Etapa 2 · Lanzan Q3</div>
+      <div class="prod-item">Paquetería ecommerce B2C: Redireccionamiento <span>— Última Milla</span></div>
+      <div class="prod-item">Courier US-MX <span>— CBT+GF</span></div>
+    </div>
+    <div>
+      <div class="stage-title muted">Etapa 3 · Q3-Q4</div>
+      <div class="prod-item">Paquetería ecommerce B2C: Repactado ecommerce <span>— Última Milla</span></div>
+      <div class="prod-item">Paquetería ecommerce B2C: Logística inversa <span>— Última Milla</span></div>
+      <div class="prod-item">Distribución Automotriz <span>— Supply</span></div>
+      <div class="prod-item">Warehousing <span>— Supply</span></div>
+      <div class="prod-item">Carga peligrosa (WHS y Transporte) <span>— Supply</span></div>
+      <div class="prod-item">Impo aérea <span>— CBT+GF</span></div>
+      <div class="prod-item">Impo marítima <span>— CBT+GF</span></div>
+      <div class="prod-item">Courier Comercial <span>— CBT+GF</span></div>
+      <div class="prod-item">Fulfillment <span>— Última Milla</span></div>
+      <div class="prod-item">Service Center MELI <span>— XD</span></div>
+
+      <div class="stage-title muted">Etapa 4 · 2027</div>
+      <div class="prod-item">Crossdocking <span>— XD</span></div>
+      <div class="prod-item">Paquetería ecommerce B2C <span>— Última Milla</span></div>
+      <div class="prod-item">Distribución de Tarjetas Valoradas (resto clientes) <span>— Última Milla</span></div>
+      <div class="prod-item">Warehousing Salud <span>— Supply</span></div>
+      <div class="prod-item">Distribución Salud <span>— Supply</span></div>
+    </div>
+  </div>
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px 24px;">
+    <div class="info-box">Los 5 productos resaltados arriba (Kick Off Comité + Etapa 1 MVP) son los que se presentan en detalle en las próximas solapas — son los que ya tienen indicadores cargados en el Comité de Performance.</div>
+  </div>
+</div>
+
+<!-- Panels por producto (contenido inyectado por JS) -->
+<div class="panel" id="panel-cdd"></div>
+<div class="panel" id="panel-rash"></div>
+<div class="panel" id="panel-pickit"></div>
+<div class="panel" id="panel-consumo"></div>
+<div class="panel" id="panel-courier"></div>
+
+<script>
+const MO=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+const MS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function cap(m){return m?m.charAt(0)+m.slice(1).toLowerCase():'';}
+function fmtARS(n){
+  const v=Math.abs(n);
+  let s;
+  if(v>=1e9) s='$'+(n/1e9).toFixed(1)+'MM';
+  else if(v>=1e6) s='$'+(n/1e6).toFixed(1)+'M';
+  else if(v>=1e3) s='$'+(n/1e3).toFixed(0)+'K';
+  else s='$'+Math.round(n);
+  return s;
+}
+function slaColor(v){ if(v==null) return '#ccc'; return v>=95?'#4D7200':v>=80?'#A06800':'#C0392B'; }
+
+const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":"ENERO","venta":18259848,"costo":8650513.95,"margen":9609334.05,"volumen":1556},{"producto":"Carta Documento Digital","anio":2026,"mes":"FEBRERO","venta":4752987.4,"costo":9406954.1,"margen":-4653966.7,"volumen":392},{"producto":"Carta Documento Digital","anio":2026,"mes":"MARZO","venta":32780164.34,"costo":24248539.17,"margen":8531625.17,"volumen":3681},{"producto":"Carta Documento Digital","anio":2026,"mes":"ABRIL","venta":7535836.82,"costo":11747814.64,"margen":-4211977.82,"volumen":840},{"producto":"Carta Documento Digital","anio":2026,"mes":"MAYO","venta":22604343.76,"costo":16906060.79,"margen":5698282.97,"volumen":2651},{"producto":"Carta Documento Digital","anio":2026,"mes":"JUNIO","venta":29247864.54,"costo":21173654.63,"margen":8074209.91,"volumen":2853},{"producto":"Courier Personas (Customs Clearance)","anio":2026,"mes":"JUNIO","venta":199640125.09,"costo":167898714.96,"margen":31741410.13,"volumen":0},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ENERO","venta":179099785.81,"costo":307874246.78,"margen":-128774460.97,"volumen":1092},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"FEBRERO","venta":188140353.31,"costo":243073513.3,"margen":-54933159.99,"volumen":532},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MARZO","venta":212916674.23,"costo":299430542.28,"margen":-86513868.05,"volumen":2889},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ABRIL","venta":261932663.52,"costo":320906037.78,"margen":-58973374.26,"volumen":3913},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MAYO","venta":181885328.33,"costo":297633458.46,"margen":-115748130.13,"volumen":4455},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"JUNIO","venta":207152205.15,"costo":243945264.06,"margen":-36793058.91,"volumen":2599},{"producto":"Rash","anio":2026,"mes":"JUNIO","venta":2575383.03,"costo":2933286.37,"margen":-357903.34,"volumen":138}],
+"pickitVol":[["ENERO",21],["FEBRERO",489],["MARZO",16000],["ABRIL",13635],["MAYO",23504],["JUNIO",17235],["JULIO",22148]],
+"pickitFac":[["FEBRERO",111881.12],["MARZO",3492517.88],["ABRIL",135897691.99],["MAYO",138654667.16],["JUNIO",282860218.36],["JULIO",158680482.77]],
+"cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,91.7,25.04,18.2]],
+"rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
+"pickitSla":[["ENERO",2026,96.6,99.7,92.4,66.7,16.7],["FEBRERO",2026,97.6,99,92.5,92.7,2.2],["MARZO",2026,95.8,98.2,94.8,97,1],["ABRIL",2026,96.9,97.4,95.2,97,0.3],["MAYO",2026,97,97.5,96.2,96.4,0.9],["JUNIO",2026,98.5,98.2,96.4,97.2,0.8],["JULIO",2026,94.9,98.8,96.4,97.1,0.9],["AGOSTO",2026,99.2,94.8,92.3,91.1,1.2]],
+"consumoSla":[["ENERO",2026,81.2,98.9,96.4],["FEBRERO",2026,90.3,99.2,96.8],["MARZO",2026,80.1,99.7,96.8],["ABRIL",2026,82.6,99.5,97.3],["MAYO",2026,84.3,97.4,95.8]],
+"courierSla":[["Julio",27,2026,27.9,96.8,100],["Julio",28,2026,35.9,73.3,98.1],["Julio",29,2026,19.2,67,100],["Julio",30,2026,33.8,77.1,100],["Julio",31,2026,8,55.9,100],["Agosto",32,2026,9,55.8,100],["Agosto",33,2026,0,68.3,100]],
+"motivosCdd":[["No responde",25.19],["Titular Desconocido",22.05],["Entregado",21.65],["No se ubica domicilio",10.77],["Se mudó",7.69],["Zona Peligrosa",5.98],["Domicilio incompleto",2.05],["Domicilio inexistente",1.65],["Requisitos incompletos",0.8],["Rechazado",0.63],["Fallecido",0.85],["Persona no habilitada",0.34],["Sin Definir",0.23],["Difiere Entrega",0.11]],
+"kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7}
+};
+
+const CHART_INSTANCES={};
+function mkChart(id,cfg){
+  if(CHART_INSTANCES[id]){CHART_INSTANCES[id].destroy();}
+  const el=document.getElementById(id);
+  if(!el)return;
+  CHART_INSTANCES[id]=new Chart(el.getContext('2d'),cfg);
+}
+
+function switchTab(tab,el){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('panel-'+tab).classList.add('on');
+  if(tab==='cdd') renderCDD();
+  else if(tab==='rash') renderRash();
+  else if(tab==='pickit') renderPickit();
+  else if(tab==='consumo') renderConsumo();
+  else if(tab==='courier') renderCourier();
+}
+
+// ── Helper: tarjetas Venta/Margen $/Margen % + gráficos Fac/Vol, a partir de filas MARGEN_HIST ──
+function buildKpiCards(rows){
+  const ult=rows[rows.length-1];
+  const pct=ult.venta?(ult.margen/ult.venta*100):0;
+  return `<div class="cards-row">
+    <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta · ${cap(ult.mes)} ${ult.anio}</div><div class="val">${fmtARS(ult.venta)}</div></div>
+    <div class="kcard" style="border-top-color:${ult.margen>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto $</div><div class="val" style="color:${ult.margen>=0?'#4D7200':'#C0392B'}">${fmtARS(ult.margen)}</div></div>
+    <div class="kcard" style="border-top-color:${pct>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto %</div><div class="val" style="color:${pct>=0?'#4D7200':'#C0392B'}">${pct.toFixed(1)}%</div></div>
+  </div>`;
+}
+function buildFacVolCharts(idPrefix,rows,volLabel){
+  return `<div class="two-col">
+    <div class="chart-box"><h3>Evolución de Facturación</h3><div class="note">ARS por mes</div><canvas id="${idPrefix}-fac"></canvas></div>
+    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">${volLabel||'Unidades por mes'}</div><canvas id="${idPrefix}-vol"></canvas></div>
+  </div>`;
+}
+function paintFacVolCharts(idPrefix,rows){
+  const labels=rows.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2));
+  mkChart(idPrefix+'-fac',{type:'bar',data:{labels,datasets:[{data:rows.map(r=>r.venta),backgroundColor:'#009CA3',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtARS(v)}}}}});
+  mkChart(idPrefix+'-vol',{type:'line',data:{labels,datasets:[{data:rows.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+}
+
+// ── CDD ──
+function renderCDD(){
+  const rows=DATA.margen.filter(r=>r.producto==='Carta Documento Digital').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
+  const sla=DATA.cddSla;
+  const pc=document.getElementById('panel-cdd');
+  pc.innerHTML=`
+    <div class="eyebrow">Última Milla</div>
+    <div class="bigtitle">Carta Documento Digital</div>
+    <div class="subdate">Cartas documento emitidas y distribuidas físicamente, digitalizando la trazabilidad.</div>
+    ${buildKpiCards(rows)}
+    ${buildFacVolCharts('cdd',rows)}
+    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Octubre 2025 → Agosto 2026</div><canvas id="cdd-sla"></canvas></div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Acumulado histórico</div>
+        <div style="display:flex;gap:16px;align-items:center">
+          <div style="flex:0 0 220px;height:220px"><canvas id="cdd-motivos"></canvas></div>
+          <div class="legend-list" id="cdd-motivos-legend"></div>
+        </div>
+      </div>
+      <div class="chart-box"><h3>KPIs de Estabilidad de Plataforma</h3><div class="note">Registro de incidentes técnicos</div>
+        <div class="cards-row" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+          <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Issues totales</div><div class="val" style="font-size:24px">${DATA.kpisEstab.total}</div></div>
+          <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Corregidos</div><div class="val" style="font-size:24px;color:#4D7200">${DATA.kpisEstab.corregidos}</div></div>
+          <div class="kcard" style="border-top-color:var(--gray)"><div class="lbl">Abiertos</div><div class="val" style="font-size:24px">${DATA.kpisEstab.abiertos}</div></div>
+          <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">MTTR promedio (días)</div><div class="val" style="font-size:24px">${DATA.kpisEstab.mttr_prom}</div></div>
+        </div>
+      </div>
+    </div>`;
+  paintFacVolCharts('cdd',rows);
+  const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
+  mkChart('cdd-sla',{data:{labels,datasets:[
+    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
+    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  const colors=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7','#5D6D7E','#C39BD3'];
+  mkChart('cdd-motivos',{type:'doughnut',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  document.getElementById('cdd-motivos-legend').innerHTML=DATA.motivosCdd.slice(0,6).map((m,i)=>
+    `<div class="legend-item"><span class="dot" style="background:${colors[i]}"></span>${m[0]}<span class="pct" style="color:${colors[i]}">${m[1].toFixed(1)}%</span></div>`).join('');
+}
+
+// ── RASH ──
+function renderRash(){
+  const rows=DATA.margen.filter(r=>r.producto==='Rash').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
+  const sla=DATA.rashSla;
+  const pc=document.getElementById('panel-rash');
+  pc.innerHTML=`
+    <div class="eyebrow">Última Milla</div>
+    <div class="bigtitle">Rash</div>
+    <div class="subdate">Plataforma de autogestión logística para pymes/emprendedores. Lanzó 15/06/2026.</div>
+    <div class="note-box">Producto recién lanzado — solo hay 1 mes de margen cargado (Junio 2026) y 3 de SLA/Efectividad (Jun-Ago). No hay suficiente historia todavía para una evolución larga.</div>
+    ${buildKpiCards(rows)}
+    ${buildFacVolCharts('rash',rows,'Envíos por mes')}
+    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Junio → Agosto 2026</div><canvas id="rash-sla"></canvas></div>`;
+  paintFacVolCharts('rash',rows);
+  const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
+  mkChart('rash-sla',{data:{labels,datasets:[
+    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
+    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+}
+
+// ── ENTREGA EN PUNTO PICKIT ──
+function renderPickit(){
+  const volRows=DATA.pickitVol.filter(([m])=>m!=='Total general');
+  const facMap=Object.fromEntries(DATA.pickitFac.map(([m,v])=>[m.toUpperCase(),v]));
+  const rows=volRows.map(([m,v])=>({mes:m,anio:2026,volumen:v,venta:facMap[m]||0}));
+  const sla=DATA.pickitSla;
+  const ultFac=rows.filter(r=>r.venta).slice(-1)[0]||rows[rows.length-1];
+  const pc=document.getElementById('panel-pickit');
+  pc.innerHTML=`
+    <div class="eyebrow">Última Milla</div>
+    <div class="bigtitle">Entrega en Punto Pickit</div>
+    <div class="subdate">Entrega en puntos Pick It para paquetería B2C (Adidas).</div>
+    <div class="note-box">Este producto no tiene margen calculado en Power BI todavía (solo venta y volumen, vía sheet manual). No se muestran tarjetas de Margen Bruto.</div>
+    <div class="cards-row" style="grid-template-columns:1fr 1fr">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(ultFac.mes)} ${ultFac.anio}</div><div class="val">${fmtARS(ultFac.venta)}</div></div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(rows[rows.length-1].mes)} ${rows[rows.length-1].anio}</div><div class="val">${rows[rows.length-1].volumen.toLocaleString()}</div></div>
+    </div>
+    ${buildFacVolCharts('pickit',rows,'Envíos en punto Pick It')}
+    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Enero → Agosto 2026</div><canvas id="pickit-sla"></canvas></div>
+    <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
+  paintFacVolCharts('pickit',rows);
+  const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
+  mkChart('pickit-sla',{data:{labels,datasets:[
+    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
+    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  mkChart('pickit-pp',{data:{labels,datasets:[
+    {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#009CA3',tension:.3},
+    {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+}
+
+// ── CONSUMO MASIVO ──
+function renderConsumo(){
+  const rows=DATA.margen.filter(r=>r.producto==='Distribucion Consumo Masivo y Palletizado').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
+  const sla=DATA.consumoSla;
+  const pc=document.getElementById('panel-consumo');
+  pc.innerHTML=`
+    <div class="eyebrow">Supply Chain</div>
+    <div class="bigtitle">Distribución Consumo Masivo y Paletizados</div>
+    <div class="subdate">Distribución a comercios y cadenas. Clientes: Molinos, Procter & Gamble, BAT, DirecTV, Toyota.</div>
+    ${buildKpiCards(rows)}
+    <div class="note-box"><b>${rows.filter(r=>r.margen<0).length} de ${rows.length} meses con margen negativo</b> — costo consistentemente por encima de la venta en todo el período cargado.</div>
+    ${buildFacVolCharts('consumo',rows)}
+    <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)</div><canvas id="consumo-sla"></canvas></div>`;
+  paintFacVolCharts('consumo',rows);
+  const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
+  mkChart('consumo-sla',{data:{labels,datasets:[
+    {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
+    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#97BF0D',tension:.3}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+}
+
+// ── COURIER (MELI CC) ──
+function renderCourier(){
+  const rows=DATA.margen.filter(r=>r.producto==='Courier Personas (Customs Clearance)').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
+  const sla=DATA.courierSla;
+  const pc=document.getElementById('panel-courier');
+  pc.innerHTML=`
+    <div class="eyebrow">Cross Border Transactions</div>
+    <div class="bigtitle">Courier Personas <span style="color:var(--gray);font-weight:400">(MELI Customs Clearance)</span></div>
+    <div class="subdate">Solo cliente MELI (Mercado Créditos SRL). Este producto no mide Efectividad, solo primera milla.</div>
+    <div class="note-box">Solo hay <b>1 mes de margen</b> (Junio 2026) para este cliente — no hay evolución mensual para graficar todavía.</div>
+    ${buildKpiCards(rows)}
+    <div class="chart-box"><h3>Evolución de SLA por tipo (detalle semanal)</h3><div class="note">Julio → Agosto 2026, Primera Milla</div><canvas id="courier-sla"></canvas></div>`;
+  const labels=sla.map(r=>['S'+r[1],r[0].slice(0,3)]);
+  mkChart('courier-sla',{type:'line',data:{labels,datasets:[
+    {label:'Tránsito a Aduana',data:sla.map(r=>r[3]),borderColor:'#009CA3',tension:.3,spanGaps:true},
+    {label:'Declaración y Liberación',data:sla.map(r=>r[4]),borderColor:'#F29400',tension:.3,spanGaps:true},
+    {label:'Traslado al CAD',data:sla.map(r=>r[5]),borderColor:'#97BF0D',tension:.3,spanGaps:true}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+}
+</script>
+</body>
+</html>
