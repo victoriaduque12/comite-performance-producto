@@ -196,6 +196,21 @@ function paintFacVolCharts(idPrefix,rows){
   mkChart(idPrefix+'-vol',{type:'line',data:{labels,datasets:[{data:rows.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 }
+function buildMargenChart(idPrefix,periodo){
+  return `<div class="chart-box"><h3>Evolución de Margen Bruto</h3><div class="note">Venta, Costo y Margen % · ${periodo}</div><canvas id="${idPrefix}-margen"></canvas></div>`;
+}
+function paintMargenChart(idPrefix,rows){
+  const labels=rows.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2));
+  mkChart(idPrefix+'-margen',{data:{labels,datasets:[
+    {type:'bar',label:'Venta',data:rows.map(r=>r.venta),backgroundColor:'#003E51',order:2,yAxisID:'y'},
+    {type:'bar',label:'Costo',data:rows.map(r=>r.costo),backgroundColor:'#c9d3d6',order:2,yAxisID:'y'},
+    {type:'line',label:'Margen %',data:rows.map(r=>r.venta?(r.margen/r.venta*100):0),borderColor:'#97BF0D',backgroundColor:'#97BF0D',borderWidth:2.5,tension:.35,yAxisID:'y1',order:1,pointRadius:4}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},
+    scales:{
+      y:{position:'left',ticks:{callback:v=>fmtARS(v)},title:{display:true,text:'ARS'}},
+      y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'},title:{display:true,text:'Margen %'}}
+    }}});
+}
 
 // ── CDD ──
 function renderCDD(){
@@ -207,6 +222,7 @@ function renderCDD(){
     <div class="bigtitle">Carta Documento Digital</div>
     <div class="subdate">Cartas documento emitidas y distribuidas físicamente, digitalizando la trazabilidad.</div>
     ${buildKpiCards(rows)}
+    ${buildMargenChart('cdd','Enero → Junio 2026')}
     ${buildFacVolCharts('cdd',rows)}
     <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Octubre 2025 → Agosto 2026</div><canvas id="cdd-sla"></canvas></div>
     <div class="two-col">
@@ -226,6 +242,7 @@ function renderCDD(){
       </div>
     </div>`;
   paintFacVolCharts('cdd',rows);
+  paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('cdd-sla',{data:{labels,datasets:[
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
@@ -250,9 +267,11 @@ function renderRash(){
     <div class="subdate">Plataforma de autogestión logística para pymes/emprendedores. Lanzó 15/06/2026.</div>
     <div class="note-box">Producto recién lanzado — solo hay 1 mes de margen cargado (Junio 2026) y 3 de SLA/Efectividad (Jun-Ago). No hay suficiente historia todavía para una evolución larga.</div>
     ${buildKpiCards(rows)}
+    ${buildMargenChart('rash','Junio 2026')}
     ${buildFacVolCharts('rash',rows,'Envíos por mes')}
     <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Junio → Agosto 2026</div><canvas id="rash-sla"></canvas></div>`;
   paintFacVolCharts('rash',rows);
+  paintMargenChart('rash',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('rash-sla',{data:{labels,datasets:[
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
@@ -305,9 +324,11 @@ function renderConsumo(){
     <div class="subdate">Distribución a comercios y cadenas. Clientes: Molinos, Procter & Gamble, BAT, DirecTV, Toyota.</div>
     ${buildKpiCards(rows)}
     <div class="note-box"><b>${rows.filter(r=>r.margen<0).length} de ${rows.length} meses con margen negativo</b> — costo consistentemente por encima de la venta en todo el período cargado.</div>
+    ${buildMargenChart('consumo','Enero → Junio 2026')}
     ${buildFacVolCharts('consumo',rows)}
     <div class="chart-box"><h3>Evolución de SLA & Efectividad</h3><div class="note">Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)</div><canvas id="consumo-sla"></canvas></div>`;
   paintFacVolCharts('consumo',rows);
+  paintMargenChart('consumo',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('consumo-sla',{data:{labels,datasets:[
     {type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#009CA3',tension:.3},
@@ -327,7 +348,9 @@ function renderCourier(){
     <div class="subdate">Solo cliente MELI (Mercado Créditos SRL). Este producto no mide Efectividad, solo primera milla.</div>
     <div class="note-box">Solo hay <b>1 mes de margen</b> (Junio 2026) para este cliente — no hay evolución mensual para graficar todavía.</div>
     ${buildKpiCards(rows)}
+    ${buildMargenChart('courier','Junio 2026')}
     <div class="chart-box"><h3>Evolución de SLA por tipo (detalle semanal)</h3><div class="note">Julio → Agosto 2026, Primera Milla</div><canvas id="courier-sla"></canvas></div>`;
+  paintMargenChart('courier',rows);
   const labels=sla.map(r=>['S'+r[1],r[0].slice(0,3)]);
   mkChart('courier-sla',{type:'line',data:{labels,datasets:[
     {label:'Tránsito a Aduana',data:sla.map(r=>r[3]),borderColor:'#009CA3',tension:.3,spanGaps:true},
