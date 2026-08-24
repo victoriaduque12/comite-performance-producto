@@ -1933,7 +1933,7 @@ function renderResumen(prod,v,fac,vol,clis){
 
 // ── SLA & EFECTIVIDAD (desde Supabase) ──
 // ── SLA Courier (MELI CC): varios tipos de SLA, medidos por semana ──
-let courierSlaChartInstance=null;
+let courierSlaChartInstance=null, courierVolChartInstance=null;
 function renderSlaCourier(pc){
   if(courierSlaChartInstance){courierSlaChartInstance.destroy();courierSlaChartInstance=null;}
   const rows=allCourierSla.filter(r=>(r['producto']||'').trim()==='Courier Personas (Customs Clearance)');
@@ -1968,6 +1968,8 @@ function renderSlaCourier(pc){
       '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Evolución semanal por tipo de SLA</div></div>'+
       '<div class="pbi-chartwrap"><canvas id="courierSlaCanvas"></canvas></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Evolución del Volumen (equipos) por semana</div></div>'+
+      '<div class="pbi-chartwrap"><canvas id="courierVolCanvas"></canvas></div>'+
       '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
     '</div>';
 
@@ -1991,6 +1993,24 @@ function renderSlaCourier(pc){
     },
       scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}
   });
+
+  const parseVol=v=>{
+    if(v===null||v===undefined||v==='') return null;
+    const n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));
+    return isNaN(n)?null:n;
+  };
+  const conVol=conDatos.filter(r=>parseVol(r['Equipos'])!==null);
+  if(conVol.length){
+    const volLabels=conVol.map(r=>['S'+r.semana,r.mes.slice(0,3)]);
+    const ctxVol=document.getElementById('courierVolCanvas').getContext('2d');
+    if(courierVolChartInstance){courierVolChartInstance.destroy();}
+    courierVolChartInstance=new Chart(ctxVol,{
+      type:'bar',
+      data:{labels:volLabels,datasets:[{label:'Equipos',data:conVol.map(r=>parseVol(r['Equipos'])),backgroundColor:'#009CA3',borderRadius:4}]},
+      options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Volumen (equipos) · Courier Personas (MELI CC)',font:{size:13}}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}
+    });
+  }
 }
 
 function renderSlaEfec(prod){
