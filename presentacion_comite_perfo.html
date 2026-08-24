@@ -512,11 +512,10 @@ function renderRash(){
 
     <div class="note-box" style="margin-top:18px">Principal oportunidad en la activación: el ${a.tasaFinalizacion}% de los usuarios completa el onboarding, pero solo el ${a.tasaActivacion}% de los usuarios activos realizó al menos un envío. El foco está puesto en reducir las fricciones entre el alta y la creación del primer envío.</div>
 
-    <div class="section-sub" style="margin-top:22px;font-weight:600;color:var(--gray);text-transform:uppercase;font-size:11px;letter-spacing:.5px">Indicadores secundarios</div>
-    <div class="cards-row-sec">
-      <div class="kcard-sec"><div class="val-sec">${a.altasEnPendiente}</div><div class="lbl-sec">Registro pendiente</div></div>
-      <div class="kcard-sec"><div class="val-sec">${a.b2cPct}% / ${a.b2bPct}%</div><div class="lbl-sec">Mix usuarios (B2C / B2B)</div></div>
-      <div class="kcard-sec"><div class="val-sec">${a.segRecurrentes}</div><div class="lbl-sec">Usuarios recurrentes</div></div>
+    <div class="section-title" style="margin-top:22px">MIX USUARIOS</div>
+    <div class="cards-row" style="grid-template-columns:repeat(2,1fr)">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="val" style="font-size:26px">${a.b2cPct}%</div><div class="lbl">B2C (personas)</div></div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:26px;color:var(--orange)">${a.b2bPct}%</div><div class="lbl">B2B (empresas) — foco estratégico del producto</div></div>
     </div>
     <div class="chart-box" style="margin-top:10px"><h3 style="font-size:13px;color:var(--gray)">Evolución de altas</h3><div class="note">Junio → Agosto (parcial) — la adquisición continúa, aunque todavía no se traduce proporcionalmente en envíos</div><canvas id="rash-altas-mes" style="max-height:180px"></canvas></div>
 
