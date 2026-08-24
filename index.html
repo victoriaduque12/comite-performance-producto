@@ -17,16 +17,16 @@ header{height:64px;background:var(--teal);display:flex;align-items:center;justif
 .hdiv{width:1px;height:28px;background:rgba(255,255,255,.3);}
 .htitle{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:#fff;letter-spacing:.8px;text-transform:uppercase;line-height:1.25;}
 .hsub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px;}
-.hr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.hlbl{font-size:10px;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.7px;}
-.hsel{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;padding:5px 10px;border-radius:5px;cursor:pointer;outline:none;}
+.hr{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+.hlbl{font-size:9px;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.hsel{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;padding:5px 8px;border-radius:5px;cursor:pointer;outline:none;}
 .hsel::placeholder{color:rgba(255,255,255,.6);}
 .hsel option{background:var(--teal);}
 .live{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;}
 .pdot{width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
 .live-t{font-size:11px;font-weight:700;color:#fff;}
-.btn-ref{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:5px;cursor:pointer;text-transform:uppercase;}
+.btn-ref{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:5px;cursor:pointer;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
 .btn-ref:hover{background:rgba(255,255,255,.3);}
 .cli-wrap{position:relative;display:inline-block;}
 .cli-arrow{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.7);font-size:10px;pointer-events:none;}
@@ -422,19 +422,19 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     <span class="hlbl">Producto</span>
     <div class="cli-wrap">
       <input class="hsel" id="fProdInput" placeholder="Buscar…" autocomplete="off"
-        style="max-width:170px;padding-right:22px;" oninput="onProdInput()">
+        style="max-width:130px;padding-right:22px;" oninput="onProdInput()">
       <span class="cli-arrow">▾</span>
       <div class="cli-drop" id="prodDrop"></div>
     </div>
     <span class="hlbl">Cliente</span>
     <div class="cli-wrap">
       <input class="hsel" id="fCliInput" placeholder="Buscar…" autocomplete="off"
-        style="max-width:170px;padding-right:22px;" oninput="onCliInput()">
+        style="max-width:130px;padding-right:22px;" oninput="onCliInput()">
       <span class="cli-arrow">▾</span>
       <div class="cli-drop" id="cliDrop"></div>
     </div>
 
-    <button class="btn-ref" onclick="reloadAll()">
+    <button class="btn-ref" style="margin-left:auto" onclick="reloadAll()">
       <svg id="refIco" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
       </svg>
