@@ -386,7 +386,7 @@ function renderCDD(){
     <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA | Desglose por semana en agosto</div>
     <div class="chart-box"><h3>SLA · Detalle semanal Agosto 2026</h3><div class="note">Corte parcial, se ajusta el próximo lunes de ser necesario</div><canvas id="cdd-sla-semanal"></canvas></div>
     <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Agosto 2026</div>
-    <div class="chart-box"><h3>SLA y Share de Volumen por Provincia</h3><div class="note">Ordenado por SLA de mayor a menor · línea punteada = Target SLA 95%</div>
+    <div class="chart-box"><h3>SLA y Share de Volumen por Provincia</h3><div class="note">Ordenado por Share de Volumen de mayor a menor · línea punteada = Target SLA 95%</div>
       <canvas id="cdd-sla-share-provincia" style="max-height:380px"></canvas>
     </div>
     <div class="note-box" id="cdd-provincia-insight"></div>
@@ -411,7 +411,7 @@ function renderCDD(){
   mkChart('cdd-sla-semanal',{type:'bar',data:{labels:DATA.cddSlaSemanal.map(r=>r[0]),datasets:[{data:DATA.cddSlaSemanal.map(r=>r[1]),backgroundColor:'#009CA3',borderRadius:4}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:50,max:100,ticks:{callback:v=>v+'%'}}}}});
 
-  const provOrdenadas=DATA.cddSlaProvincia.slice().sort((a,b)=>(b.sla??-1)-(a.sla??-1));
+  const provOrdenadas=DATA.cddSlaProvincia.slice().sort((a,b)=>b.share-a.share);
   mkChart('cdd-sla-share-provincia',{type:'bar',data:{
     labels:provOrdenadas.map(p=>p.provincia),
     datasets:[
