@@ -327,7 +327,7 @@ function buildFacVolCharts(idPrefix,rows,volLabel){
   const volVar=ant?varHtml(ult.volumen,ant.volumen):'';
   return `<div class="two-col">
     <div class="chart-box"><h3>Evolución de Facturación</h3><div class="note">ARS por mes</div><canvas id="${idPrefix}-fac"></canvas></div>
-    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · ${volLabel||'unidades por mes'}</div><canvas id="${idPrefix}-vol"></canvas>${volVar}</div>
+    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · ${volLabel||'unidades por mes'}</div><canvas id="${idPrefix}-vol"></canvas><div id="${idPrefix}-vol-var">${volVar}</div></div>
   </div>`;
 }
 function paintFacVolCharts(idPrefix,rows){
@@ -592,6 +592,8 @@ function renderPickit(){
   const volRowsSinJulio=rows.filter(r=>r.mes!=='JULIO');
   mkChart('pickit-vol',{type:'line',data:{labels:volRowsSinJulio.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsSinJulio.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
+  const vUlt=volRowsSinJulio[volRowsSinJulio.length-1], vAnt=volRowsSinJulio[volRowsSinJulio.length-2];
+  document.getElementById('pickit-vol-var').innerHTML=vAnt?varHtml(vUlt.volumen,vAnt.volumen):'';
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('pickit',sla,false);
   mkChart('pickit-pp',{data:{labels,datasets:[
