@@ -436,7 +436,7 @@ function renderRash(){
   const flujosColores=['#009CA3','#97BF0D','#F29400'];
   mkChart('rash-flujos',{type:'bar',data:{labels:flujosLabels,datasets:flujosNombres.map((n,i)=>({
     label:n,data:DATA.rashFlujos.map(m=>m.flujos.find(f=>f[0]===n)[1]),backgroundColor:flujosColores[i]
-  }))},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+  }))},options:{responsive:true,layout:{padding:{top:26}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
