@@ -181,8 +181,8 @@ function paintSlaEfecCharts(idPrefix,sla,target){
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   const slaDs=[{type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#0099A8',tension:.3}];
   const efecDs=[
-    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3},
-    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#8FBF4C',tension:.3}
+    {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3,datalabels:{align:'top',offset:6}},
+    {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#8FBF4C',tension:.3,datalabels:{align:'bottom',offset:6}}
   ];
   if(target){
     slaDs.push({type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
