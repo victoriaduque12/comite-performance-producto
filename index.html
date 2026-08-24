@@ -4,29 +4,29 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Comité de Performance · OCASA</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--teal:#009CA3;--teal2:#1DB4C2;--black:#231F20;--gray:#B1B1B1;--green:#97BF0D;--orange:#F29400;--white:#fff;--surface:#F0F7F7;}
+:root{--teal:#0099A8;--teal2:#1DB4C2;--black:#231F20;--gray:#B1B1B1;--green:#8FBF4C;--orange:#F6A945;--white:#fff;--surface:#F0F7F7;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Barlow',sans-serif;background:var(--surface);color:var(--black);display:flex;flex-direction:column;}
+body{font-family:'Montserrat',sans-serif;background:var(--surface);color:var(--black);display:flex;flex-direction:column;}
 header{height:64px;background:var(--teal);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,100,105,.3);}
 .hl{display:flex;align-items:center;gap:14px;}
-.logo{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;letter-spacing:5px;color:#fff;text-transform:uppercase;}
+.logo{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;letter-spacing:5px;color:#fff;text-transform:uppercase;}
 .hdiv{width:1px;height:28px;background:rgba(255,255,255,.3);}
-.htitle{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;color:#fff;letter-spacing:1.3px;text-transform:uppercase;line-height:1.2;}
+.htitle{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;color:#fff;letter-spacing:1.3px;text-transform:uppercase;line-height:1.2;}
 .hsub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px;}
 .hr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .hlbl{font-size:10px;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.7px;}
-.hsel{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Barlow',sans-serif;font-size:12px;padding:5px 10px;border-radius:5px;cursor:pointer;outline:none;}
+.hsel{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;padding:5px 10px;border-radius:5px;cursor:pointer;outline:none;}
 .hsel::placeholder{color:rgba(255,255,255,.6);}
 .hsel option{background:var(--teal);}
 .live{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;}
 .pdot{width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
 .live-t{font-size:11px;font-weight:700;color:#fff;}
-.btn-ref{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:5px;cursor:pointer;text-transform:uppercase;}
+.btn-ref{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:5px;cursor:pointer;text-transform:uppercase;}
 .btn-ref:hover{background:rgba(255,255,255,.3);}
 .cli-wrap{position:relative;display:inline-block;}
 .cli-arrow{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.7);font-size:10px;pointer-events:none;}
@@ -68,26 +68,26 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .ostats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
 .osc{background:#fff;border:1px solid rgba(0,156,163,.2);border-top:3px solid var(--teal);border-radius:10px;padding:14px;}
 .osc-l{font-size:9.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
-.osc-v{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;}
+.osc-v{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;}
 .osc-s{font-size:10px;color:var(--gray);margin-top:2px;}
 .ogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;}
 .ocard{background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid var(--teal);border-radius:10px;padding:14px;cursor:pointer;transition:box-shadow .18s,transform .18s;}
 .ocard:hover{box-shadow:0 5px 18px rgba(0,156,163,.15);transform:translateY(-2px);}
 .oc-num{font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.7px;text-transform:uppercase;margin-bottom:2px;}
-.oc-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--black);margin:3px 0 1px;}
+.oc-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--black);margin:3px 0 1px;}
 .oc-owner{font-size:10px;color:var(--gray);margin-bottom:8px;}
-.oc-v{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--black);}
+.oc-v{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;color:var(--black);}
 /* PRODUCT PANEL */
 .pp{flex:1;display:none;flex-direction:column;overflow:hidden;}
 .pp.vis{display:flex;}
 .ptop{background:#fff;border-bottom:1px solid rgba(0,0,0,.07);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;}
 .pi{display:flex;align-items:center;gap:11px;}
-.pnum{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:700;opacity:.55;line-height:1;}
-.pname{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--black);}
+.pnum{font-family:'Montserrat',sans-serif;font-size:38px;font-weight:700;opacity:.55;line-height:1;}
+.pname{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;color:var(--black);}
 .pdesc{font-size:11px;color:var(--gray);margin-top:2px;max-width:400px;}
 .pmeta{display:flex;align-items:center;gap:14px;flex-shrink:0;}
 .mi{text-align:right;}
-.mv{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--black);}
+.mv{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--black);}
 .ml{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;}
 .ms{width:1px;height:30px;background:rgba(0,0,0,.08);}
 .kstrip{background:#fff;border-bottom:1px solid rgba(0,0,0,.06);padding:5px 20px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex-shrink:0;}
@@ -111,15 +111,15 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .mrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
 .mc{background:#fff;border:1px solid rgba(0,156,163,.18);border-top:3px solid var(--teal);border-radius:9px;padding:12px 14px;}
 .mc-l{font-size:9.5px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
-.mc-v{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--black);}
+.mc-v{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--black);}
 .mc-s{font-size:10px;color:var(--gray);margin-top:2px;}
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .cb{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
-.cb-t{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:2px;}
+.cb-t{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:2px;}
 .cb-s{font-size:10px;color:var(--gray);margin-bottom:8px;}
 .cw{position:relative;height:180px;}
 .ctb{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
-.ctb h3{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:10px;}
+.ctb h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:10px;}
 .ct{width:100%;border-collapse:collapse;font-size:12px;}
 .ct th{text-align:left;font-size:9.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;padding:4px 8px;border-bottom:1px solid rgba(0,0,0,.07);}
 .ct td{padding:6px 8px;border-bottom:1px solid rgba(0,0,0,.04);}
@@ -142,23 +142,23 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .sla-kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
 .sla-k{background:var(--surface);border:1px solid rgba(0,156,163,.18);border-radius:8px;padding:10px 14px;min-width:110px;}
 .sla-kl{font-size:9px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;}
-.sla-kv{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;margin-top:2px;}
+.sla-kv{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;margin-top:2px;}
 .sla-kt{font-size:9px;color:var(--gray);margin-top:1px;}
 .chart-box{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
-.chart-box-t{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.chart-box-t{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
 .chart-box-s{font-size:10px;color:var(--gray);margin-bottom:10px;}
 .chwrap{position:relative;height:175px;}
 /* PBI */
 .pbi-full{flex:1;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
 .pbi-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(0,156,163,.15);flex-shrink:0;background:#fff;}
-.pbi-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--black);display:flex;align-items:center;gap:8px;}
+.pbi-title{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--black);display:flex;align-items:center;gap:8px;}
 .pbi-actions{display:flex;gap:8px;}
-.pbi-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--teal);color:var(--teal);background:#fff;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer;text-transform:uppercase;text-decoration:none;transition:background .15s;}
+.pbi-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--teal);color:var(--teal);background:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer;text-transform:uppercase;text-decoration:none;transition:background .15s;}
 .pbi-btn:hover,.pbi-btn.prim{background:var(--teal);color:#fff;}
 .pbi-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:20px 16px 28px;background:var(--surface);}
 .pbi-head{width:100%;max-width:900px;text-align:left;}
-.pbi-eyebrow{font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--teal);text-transform:uppercase;margin-bottom:2px;}
-.pbi-bigtitle{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:var(--black);line-height:1.1;}
+.pbi-eyebrow{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--teal);text-transform:uppercase;margin-bottom:2px;}
+.pbi-bigtitle{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:var(--black);line-height:1.1;}
 .pbi-subdate{font-size:11px;color:var(--gray);margin-top:4px;}
 .pbi-alert{width:100%;max-width:900px;background:#FDEDED;border:1px solid #f3b9b9;border-radius:10px;padding:12px 16px;font-size:12.5px;color:#8a2c2c;line-height:1.6;text-align:left;}
 .pbi-alert b{color:#b02a2a;}
@@ -168,31 +168,31 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .pbi-mcard-sub{font-size:10.5px;color:var(--gray);margin-top:4px;line-height:1.35;}
 .pbi-mcard-sub em{font-style:italic;display:block;margin-top:3px;}
 .pbi-mcard-top{border-top:3px solid; }
-.pbi-mcard-v{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pbi-mcard-v{font-family:'Montserrat',sans-serif;font-size:19px;font-weight:700;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pbi-chartwrap{width:100%;max-width:900px;background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.04);}
 .pbi-chartwrap canvas{max-height:260px;}
 .pbi-card{background:#fff;border:1px solid rgba(0,156,163,.2);border-radius:14px;padding:24px 28px;max-width:540px;width:100%;text-align:center;box-shadow:0 2px 12px rgba(0,156,163,.08);}
 .pbi-icon{font-size:40px;margin-bottom:10px;}
-.pbi-card-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--black);margin-bottom:6px;}
+.pbi-card-title{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;color:var(--black);margin-bottom:6px;}
 .pbi-card-sub{font-size:12px;color:var(--gray);line-height:1.7;margin-bottom:18px;text-align:left;}
-.pbi-open-btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;padding:11px 24px;border-radius:8px;cursor:pointer;text-decoration:none;border:none;text-transform:uppercase;letter-spacing:.5px;transition:background .15s;}
+.pbi-open-btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;padding:11px 24px;border-radius:8px;cursor:pointer;text-decoration:none;border:none;text-transform:uppercase;letter-spacing:.5px;transition:background .15s;}
 .pbi-open-btn:hover{background:#007980;}
 .pbi-note{font-size:10px;color:var(--gray);margin-top:10px;}
 .pbi-meta{display:flex;gap:16px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
 .pbi-meta-item{text-align:center;}
-.pbi-meta-v{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--teal);}
+.pbi-meta-v{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--teal);}
 .pbi-meta-l{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;}
 /* COMPARATIVA / RANKING */
 .comp-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .comp-card{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
-.comp-card h4{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.comp-card h4{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
 .comp-sub{font-size:10px;color:var(--gray);margin-bottom:9px;}
 .rank-box{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;}
-.rank-box h4{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.rank-box h4{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px;}
 .rank-sub{font-size:10px;color:var(--gray);margin-bottom:10px;}
 .rank-item{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04);}
 .rank-item:last-child{border-bottom:none;}
-.rank-pos{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--teal);width:22px;flex-shrink:0;opacity:.5;}
+.rank-pos{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--teal);width:22px;flex-shrink:0;opacity:.5;}
 .rank-name{flex:1;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rank-bar-wrap{width:90px;height:6px;background:rgba(0,156,163,.12);border-radius:3px;flex-shrink:0;}
 .rank-bar{height:6px;border-radius:3px;background:var(--teal);}
@@ -289,7 +289,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     letter-spacing:.4px;
     border:none;
     background:none;
-    font-family:'Barlow',sans-serif;
+    font-family:'Montserrat',sans-serif;
     padding:0;
     transition:color .15s,background .15s;
     border-left:1px solid rgba(255,255,255,.15);
@@ -668,13 +668,13 @@ const PBI_MARGEN_URL='https://app.powerbi.com/reportEmbed?reportId=14350c8e-8242
 const MO=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 const MS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const ML={ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio',AGOSTO:'Agosto',SEPTIEMBRE:'Septiembre',OCTUBRE:'Octubre',NOVIEMBRE:'Noviembre',DICIEMBRE:'Diciembre'};
-const T='#009CA3',G='#97BF0D',O='#F29400';
+const T='#0099A8',G='#8FBF4C',O='#F6A945';
 
 // ── INDICADORES (definición completa por producto) ──
 // fuente, formula, frecuencia, responsable, estado: ok/wip/pend
 const INDICADORES={
   'Cross Docking':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma de venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Volumen',formula:'Suma de unidades procesadas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Margen Bruto',formula:'Facturación − Costo directo operativo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'German Gallarini',est:'wip'},
@@ -682,12 +682,12 @@ const INDICADORES={
       {nombre:'Nuevos clientes',formula:'Clientes con primera facturación en el mes',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Churn (bajas)',formula:'Clientes activos mes anterior sin facturación en mes actual',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
     ]},
-    {cat:'Operación',color:'#F29400',items:[
+    {cat:'Operación',color:'#F6A945',items:[
       {nombre:'SLA',formula:'Operaciones entregadas en plazo / Total operaciones × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Backlog operativo',formula:'Operaciones pendientes al cierre del período',fuente:'Sistema operativo',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Tasa de errores operativos',formula:'Operaciones con error / Total operaciones × 100',fuente:'Sistema operativo',frec:'Mensual',resp:'German Gallarini',est:'pend'},
     ]},
-    {cat:'Comercial / Cliente',color:'#009CA3',items:[
+    {cat:'Comercial / Cliente',color:'#0099A8',items:[
       {nombre:'NPS',formula:'% Promotores − % Detractores (encuesta)',fuente:'Encuesta NPS',frec:'Trimestral',resp:'German Gallarini',est:'pend'},
       {nombre:'Penalidades',formula:'Monto total de penalidades aplicadas en el período',fuente:'Sistema contable',frec:'Mensual',resp:'German Gallarini',est:'wip'},
       {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes activos inicio de período × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
@@ -696,18 +696,18 @@ const INDICADORES={
     ]},
   ],
   'Paqueteria E-Commerce B2C':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma de venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Volumen',formula:'Suma de envíos del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Margen Bruto',formula:'Facturación − Costo directo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
       {nombre:'Costo por envío',formula:'Costo total / Total envíos del período',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
       {nombre:'Nuevos clientes',formula:'Clientes con primera facturación en el mes',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
     ]},
-    {cat:'Colecta',color:'#F29400',items:[
+    {cat:'Colecta',color:'#F6A945',items:[
       {nombre:'Tasa colectas fallidas',formula:'Colectas donde no se retiró mercadería / Total colectas × 100',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tiempo solicitud→colecta',formula:'Promedio de horas entre solicitud de colecta y ejecución',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
     ]},
-    {cat:'Última Milla',color:'#009CA3',items:[
+    {cat:'Última Milla',color:'#0099A8',items:[
       {nombre:'SLA',formula:'Envíos entregados en plazo / Total envíos × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Efectividad',formula:'Envíos entregados exitosamente / Total envíos × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Causas de no entrega',formula:'Distribución % de motivos de fallo de entrega',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
@@ -716,7 +716,7 @@ const INDICADORES={
       {nombre:'Tasa paquetes vencidos',formula:'Paquetes sin retirar > plazo máximo / Total en punto × 100',fuente:'Sistema operativo Pick It',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Incidentes en punto',formula:'Cantidad de incidentes reportados en puntos de entrega',fuente:'Sistema operativo Pick It',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
     ]},
-    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+    {cat:'Experiencia del Cliente',color:'#0099A8',items:[
       {nombre:'NPS',formula:'% Promotores − % Detractores (encuesta)',fuente:'Encuesta NPS',frec:'Trimestral',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tasa de retiro efectivo',formula:'Paquetes retirados / Total paquetes disponibles en punto × 100',fuente:'Sistema operativo Pick It',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
@@ -724,116 +724,116 @@ const INDICADORES={
     ]},
   ],
   'Warehousing':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Volumen (m² o pallets)',formula:'Unidades almacenadas / movidas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Margen Bruto',formula:'Facturación − Costo operativo directo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'German Gallarini',est:'wip'},
       {nombre:'ARPU',formula:'Facturación total / Cantidad de clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
     ]},
-    {cat:'Operación',color:'#F29400',items:[
+    {cat:'Operación',color:'#F6A945',items:[
       {nombre:'SLA',formula:'Órdenes procesadas en plazo / Total órdenes × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Exactitud de inventario',formula:'Ítems sin discrepancia / Total ítems auditados × 100',fuente:'Sistema WMS',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Productividad operativa',formula:'Unidades procesadas / Horas hombre trabajadas',fuente:'Sistema WMS / RRHH',frec:'Mensual',resp:'German Gallarini',est:'pend'},
     ]},
-    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+    {cat:'Experiencia del Cliente',color:'#0099A8',items:[
       {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio período × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
       {nombre:'Tickets',formula:'Total tickets abiertos en el período',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
     ]},
   ],
   'Distribución de Tarjetas Valoradas':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Volumen',formula:'Tarjetas distribuidas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
     ]},
-    {cat:'Última Milla',color:'#009CA3',items:[
+    {cat:'Última Milla',color:'#0099A8',items:[
       {nombre:'SLA',formula:'Entregas en plazo / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Efectividad',formula:'Entregas exitosas / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
     ]},
-    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+    {cat:'Experiencia del Cliente',color:'#0099A8',items:[
       {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
     ]},
   ],
   'Postal':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Volumen',formula:'Piezas postales distribuidas',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
     ]},
-    {cat:'Última Milla',color:'#009CA3',items:[
+    {cat:'Última Milla',color:'#0099A8',items:[
       {nombre:'SLA',formula:'Entregas en plazo / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Efectividad',formula:'Entregas exitosas / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
     ]},
-    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+    {cat:'Experiencia del Cliente',color:'#0099A8',items:[
       {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
     ]},
   ],
   'Salud Warehousing':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Volumen almacenado',formula:'m² o pallets ocupados en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Margen Bruto',formula:'Facturación − Costo operativo',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'German Gallarini',est:'wip'},
       {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
     ]},
-    {cat:'Operación',color:'#F29400',items:[
+    {cat:'Operación',color:'#F6A945',items:[
       {nombre:'SLA',formula:'Órdenes en plazo / Total órdenes × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Exactitud de inventario',formula:'Ítems sin discrepancia / Total auditados × 100',fuente:'WMS',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Cumplimiento cadena de frío',formula:'Registros en rango de temperatura / Total registros × 100',fuente:'Sistema monitoreo IoT',frec:'Diario',resp:'German Gallarini',est:'pend'},
     ]},
-    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+    {cat:'Experiencia del Cliente',color:'#0099A8',items:[
       {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
       {nombre:'Tickets',formula:'Total tickets abiertos en el período',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
     ]},
   ],
   'Salud Distribucion':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Volumen',formula:'Envíos de medicamentos/material sanitario',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'ARPU',formula:'Facturación total / Clientes activos',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
     ]},
-    {cat:'Última Milla',color:'#009CA3',items:[
+    {cat:'Última Milla',color:'#0099A8',items:[
       {nombre:'SLA',formula:'Entregas en plazo / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Efectividad',formula:'Entregas exitosas / Total entregas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'German Gallarini',est:'ok'},
       {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'German Gallarini',est:'pend'},
     ]},
-    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+    {cat:'Experiencia del Cliente',color:'#0099A8',items:[
       {nombre:'Tickets / 100 envíos',formula:'Total tickets / Total envíos × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Tiempo resolución tickets',formula:'Promedio días apertura → cierre',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'German Gallarini',est:'pend'},
       {nombre:'Churn Rate',formula:'Clientes perdidos / Clientes inicio × 100',fuente:'Supabase · ventas',frec:'Mensual',resp:'German Gallarini',est:'wip'},
     ]},
   ],
   'Carta Documento Digital':[
-    {cat:'Performance del Negocio',color:'#97BF0D',items:[
+    {cat:'Performance del Negocio',color:'#8FBF4C',items:[
       {nombre:'Facturación',formula:'Suma venta normalizada del período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Volumen',formula:'Cartas documento emitidas en el período',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Margen Bruto',formula:'Facturación − Costo (impresión + distribución)',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
       {nombre:'Costo por envío',formula:'Costo total / Cartas emitidas',fuente:'Sistema contable / ERP',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
       {nombre:'Nuevos clientes / Bajas',formula:'Altas y bajas respecto al mes anterior',fuente:'Supabase · ventas',frec:'Mensual',resp:'Victoria Duque',est:'wip'},
     ]},
-    {cat:'Operación',color:'#F29400',items:[
+    {cat:'Operación',color:'#F6A945',items:[
       {nombre:'Tasa de error operativo',formula:'Cartas con problema de impresión / Total cartas × 100',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tiempo de imposición (AWP→HFD)',formula:'Promedio de horas desde ingreso en AWP hasta pase a HFD',fuente:'Sistema AWP / HFD',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tiempo digitalización acuses (addoc)',formula:'Promedio de horas entre entrega y digitalización del acuse',fuente:'Sistema addoc',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
     ]},
-    {cat:'Última Milla',color:'#009CA3',items:[
+    {cat:'Última Milla',color:'#0099A8',items:[
       {nombre:'Efectividad 1ra vuelta',formula:'Entregas en 1ra visita / Total cartas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Efectividad general',formula:'Total entregas exitosas (todas las vueltas) / Total cartas × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'SLA',formula:'Cartas entregadas en plazo contractual / Total × 100',fuente:'Supabase · sla_efectividad',frec:'Mensual',resp:'Victoria Duque',est:'ok'},
       {nombre:'Causas de no entregado',formula:'Distribución % de motivos de fallo',fuente:'Sistema operativo',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
     ]},
-    {cat:'Experiencia del Cliente',color:'#009CA3',items:[
+    {cat:'Experiencia del Cliente',color:'#0099A8',items:[
       {nombre:'Tickets / 100 cartas',formula:'Total tickets / Total cartas emitidas × 100',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Tickets por cliente',formula:'Tickets del período agrupados por cliente',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
       {nombre:'Principales motivos de tickets',formula:'Top motivos por frecuencia (Pareto)',fuente:'CRM / Helpdesk',frec:'Mensual',resp:'Victoria Duque',est:'pend'},
@@ -978,7 +978,7 @@ function getNum(prod){
 }
 
 // ── CHART HELPERS ──
-Chart.defaults.font.family="'Barlow',sans-serif";
+Chart.defaults.font.family="'Montserrat',sans-serif";
 Chart.defaults.font.size=11;
 Chart.defaults.color='#888';
 const CI={};
@@ -1312,7 +1312,7 @@ async function loadAll(){
     // Mostrar botón de reintentar
     const btn=document.createElement('button');
     btn.textContent='🔄 Reintentar';
-    btn.style.cssText='margin-top:12px;padding:8px 20px;background:var(--teal);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:Barlow,sans-serif;font-size:13px;font-weight:700;';
+    btn.style.cssText='margin-top:12px;padding:8px 20px;background:var(--teal);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:Montserrat,sans-serif;font-size:13px;font-weight:700;';
     btn.onclick=loadAll;
     document.getElementById('gload').appendChild(btn);
   }
@@ -1783,18 +1783,18 @@ function renderResumen(prod,v,fac,vol,clis){
     if(fUlt26!==null&&fMismo25!==null){
       const pct1=diffPct(fUlt26,fMismo25);
       const card1=document.createElement('div');
-      card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct1>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:14px;';
+      card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct1>=0?'#8FBF4C':'#C0392B')+';border-radius:10px;padding:14px;';
       card1.innerHTML=
         '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+mesLabel(ultM26)+' 2025 → '+mesLabel(ultM26)+' 2026</div>'+
         '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'+
           '<div>'+
             '<div style="font-size:9px;color:var(--gray)">'+mesLabel(ultM26)+' 2025</div>'+
-            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:var(--orange)">'+fmtARS(fMismo25)+'</div>'+
+            '<div style="font-family:Montserrat,sans-serif;font-size:22px;font-weight:700;color:var(--orange)">'+fmtARS(fMismo25)+'</div>'+
           '</div>'+
           '<div style="color:var(--gray);font-size:18px">→</div>'+
           '<div>'+
             '<div style="font-size:9px;color:var(--gray)">'+mesLabel(ultM26)+' 2026</div>'+
-            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:#97BF0D">'+fmtARS(fUlt26)+'</div>'+
+            '<div style="font-family:Montserrat,sans-serif;font-size:22px;font-weight:700;color:#8FBF4C">'+fmtARS(fUlt26)+'</div>'+
           '</div>'+
         '</div>'+
         '<div style="margin-top:6px">'+pctBadge(pct1)+'<span style="font-size:10px;color:var(--gray);margin-left:4px">interanual</span></div>';
@@ -1805,18 +1805,18 @@ function renderResumen(prod,v,fac,vol,clis){
     if(fUlt26!==null&&fAnt26!==null&&antM26){
       const pct2=diffPct(fUlt26,fAnt26);
       const card2=document.createElement('div');
-      card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct2>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:14px;';
+      card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(pct2>=0?'#8FBF4C':'#C0392B')+';border-radius:10px;padding:14px;';
       card2.innerHTML=
         '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+mesLabel(antM26)+' 2026 → '+mesLabel(ultM26)+' 2026</div>'+
         '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'+
           '<div>'+
             '<div style="font-size:9px;color:var(--gray)">'+mesLabel(antM26)+' 2026</div>'+
-            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:#97BF0D">'+fmtARS(fAnt26)+'</div>'+
+            '<div style="font-family:Montserrat,sans-serif;font-size:22px;font-weight:700;color:#8FBF4C">'+fmtARS(fAnt26)+'</div>'+
           '</div>'+
           '<div style="color:var(--gray);font-size:18px">→</div>'+
           '<div>'+
             '<div style="font-size:9px;color:var(--gray)">'+mesLabel(ultM26)+' 2026</div>'+
-            '<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:700;color:#97BF0D">'+fmtARS(fUlt26)+'</div>'+
+            '<div style="font-family:Montserrat,sans-serif;font-size:22px;font-weight:700;color:#8FBF4C">'+fmtARS(fUlt26)+'</div>'+
           '</div>'+
         '</div>'+
         '<div style="margin-top:6px">'+pctBadge(pct2)+'<span style="font-size:10px;color:var(--gray);margin-left:4px">variación mensual</span></div>';
@@ -1914,7 +1914,7 @@ function renderResumen(prod,v,fac,vol,clis){
     requestAnimationFrame(()=>{
       const meses=RASH_FLUJOS_HIST.map(m=>m.mes.slice(0,3)+' '+m.anio);
       const labels=RASH_FLUJOS_HIST[0].flujos.map(f=>f.label);
-      const colores=['#009CA3','#97BF0D','#F29400','#E05A5A'];
+      const colores=['#0099A8','#8FBF4C','#F6A945','#E05A5A'];
       const datasets=labels.map((lbl,i)=>({
         label:lbl,
         data:RASH_FLUJOS_HIST.map(m=>{const f=m.flujos.find(x=>x.label===lbl);return f?f.pct:0;}),
@@ -1974,7 +1974,7 @@ function renderSlaCourier(pc){
     '</div>';
 
   const labels=conDatos.map(r=>['S'+r.semana,r.mes.slice(0,3)]);
-  const colors=['#009CA3','#F29400','#97BF0D'];
+  const colors=['#0099A8','#F6A945','#8FBF4C'];
   const datasets=tipos.map((t,i)=>({
     label:t.replace('SLA ',''),
     data:conDatos.map(r=>parseNum(r[t])),
@@ -2006,7 +2006,7 @@ function renderSlaCourier(pc){
     if(courierVolChartInstance){courierVolChartInstance.destroy();}
     courierVolChartInstance=new Chart(ctxVol,{
       type:'bar',
-      data:{labels:volLabels,datasets:[{label:'Equipos',data:conVol.map(r=>parseVol(r['Equipos'])),backgroundColor:'#009CA3',borderRadius:4}]},
+      data:{labels:volLabels,datasets:[{label:'Equipos',data:conVol.map(r=>parseVol(r['Equipos'])),backgroundColor:'#0099A8',borderRadius:4}]},
       options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Volumen (equipos) · Courier Personas (MELI CC)',font:{size:13}}},
         scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}
     });
@@ -2160,7 +2160,7 @@ function renderSlaEfec(prod){
     const refLine={id:'r95e1',afterDraw(c){const{ctx,chartArea:{left,right},scales:{y}}=c;const py=y.getPixelForValue(95);ctx.save();ctx.beginPath();ctx.strokeStyle='rgba(0,156,163,.5)';ctx.setLineDash([5,3]);ctx.lineWidth=1.5;ctx.moveTo(left,py);ctx.lineTo(right,py);ctx.stroke();ctx.restore();}};
     requestAnimationFrame(()=>{
       dc('ch-efec1');const el=document.getElementById('ch-efec1');
-      if(el) CI['ch-efec1']=new Chart(el.getContext('2d'),{type:'line',data:{labels:lbls,datasets:[{data:vals,borderColor:'#F29400',backgroundColor:'rgba(242,148,0,.07)',pointBackgroundColor:ptCols,pointRadius:5,tension:.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:0,max:100,ticks:{callback:v=>v+'%',stepSize:20},grid:{color:'rgba(0,0,0,.04)'}}}},plugins:[refLine]});
+      if(el) CI['ch-efec1']=new Chart(el.getContext('2d'),{type:'line',data:{labels:lbls,datasets:[{data:vals,borderColor:'#F6A945',backgroundColor:'rgba(242,148,0,.07)',pointBackgroundColor:ptCols,pointRadius:5,tension:.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:0,max:100,ticks:{callback:v=>v+'%',stepSize:20},grid:{color:'rgba(0,0,0,.04)'}}}},plugins:[refLine]});
     });
   }
 
@@ -2191,7 +2191,7 @@ function renderSlaEfec(prod){
       const sumaPct=motivosRows.reduce((a,r)=>a+parseFloat(r.porcentaje||0),0);
       const factor=(sumaPct>0&&sumaPct<=1.5)?100:1;
       function pctNorm(v){return parseFloat(v||0)*factor;}
-      const PIE_COLORS=['#009CA3','#F29400','#97BF0D','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7'];
+      const PIE_COLORS=['#0099A8','#F6A945','#8FBF4C','#E05A5A','#1DB4C2','#8E44AD','#E67E22','#2ECC71','#3498DB','#95A5A6','#F39C12','#BDC3C7'];
       const sorted=motivosRows.slice().sort((a,b)=>pctNorm(b.porcentaje)-pctNorm(a.porcentaje));
       const box=document.createElement('div');
       box.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-top:8px;padding:14px 16px;';
@@ -2278,9 +2278,9 @@ function renderAdopcion(){
       '</div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-eyebrow">Activación · Engagement</div><div class="pbi-bigtitle" style="font-size:18px">Indicadores | Usuarios</div></div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#009CA3">'+a.segConEnvios+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios <b>con envíos realizados</b></div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#009CA3">'+a.segSinEnvios+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios activos <b>sin envíos</b></div></div>'+
-        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#009CA3">'+a.segSinOnboarding+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios <b>sin finalizar onboarding</b></div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#0099A8">'+a.segConEnvios+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios <b>con envíos realizados</b></div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#0099A8">'+a.segSinEnvios+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios activos <b>sin envíos</b></div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:#0099A8">'+a.segSinOnboarding+'</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black)">Usuarios <b>sin finalizar onboarding</b></div></div>'+
       '</div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">De registrado a cliente activo (corte actual)</div></div>'+
       '<div class="pbi-cards5">'+
@@ -2496,7 +2496,7 @@ function renderPBI(prod){
           '<div class="pbi-icon">💰</div>'+
           '<div class="pbi-card-title">Margen Bruto · '+prod+'</div>'+
           '<div class="pbi-card-sub">Todavía no hay datos de margen embebidos para este producto.</div>'+
-          '<a href="'+PBI_REPORT_URL+'" target="_blank" class="pbi-open-btn" style="background:#97BF0D">'+
+          '<a href="'+PBI_REPORT_URL+'" target="_blank" class="pbi-open-btn" style="background:#8FBF4C">'+
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'+
             'Abrir Margen Bruto en Power BI'+
           '</a>'+
@@ -2538,7 +2538,7 @@ function renderPBI(prod){
       '<div class="pbi-chartwrap">'+
         '<canvas id="pbiChartCanvas"></canvas>'+
       '</div>'+
-      '<a href="'+PBI_REPORT_URL+'" target="_blank" class="pbi-open-btn" style="background:#97BF0D">'+
+      '<a href="'+PBI_REPORT_URL+'" target="_blank" class="pbi-open-btn" style="background:#8FBF4C">'+
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'+
         'Ver detalle completo en Power BI'+
       '</a>'+
@@ -2558,7 +2558,7 @@ function renderPBI(prod){
       datasets:[
         {type:'bar',label:'Venta',data:ventaData,backgroundColor:'#003E51',order:2,yAxisID:'y'},
         {type:'bar',label:'Costo',data:costoData,backgroundColor:'#c9d3d6',order:2,yAxisID:'y'},
-        {type:'line',label:'Margen %',data:margenPctData,borderColor:'#97BF0D',backgroundColor:'#97BF0D',pointBackgroundColor:'#97BF0D',borderWidth:2.5,tension:.35,yAxisID:'y1',order:1}
+        {type:'line',label:'Margen %',data:margenPctData,borderColor:'#8FBF4C',backgroundColor:'#8FBF4C',pointBackgroundColor:'#8FBF4C',borderWidth:2.5,tension:.35,yAxisID:'y1',order:1}
       ]
     },
     options:{
@@ -2619,7 +2619,7 @@ function renderComparativa(prod){
   // ── Tarjeta 1: 2 meses atrás vs mes anterior ──
   const card1=document.createElement('div');
   const hayCard1=!!(antMc&&ant2Mc);
-  card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(hayCard1&&pct(fAnt,fAnt2)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
+  card1.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(hayCard1&&pct(fAnt,fAnt2)>=0?'#8FBF4C':'#C0392B')+';border-radius:10px;padding:18px;';
   card1.innerHTML=hayCard1?(
     '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">'+
       mesLbl(ant2Mc)+' '+ant2Y+' vs '+mesLbl(antMc)+' '+antY+
@@ -2627,12 +2627,12 @@ function renderComparativa(prod){
     '<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">'+
       '<div>'+
         '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ant2Mc)+' '+ant2Y+'</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#F29400">'+fmtARS(fAnt2)+'</div>'+
+        '<div style="font-family:Montserrat,sans-serif;font-size:28px;font-weight:700;color:#F6A945">'+fmtARS(fAnt2)+'</div>'+
       '</div>'+
       '<div style="font-size:20px;color:#ccc;padding-bottom:4px">→</div>'+
       '<div>'+
         '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(antMc)+' '+antY+'</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(fAnt)+'</div>'+
+        '<div style="font-family:Montserrat,sans-serif;font-size:28px;font-weight:700;color:#8FBF4C">'+fmtARS(fAnt)+'</div>'+
       '</div>'+
     '</div>'+
     '<div>'+pctHtml(pct(fAnt,fAnt2))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación mensual</span></div>'
@@ -2641,7 +2641,7 @@ function renderComparativa(prod){
   // ── Tarjeta 2: mes anterior vs mes actual ──
   const card2=document.createElement('div');
   const hayCard2=!!(ultMc&&antMc);
-  card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(hayCard2&&pct(fUlt,fAnt)>=0?'#97BF0D':'#C0392B')+';border-radius:10px;padding:18px;';
+  card2.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-top:3px solid '+(hayCard2&&pct(fUlt,fAnt)>=0?'#8FBF4C':'#C0392B')+';border-radius:10px;padding:18px;';
   card2.innerHTML=
     '<div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">'+
       mesLbl(antMc)+' '+antY+' vs '+mesLbl(ultMc)+' '+ultY+
@@ -2649,12 +2649,12 @@ function renderComparativa(prod){
     '<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">'+
       '<div>'+
         '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(antMc)+' '+antY+'</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#F29400">'+fmtARS(fAnt)+'</div>'+
+        '<div style="font-family:Montserrat,sans-serif;font-size:28px;font-weight:700;color:#F6A945">'+fmtARS(fAnt)+'</div>'+
       '</div>'+
       '<div style="font-size:20px;color:#ccc;padding-bottom:4px">→</div>'+
       '<div>'+
         '<div style="font-size:9px;color:var(--gray);margin-bottom:2px">'+mesLbl(ultMc)+' '+ultY+'</div>'+
-        '<div style="font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:700;color:#97BF0D">'+fmtARS(fUlt)+'</div>'+
+        '<div style="font-family:Montserrat,sans-serif;font-size:28px;font-weight:700;color:#8FBF4C">'+fmtARS(fUlt)+'</div>'+
       '</div>'+
     '</div>'+
     (hayCard2?'<div>'+pctHtml(pct(fUlt,fAnt))+'<span style="font-size:11px;color:var(--gray);margin-left:6px">variación mensual</span></div>':'<div style="font-size:11px;color:var(--gray)">Solo un mes disponible.</div>');
@@ -2674,7 +2674,7 @@ function renderComparativa(prod){
   const d2=years.length>1?MO.map(m=>byAM[yr2+'|'+m]||0):null;
   const cg=document.createElement('div');
   cg.style.cssText='background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px;';
-  cg.innerHTML='<div style="font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:700;margin-bottom:3px">Facturación mensual — '+yr1+(d2?' vs '+yr2:'')+'</div><div style="font-size:10px;color:var(--gray);margin-bottom:8px">ARS M</div><div style="position:relative;height:200px"><canvas id="cc-comp"></canvas></div>';
+  cg.innerHTML='<div style="font-family:Montserrat,sans-serif;font-size:13px;font-weight:700;margin-bottom:3px">Facturación mensual — '+yr1+(d2?' vs '+yr2:'')+'</div><div style="font-size:10px;color:var(--gray);margin-bottom:8px">ARS M</div><div style="position:relative;height:200px"><canvas id="cc-comp"></canvas></div>';
   pc.appendChild(cg);
   const ds=[{label:String(yr1),data:d1.map(x=>+(x/1e6).toFixed(1)),backgroundColor:'rgba(242,148,0,.75)',borderRadius:4}];
   if(d2) ds.push({label:String(yr2),data:d2.map(x=>+(x/1e6).toFixed(1)),backgroundColor:'rgba(151,191,13,.75)',borderRadius:4});
@@ -2707,8 +2707,8 @@ function renderRanking(prod){
   const totalF=sorted.reduce((a,b)=>a+b[1],0);
   const top3p=top20.slice(0,3).reduce((a,b)=>a+b[1],0)/totalF*100;
   const rsm=document.createElement('div');rsm.className='comp-row';
-  rsm.innerHTML=`<div class="comp-card"><h4>Concentración Top 3</h4><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:${T}">${top3p.toFixed(1)}%</div><div style="font-size:10px;color:var(--gray);margin-top:2px">del total</div></div>
-    <div class="comp-card"><h4>Clientes activos · ${periodoLbl}</h4><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700">${sorted.length}</div><div style="font-size:10px;color:var(--gray);margin-top:2px">con facturación &gt; $0</div></div>`;
+  rsm.innerHTML=`<div class="comp-card"><h4>Concentración Top 3</h4><div style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;color:${T}">${top3p.toFixed(1)}%</div><div style="font-size:10px;color:var(--gray);margin-top:2px">del total</div></div>
+    <div class="comp-card"><h4>Clientes activos · ${periodoLbl}</h4><div style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700">${sorted.length}</div><div style="font-size:10px;color:var(--gray);margin-top:2px">con facturación &gt; $0</div></div>`;
   pc.appendChild(rsm);
   const rb=document.createElement('div');rb.className='rank-box';
   rb.innerHTML=`<h4>Top 20 Clientes · ${periodoLbl}</h4><div class="rank-sub">Facturación del período</div>`;
@@ -2729,7 +2729,7 @@ function renderRanking(prod){
   const pie=document.createElement('div');pie.className='comp-card';
   pie.innerHTML=`<h4>Distribución top 5 + resto</h4><div style="position:relative;height:200px"><canvas id="cc-pie"></canvas></div>`;
   pc.appendChild(pie);
-  requestAnimationFrame(()=>mkChart('cc-pie','doughnut',[...top5.map(([n])=>n.length>22?n.substring(0,22)+'…':n),'Resto'],[{data:[...top5.map(([,x])=>+(x/1e6).toFixed(1)),+(resto/1e6).toFixed(1)],backgroundColor:['#009CA3','#1DB4C2','#97BF0D','#F29400','#231F20','#B1B1B1'],borderWidth:2,borderColor:'#fff'}],{ex:{plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:c=>' '+c.label+': $'+c.raw+'M'}}}}}));
+  requestAnimationFrame(()=>mkChart('cc-pie','doughnut',[...top5.map(([n])=>n.length>22?n.substring(0,22)+'…':n),'Resto'],[{data:[...top5.map(([,x])=>+(x/1e6).toFixed(1)),+(resto/1e6).toFixed(1)],backgroundColor:['#0099A8','#1DB4C2','#8FBF4C','#F6A945','#231F20','#B1B1B1'],borderWidth:2,borderColor:'#fff'}],{ex:{plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:c=>' '+c.label+': $'+c.raw+'M'}}}}}));
 }
 
 // ── UTILS ──
