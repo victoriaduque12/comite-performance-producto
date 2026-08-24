@@ -358,7 +358,7 @@ function renderCDD(){
     <div class="section-title">🛠️ Indicadores de plataforma</div>
     <div class="section-sub">KPIs de estabilidad técnica</div>
     <div class="cards-row" style="grid-template-columns:1fr">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Incidentes totales (histórico)</div><div class="val">${DATA.kpisEstab.total}</div><div class="sub">${DATA.kpisEstab.corregidos} corregidos · ${DATA.kpisEstab.abiertos} abiertos · MTTR promedio ${DATA.kpisEstab.mttr_prom} días</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Incidentes totales (histórico)</div><div class="val">${DATA.kpisEstab.total}</div><div class="sub">${DATA.kpisEstab.corregidos} corregidos · ${DATA.kpisEstab.abiertos} abiertos · Tiempo medio de resolución ${DATA.kpisEstab.mttr_prom} días</div></div>
     </div>
     <div class="two-col">
       <div class="chart-box"><h3>Incidentes reportados por mes</h3><div class="note">Abril → Agosto 2026</div><canvas id="cdd-inc-mes"></canvas></div>
@@ -460,7 +460,7 @@ function renderRash(){
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Issues totales</div><div class="val" style="font-size:24px">${ri.total}</div></div>
       <div class="kcard" style="border-top-color:#C0392B"><div class="lbl">Bugs</div><div class="val" style="font-size:24px;color:#C0392B">${ri.bugs}</div></div>
       <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Resueltos</div><div class="val" style="font-size:24px;color:#4D7200">${ri.resueltos}</div></div>
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">MTTR promedio (días)</div><div class="val" style="font-size:24px">${ri.mttr_prom}</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Tiempo medio de resolución (días)</div><div class="val" style="font-size:24px">${ri.mttr_prom}</div></div>
     </div>
     <div class="chart-box"><h3>Issues reportados por semana</h3><div class="note">Desde el Go Live</div><canvas id="rash-issues"></canvas></div>`;
   paintFacVolCharts('rash',rows);
