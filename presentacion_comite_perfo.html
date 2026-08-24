@@ -226,7 +226,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   {"mes":"Julio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",78.36],["Colecta en punto – Entrega Domicilio c/aviso",19.4],["Colecta en punto – Entrega en punto c/aviso",2.24]]},
   {"mes":"Agosto","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",50],["Colecta en punto – Entrega Domicilio c/aviso",50],["Colecta en punto – Entrega en punto c/aviso",0]]}
 ],
-"rashVolumenOperativo":[["Julio",134],["Agosto",10]]
+"rashVolumenOperativo":[["Junio",138],["Julio",134],["Agosto",10]]
 };
 
 const CHART_INSTANCES={};
@@ -434,7 +434,7 @@ function renderRash(){
   paintMargenChart('rash',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('rash',sla,true);
-  mkChart('rash-vol-operativo',{type:'bar',data:{labels:DATA.rashVolumenOperativo.map(r=>r[0]),datasets:[{data:DATA.rashVolumenOperativo.map(r=>r[1]),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:cnt}}]},
+  mkChart('rash-vol-operativo',{type:'line',data:{labels:DATA.rashVolumenOperativo.map(r=>r[0]),datasets:[{data:DATA.rashVolumenOperativo.map(r=>r[1]),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   const flujosLabels=DATA.rashFlujos.map(m=>m.mes);
   const flujosNombres=DATA.rashFlujos[0].flujos.map(f=>f[0]);
