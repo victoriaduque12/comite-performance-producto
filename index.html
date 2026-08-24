@@ -1936,14 +1936,15 @@ function renderResumen(prod,v,fac,vol,clis){
 let courierSlaChartInstance=null, courierVolChartInstance=null;
 function renderSlaCourier(pc){
   if(courierSlaChartInstance){courierSlaChartInstance.destroy();courierSlaChartInstance=null;}
+  if(courierVolChartInstance){courierVolChartInstance.destroy();courierVolChartInstance=null;}
   const rows=allCourierSla.filter(r=>(r['producto']||'').trim()==='Courier Personas (Customs Clearance)');
-  const tipos=['SLA Transito a Aduana','SLA Declaración y Liberación','SLA Traslado al CAD'];
   const parseNum=v=>{
     if(v===null||v===undefined||v==='') return null;
     const n=parseFloat(String(v).replace(',','.'));
     return isNaN(n)?null:n;
   };
-  const conDatos=rows.filter(r=>tipos.some(t=>parseNum(r[t])!==null))
+  const slaTipos=['SLA','SLA + 24 hs','SLA + 48 hs'];
+  const conDatos=rows.filter(r=>slaTipos.some(t=>parseNum(r[t])!==null))
     .sort((a,b)=>Number(a.anio)-Number(b.anio)||Number(a.semana)-Number(b.semana));
 
   if(!conDatos.length){
@@ -1954,29 +1955,29 @@ function renderSlaCourier(pc){
   }
 
   const ult=conDatos[conDatos.length-1];
-  const cards=tipos.map(t=>{
+  const cards=slaTipos.map(t=>{
     const v=parseNum(ult[t]);
-    return v===null?'':`<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:${slaColor(v)}">${v.toFixed(1)}%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">${t.replace('SLA ','')}</div><div class="pbi-mcard-sub">Semana ${ult.semana} (${ult.mes} ${ult.anio})</div></div>`;
+    return v===null?'':`<div class="pbi-mcard"><div class="pbi-mcard-v" style="color:${slaColor(v)}">${v.toFixed(1)}%</div><div class="pbi-mcard-lbl" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--black);font-weight:600">${t}</div><div class="pbi-mcard-sub">Semana ${ult.semana} (${ult.mes} ${ult.anio})</div></div>`;
   }).join('');
 
   const pc2=document.getElementById('tab-slaefec');
   pc2.innerHTML=
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">📈</span> SLA · Courier Personas (Customs Clearance)</div></div>'+
     '<div class="pbi-body">'+
-      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">MELI CC</div><div class="pbi-bigtitle" style="font-size:19px">SLA por tipo (detalle semanal)</div>'+
+      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">MELI CC</div><div class="pbi-bigtitle" style="font-size:19px">SLA (detalle semanal)</div>'+
       '<div class="pbi-subdate">Este producto solo mide primera milla — no se calcula Efectividad acá.</div></div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div>'+
-      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Evolución semanal por tipo de SLA</div></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Evolución semanal de SLA</div></div>'+
       '<div class="pbi-chartwrap"><canvas id="courierSlaCanvas"></canvas></div>'+
-      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Evolución del Volumen (equipos) por semana</div></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Equipos: Arribados, Liberados y Pendientes</div></div>'+
       '<div class="pbi-chartwrap"><canvas id="courierVolCanvas"></canvas></div>'+
       '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
     '</div>';
 
   const labels=conDatos.map(r=>['S'+r.semana,r.mes.slice(0,3)]);
   const colors=['#0099A8','#F6A945','#8FBF4C'];
-  const datasets=tipos.map((t,i)=>({
-    label:t.replace('SLA ',''),
+  const datasets=slaTipos.map((t,i)=>({
+    label:t,
     data:conDatos.map(r=>parseNum(r[t])),
     borderColor:colors[i],
     backgroundColor:colors[i],
@@ -1989,25 +1990,28 @@ function renderSlaCourier(pc){
     data:{labels,datasets},
     options:{responsive:true,plugins:{
       legend:{position:'bottom'},
-      title:{display:true,text:'SLA por tipo · Courier Personas (MELI CC)',font:{size:13}}
+      title:{display:true,text:'SLA · Courier Personas (MELI CC)',font:{size:13}}
     },
       scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}
   });
 
-  const parseVol=v=>{
-    if(v===null||v===undefined||v==='') return null;
-    const n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));
-    return isNaN(n)?null:n;
-  };
-  const conVol=conDatos.filter(r=>parseVol(r['Equipos'])!==null);
-  if(conVol.length){
-    const volLabels=conVol.map(r=>['S'+r.semana,r.mes.slice(0,3)]);
+  const equiposTipos=['Equipos Arribados','Equipos Liberados','Equipos Pendientes'];
+  const conEquipos=rows.filter(r=>equiposTipos.some(t=>parseNum(r[t])!==null))
+    .sort((a,b)=>Number(a.anio)-Number(b.anio)||Number(a.semana)-Number(b.semana));
+  if(conEquipos.length){
+    const eqLabels=conEquipos.map(r=>['S'+r.semana,r.mes.slice(0,3)]);
+    const eqColors=['#0099A8','#8FBF4C','#F6A945'];
+    const eqDatasets=equiposTipos.map((t,i)=>({
+      label:t.replace('Equipos ',''),
+      data:conEquipos.map(r=>parseNum(r[t])),
+      backgroundColor:eqColors[i],
+      borderRadius:4
+    }));
     const ctxVol=document.getElementById('courierVolCanvas').getContext('2d');
-    if(courierVolChartInstance){courierVolChartInstance.destroy();}
     courierVolChartInstance=new Chart(ctxVol,{
       type:'bar',
-      data:{labels:volLabels,datasets:[{label:'Equipos',data:conVol.map(r=>parseVol(r['Equipos'])),backgroundColor:'#0099A8',borderRadius:4}]},
-      options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Volumen (equipos) · Courier Personas (MELI CC)',font:{size:13}}},
+      data:{labels:eqLabels,datasets:eqDatasets},
+      options:{responsive:true,plugins:{legend:{position:'bottom'},title:{display:true,text:'Equipos · Courier Personas (MELI CC)',font:{size:13}}},
         scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}
     });
   }
