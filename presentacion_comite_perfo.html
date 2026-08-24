@@ -289,6 +289,9 @@ function mkChart(id,cfg){
   if(CHART_INSTANCES[id]){CHART_INSTANCES[id].destroy();}
   const el=document.getElementById(id);
   if(!el)return;
+  cfg.options=cfg.options||{};
+  cfg.options.layout=cfg.options.layout||{};
+  cfg.options.layout.padding=cfg.options.layout.padding||{top:22};
   CHART_INSTANCES[id]=new Chart(el.getContext('2d'),cfg);
 }
 
