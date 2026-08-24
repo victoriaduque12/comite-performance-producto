@@ -670,9 +670,9 @@ function renderCourier(){
   paintMargenChart('courier',rows);
   const labels=sla.map(r=>['S'+r[1],r[0].slice(0,3)]);
   mkChart('courier-sla',{type:'line',data:{labels,datasets:[
-    {label:'SLA',data:sla.map(r=>r[3]),borderColor:'#0099A8',tension:.3,spanGaps:true},
-    {label:'SLA + 24 hs',data:sla.map(r=>r[4]),borderColor:'#F6A945',tension:.3,spanGaps:true},
-    {label:'SLA + 48 hs',data:sla.map(r=>r[5]),borderColor:'#8FBF4C',tension:.3,spanGaps:true}
+    {label:'SLA',data:sla.map(r=>r[3]),borderColor:'#0099A8',tension:.3,spanGaps:true,datalabels:{align:'bottom',offset:6}},
+    {label:'SLA + 24 hs',data:sla.map(r=>r[4]),borderColor:'#F6A945',tension:.3,spanGaps:true,datalabels:{align:'top',offset:6}},
+    {label:'SLA + 48 hs',data:sla.map(r=>r[5]),borderColor:'#8FBF4C',tension:.3,spanGaps:true,datalabels:{align:'top',offset:6}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[3,4,5]),max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('courier-vol',{type:'bar',data:{labels,datasets:[
     {label:'Arribados',data:sla.map(r=>r[6]),backgroundColor:'#0099A8',borderRadius:4},
