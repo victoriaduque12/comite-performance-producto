@@ -192,6 +192,31 @@ function paintSlaEfecCharts(idPrefix,sla,target){
   mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
 }
 Chart.register(ChartDataLabels);
+const targetLinePlugin={
+  id:'targetLine',
+  afterDraw(chart){
+    const opts=chart.options.plugins&&chart.options.plugins.targetLine;
+    if(!opts)return;
+    const xScale=chart.scales.x, yArea=chart.chartArea;
+    const xPix=xScale.getPixelForValue(opts.value);
+    const ctx=chart.ctx;
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([6,4]);
+    ctx.strokeStyle='#8a97a0';
+    ctx.lineWidth=1.5;
+    ctx.moveTo(xPix,yArea.top);
+    ctx.lineTo(xPix,yArea.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#6b7680';
+    ctx.font='10px Barlow';
+    ctx.textAlign='center';
+    ctx.fillText(opts.label,xPix,yArea.top-4);
+    ctx.restore();
+  }
+};
+Chart.register(targetLinePlugin);
 Chart.defaults.set('plugins.datalabels',{
   display:true,
   align:'top',
@@ -220,6 +245,19 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "consumoClientes":[["MOLINOS RIO DE LA PLATA S.A.",162078806.87],["PROCTER & GAMBLE ARGENTINA S.R.L.",25840246.58],["BAT OPERACIONES S.A.U.",11850362.21],["TOYOTA MHM LTDA",4649704],["DIRECTV ARGENTINA SOCIEDAD ANONIMA",2293150.35],["GRIMBERG DENTALES S.A.",440395.77],["DEPORSUR S.A.",3994.7]],
 "kpisEstabMensual":[["ABRIL",2026,5,4],["MAYO",2026,7,6],["JUNIO",2026,9,10],["JULIO",2026,1,2],["AGOSTO",2026,2,2]],
 "cddTopCliente":{"nombre":"GOBIERNO CIUDAD BS AS","monto":106300000,"periodo":"Total histórico"},
+"cddSlaProvincia":[
+  {"provincia":"Rio Negro","share":8.67,"sla":100.0},
+  {"provincia":"Córdoba","share":0.18,"sla":100.0},
+  {"provincia":"Santa Fé","share":0.09,"sla":100.0},
+  {"provincia":"La Pampa","share":0.09,"sla":100.0},
+  {"provincia":"Santa Cruz","share":0.09,"sla":100.0},
+  {"provincia":"Chubut","share":25.83,"sla":97.1},
+  {"provincia":"Buenos Aires","share":14.02,"sla":95.4},
+  {"provincia":"Capital Federal","share":50.46,"sla":88.7},
+  {"provincia":"Entre Rios","share":0.18,"sla":50.0},
+  {"provincia":"Chaco","share":0.18,"sla":null},
+  {"provincia":"Neuquen","share":0.09,"sla":null}
+],
 "rashIssues":{"total":15,"bugs":10,"mejoras":5,"resueltos":15,"abiertos":0,"mttr_prom":2.0,
   "porSemana":[["08/06",3],["15/06",3],["22/06",2],["29/06",3],["06/07",1],["13/07",1],["20/07",1],["17/08",1]]},
 "rashAdopcion":{
@@ -349,6 +387,14 @@ function renderCDD(){
     ${buildSlaEfecCharts('cdd','Octubre 2025 → Agosto 2026')}
     <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA | Desglose por semana en agosto</div>
     <div class="chart-box"><h3>SLA · Detalle semanal Agosto 2026</h3><div class="note">Corte parcial, se ajusta el próximo lunes de ser necesario</div><canvas id="cdd-sla-semanal"></canvas></div>
+    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Agosto 2026</div>
+    <div class="chart-box"><h3>SLA por Provincia</h3><div class="note">Ordenado de mayor a menor · línea punteada = Target SLA 95%</div>
+      <canvas id="cdd-sla-provincia" style="max-height:340px"></canvas>
+    </div>
+    <div class="chart-box"><h3>Share de Volumen por Provincia</h3><div class="note">% sobre el total de CDD del período · Agosto 2026</div>
+      <canvas id="cdd-share-provincia" style="max-height:340px"></canvas>
+    </div>
+    <div class="note-box" id="cdd-provincia-insight"></div>
     <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Julio 2026 · % sobre piezas no entregadas (excluye "Entregado")</div>
       <canvas id="cdd-motivos"></canvas>
     </div>
@@ -369,6 +415,32 @@ function renderCDD(){
   paintSlaEfecCharts('cdd',sla,true);
   mkChart('cdd-sla-semanal',{type:'bar',data:{labels:DATA.cddSlaSemanal.map(r=>r[0]),datasets:[{data:DATA.cddSlaSemanal.map(r=>r[1]),backgroundColor:'#009CA3',borderRadius:4}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:50,max:100,ticks:{callback:v=>v+'%'}}}}});
+
+  const provOrdenadas=DATA.cddSlaProvincia.slice().sort((a,b)=>(b.sla??-1)-(a.sla??-1));
+  mkChart('cdd-sla-provincia',{type:'bar',data:{
+    labels:provOrdenadas.map(p=>p.provincia),
+    datasets:[{data:provOrdenadas.map(p=>p.sla),
+      backgroundColor:provOrdenadas.map(p=>p.sla==null?'#c9d3d6':(p.sla>=95?'#8FBF4C':'#C0392B')),
+      borderRadius:4,
+      datalabels:{formatter:(v)=>v==null?'s/d':v.toFixed(1)+'%',anchor:'end',align:'end'}}]
+  },options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},targetLine:{value:95,label:'Target SLA 95%'}},
+    scales:{x:{min:0,max:105,ticks:{callback:v=>v+'%'}}}}});
+
+  const provPorShare=DATA.cddSlaProvincia.slice().sort((a,b)=>b.share-a.share);
+  mkChart('cdd-share-provincia',{type:'bar',data:{
+    labels:provPorShare.map(p=>p.provincia),
+    datasets:[{data:provPorShare.map(p=>p.share),backgroundColor:'#009CA3',borderRadius:4,
+      datalabels:{formatter:v=>v.toFixed(2)+'%',anchor:'end',align:'end'}}]
+  },options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
+
+  // Insight: provincia con mayor impacto = share × gap respecto al target, entre las que están debajo
+  const conGap=DATA.cddSlaProvincia.filter(p=>p.sla!=null&&p.sla<95).map(p=>({...p,impacto:p.share*(95-p.sla)}));
+  conGap.sort((a,b)=>b.impacto-a.impacto);
+  const principal=conGap[0];
+  const arribaTarget=DATA.cddSlaProvincia.filter(p=>p.sla!=null&&p.sla>=95).map(p=>p.provincia);
+  document.getElementById('cdd-provincia-insight').innerHTML=principal
+    ? `El principal gap se concentra en <b>${principal.provincia}</b> (${principal.share.toFixed(1)}% del volumen, SLA ${principal.sla.toFixed(1)}%) — es la que más pesa sobre el resultado general. ${arribaTarget.length?arribaTarget.join(', ')+' ya están por encima del target.':''}`
+    : 'Todas las provincias con dato disponible están sobre el target de 95%.';
   mkChart('cdd-motivos',{type:'bar',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:'#009CA3',borderRadius:4}]},
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v.toFixed(1)+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
