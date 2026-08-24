@@ -47,6 +47,23 @@ body{font-family:'Barlow',sans-serif;background:var(--surface);color:var(--black
 .legend-item .pct{margin-left:auto;font-weight:700;}
 .note-box{background:#FDEDED;border:1px solid #f3b9b9;border-radius:8px;padding:10px 14px;font-size:12px;color:#8a2c2c;margin-bottom:16px;}
 .note-box-info{background:#FFF4E0;border:1px solid #FFAB40;border-radius:8px;padding:10px 14px;font-size:12px;color:#8a5a10;margin-bottom:16px;}
+/* Funnel de adopción */
+.funnel-wrap{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:6px;}
+.funnel-stage{border-radius:8px;padding:16px 20px;text-align:center;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.funnel-num{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:700;line-height:1;}
+.funnel-lbl{font-size:14px;font-weight:600;margin-top:4px;}
+.funnel-sub{font-size:11.5px;opacity:.85;margin-top:3px;}
+.funnel-arrow{display:flex;flex-direction:column;align-items:center;padding:8px 0;}
+.funnel-arrow-pct{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;}
+.funnel-arrow-lbl{font-size:10.5px;color:var(--gray);margin-top:1px;}
+.funnel-arrow-bottleneck{background:#FDEDED;border:1px dashed #C0392B;border-radius:6px;padding:8px 14px;margin:2px 0;}
+.funnel-arrow-bottleneck .funnel-arrow-pct{color:#C0392B;}
+.funnel-arrow-bottleneck .funnel-arrow-lbl{color:#8a2c2c;font-weight:600;}
+/* Indicadores secundarios (menor jerarquía) */
+.cards-row-sec{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.kcard-sec{background:#f7f9fa;border:1px solid #e4eaec;border-radius:8px;padding:10px 14px;text-align:center;}
+.val-sec{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--gray);}
+.lbl-sec{font-size:10.5px;color:var(--gray);margin-top:2px;}
 .info-box{background:#EAF6F2;border:1px solid #b9e0d3;border-radius:8px;padding:10px 14px;font-size:12px;color:#1b5e42;margin-bottom:16px;}
 /* Portada / roadmap */
 .roadmap-title{background:var(--teal2);color:#fff;padding:20px 24px;font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;}
@@ -219,7 +236,8 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   "pctRecurrentes":57.1,"pctRecurrentesDetalle":"8 de los 14 activados",
   "enviosPromedio":8.29,
   "b2bPct":27.8,"b2cPct":72.2,"b2bCount":106,"b2cCount":275,
-  "segConEnvios":14,"segSinEnvios":367,"segSinOnboarding":256
+  "segConEnvios":14,"segSinEnvios":367,"segSinOnboarding":256,
+  "altasEnPendiente":256,"segRecurrentes":8
 },
 "rashFlujos":[
   {"mes":"Junio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",98.53],["Colecta en punto – Entrega Domicilio c/aviso",0.74],["Colecta en punto – Entrega en punto c/aviso",0.74]]},
@@ -396,35 +414,45 @@ function renderRash(){
     <div class="chart-box"><h3>Apertura por Flujos · Rash</h3><div class="note">% de envíos por flujo, mes a mes</div><canvas id="rash-flujos"></canvas></div>
 
     <div class="section-title">🌱 Indicadores de adopción</div>
-    <div class="section-sub">Altas, activación/engagement y base B2C/B2B — corte manual al ${a.fechaCorte}</div>
-    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${a.altasTotales}</div><div class="lbl">Altas totales (desde ${a.altasDesde})</div></div>
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${a.altasUltSemana}</div><div class="lbl">Última semana completa (${a.altasUltSemanaRango})</div></div>
-      <div class="kcard" style="border-top-color:${a.variacionSemanal>=0?'#4D7200':'#C0392B'}"><div class="val" style="color:${a.variacionSemanal>=0?'#4D7200':'#C0392B'}">${a.variacionSemanal}%</div><div class="lbl">Variación vs. semana anterior</div></div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="val">${a.altasEnCurso}</div><div class="lbl">Semana en curso (${a.altasEnCursoRango})</div></div>
+    <div class="section-sub">Funnel de adopción — corte manual al ${a.fechaCorte}</div>
+    <div class="funnel-wrap">
+      <div class="funnel-stage" style="width:100%;background:#003E51">
+        <div class="funnel-num">${a.altasTotales+a.altasEnPendiente}</div>
+        <div class="funnel-lbl">Iniciaron onboarding</div>
+        <div class="funnel-sub">100% de la base</div>
+      </div>
+      <div class="funnel-arrow"><span class="funnel-arrow-pct" style="color:#4D7200">↓ ${a.tasaFinalizacion}%</span><span class="funnel-arrow-lbl">Conversión a onboarding completo</span></div>
+
+      <div class="funnel-stage" style="width:78%;background:#0099A8">
+        <div class="funnel-num">${a.altasTotales}</div>
+        <div class="funnel-lbl">Completaron onboarding / Usuarios activos</div>
+        <div class="funnel-sub">${a.tasaFinalizacion}% de quienes iniciaron</div>
+      </div>
+      <div class="funnel-arrow funnel-arrow-bottleneck"><span class="funnel-arrow-pct">⚠ ↓ ${a.tasaActivacion}%</span><span class="funnel-arrow-lbl">Conversión a primer envío — principal cuello de botella</span></div>
+
+      <div class="funnel-stage" style="width:50%;background:#C0392B">
+        <div class="funnel-num">${a.segConEnvios}</div>
+        <div class="funnel-lbl">Activos con envíos</div>
+        <div class="funnel-sub">Realizaron al menos 1 envío · ${a.tasaActivacion}% de los usuarios activos</div>
+      </div>
+      <div class="funnel-arrow"><span class="funnel-arrow-pct" style="color:#4D7200">↓ ${a.pctRecurrentes}%</span><span class="funnel-arrow-lbl">Conversión a recurrencia</span></div>
+
+      <div class="funnel-stage" style="width:32%;background:#4D7200">
+        <div class="funnel-num">${a.segRecurrentes}</div>
+        <div class="funnel-lbl">Usuarios recurrentes</div>
+        <div class="funnel-sub">Realizaron más de un envío · ${a.pctRecurrentes}% de los que enviaron al menos una vez</div>
+      </div>
     </div>
-    <div class="two-col">
-      <div class="chart-box"><h3>Altas por semana</h3><div class="note">Detalle semanal</div><canvas id="rash-altas-sem"></canvas></div>
-      <div class="chart-box"><h3>Altas por mes</h3><div class="note">Junio → Agosto (parcial)</div><canvas id="rash-altas-mes"></canvas></div>
+
+    <div class="note-box" style="margin-top:18px">Principal oportunidad en la activación: el ${a.tasaFinalizacion}% de los usuarios completa el onboarding, pero solo el ${a.tasaActivacion}% de los usuarios activos realizó al menos un envío. El foco está puesto en reducir las fricciones entre el alta y la creación del primer envío.</div>
+
+    <div class="section-sub" style="margin-top:22px;font-weight:600;color:var(--gray);text-transform:uppercase;font-size:11px;letter-spacing:.5px">Indicadores secundarios</div>
+    <div class="cards-row-sec">
+      <div class="kcard-sec"><div class="val-sec">${a.altasEnPendiente}</div><div class="lbl-sec">Registro pendiente</div></div>
+      <div class="kcard-sec"><div class="val-sec">${a.b2cPct}% / ${a.b2bPct}%</div><div class="lbl-sec">Mix usuarios (B2C / B2B)</div></div>
+      <div class="kcard-sec"><div class="val-sec">${a.segRecurrentes}</div><div class="lbl-sec">Usuarios recurrentes</div></div>
     </div>
-    <div class="section-title">Base de usuarios</div>
-    <div class="chart-box" style="margin-bottom:14px"><h3 style="margin-bottom:10px">B2C vs. B2B (sobre Activos)</h3>
-    <div class="cards-row" style="grid-template-columns:repeat(2,1fr);margin-bottom:0">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="val" style="font-size:22px">${a.b2cPct}%</div><div class="lbl">B2C (personas)</div><div class="sub">${a.b2cCount} de ${a.altasTotales} Activos</div></div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:22px">${a.b2bPct}%</div><div class="lbl">B2B (empresas)</div><div class="sub">${a.b2bCount} de ${a.altasTotales} Activos</div></div>
-    </div></div>
-    <div class="chart-box"><h3 style="margin-bottom:10px">Reporte usuarios</h3>
-    <div class="cards-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
-      <div class="kcard"><div class="val" style="color:var(--teal)">${a.segConEnvios}</div><div class="lbl">Usuarios con envíos realizados</div></div>
-      <div class="kcard"><div class="val" style="color:var(--teal)">${a.segSinEnvios}</div><div class="lbl">Usuarios activos sin envíos</div></div>
-      <div class="kcard"><div class="val" style="color:var(--teal)">${a.segSinOnboarding}</div><div class="lbl">Usuarios sin finalizar onboarding</div></div>
-    </div></div>
-    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
-      <div class="kcard" style="border-top-color:${adopColor(a.tasaFinalizacion)}"><div class="val" style="font-size:22px;color:${adopColor(a.tasaFinalizacion)}">${a.tasaFinalizacion}%</div><div class="lbl">Tasa de finalización onboarding</div><div class="sub">${a.tasaFinalizacionDetalle}</div></div>
-      <div class="kcard" style="border-top-color:${adopColor(a.tasaActivacion)}"><div class="val" style="font-size:22px;color:${adopColor(a.tasaActivacion)}">${a.tasaActivacion}%</div><div class="lbl">Tasa de activación</div><div class="sub">${a.tasaActivacionDetalle}</div></div>
-      <div class="kcard" style="border-top-color:${adopColor(100-a.zombiesPct)}"><div class="val" style="font-size:22px;color:${adopColor(100-a.zombiesPct)}">${a.zombies}</div><div class="lbl">Clientes "zombie" (0 envíos)</div><div class="sub">${a.zombiesPct}% de los Activos</div></div>
-      <div class="kcard" style="border-top-color:${adopColor(a.pctRecurrentes)}"><div class="val" style="font-size:22px;color:${adopColor(a.pctRecurrentes)}">${a.pctRecurrentes}%</div><div class="lbl">% Recurrentes (≥2 envíos)</div><div class="sub">${a.pctRecurrentesDetalle}</div></div>
-    </div>
+    <div class="chart-box" style="margin-top:10px"><h3 style="font-size:13px;color:var(--gray)">Evolución de altas</h3><div class="note">Junio → Agosto (parcial) — la adquisición continúa, aunque todavía no se traduce proporcionalmente en envíos</div><canvas id="rash-altas-mes" style="max-height:180px"></canvas></div>
 
     <div class="section-title">🛠️ Indicadores de plataforma</div>
     <div class="section-sub">Issues técnicos reportados</div>
@@ -454,10 +482,6 @@ function renderRash(){
   }))},options:{responsive:true,layout:{padding:{top:26}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#009CA3',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('rash-altas-sem',{data:{labels:a.altasLabels,datasets:[
-    {type:'bar',label:'Altas por semana',data:a.altasSemana,backgroundColor:'#0099A8',borderRadius:4,yAxisID:'y',datalabels:{display:false}},
-    {type:'line',label:'Acumulado',data:a.altasAcum,borderColor:'#F6A945',tension:.3,yAxisID:'y1',datalabels:{display:false}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false}}}}});
   mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[{data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 }
