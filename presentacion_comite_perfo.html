@@ -589,6 +589,9 @@ function renderPickit(){
     </div>
     <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
   paintFacVolCharts('pickit',rows);
+  const volRowsSinJulio=rows.filter(r=>r.mes!=='JULIO');
+  mkChart('pickit-vol',{type:'line',data:{labels:volRowsSinJulio.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsSinJulio.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('pickit',sla,false);
   mkChart('pickit-pp',{data:{labels,datasets:[
