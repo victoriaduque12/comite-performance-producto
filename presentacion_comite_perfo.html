@@ -627,7 +627,7 @@ function renderConsumo(){
       ${cli.map(([n,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eef2f3;font-size:13px"><span>${n}</span><span style="font-weight:700;color:var(--teal)">${fmtARS(v)}</span></div>`).join('')}
     </div>
 
-    <div class="section-title">⚙️ Indicadores operativos</div>
+    <div class="section-title">⚙️ Indicadores operativos | Cliente: MOLINOS RIO DE LA PLATA S.A.</div>
     <div class="section-sub">SLA & Efectividad</div>
     ${buildSlaEfecCharts('consumo','Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)')}`;
   paintFacVolCharts('consumo',rows);
