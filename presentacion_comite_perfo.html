@@ -223,8 +223,10 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 },
 "rashFlujos":[
   {"mes":"Junio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",98.53],["Colecta en punto – Entrega Domicilio c/aviso",0.74],["Colecta en punto – Entrega en punto c/aviso",0.74]]},
-  {"mes":"Julio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",78.36],["Colecta en punto – Entrega Domicilio c/aviso",19.4],["Colecta en punto – Entrega en punto c/aviso",2.24]]}
-]
+  {"mes":"Julio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",78.36],["Colecta en punto – Entrega Domicilio c/aviso",19.4],["Colecta en punto – Entrega en punto c/aviso",2.24]]},
+  {"mes":"Agosto","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",50],["Colecta en punto – Entrega Domicilio c/aviso",50],["Colecta en punto – Entrega en punto c/aviso",0]]}
+],
+"rashVolumenOperativo":[["Julio",134],["Agosto",10]]
 };
 
 const CHART_INSTANCES={};
@@ -385,6 +387,7 @@ function renderRash(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA & Efectividad</div>
     ${buildSlaEfecCharts('rash','Junio → Agosto 2026')}
+    <div class="chart-box"><h3>Volumen (evolutivo por mes)</h3><div class="note">Solicitudes por mes — distinto del "Volumen facturado" de arriba</div><canvas id="rash-vol-operativo"></canvas></div>
     <div class="chart-box"><h3>Apertura por Flujos · Rash</h3><div class="note">% de envíos por flujo, mes a mes</div><canvas id="rash-flujos"></canvas></div>
 
     <div class="section-title">🛠️ Indicadores de plataforma</div>
@@ -431,6 +434,8 @@ function renderRash(){
   paintMargenChart('rash',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('rash',sla,true);
+  mkChart('rash-vol-operativo',{type:'bar',data:{labels:DATA.rashVolumenOperativo.map(r=>r[0]),datasets:[{data:DATA.rashVolumenOperativo.map(r=>r[1]),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:cnt}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
   const flujosLabels=DATA.rashFlujos.map(m=>m.mes);
   const flujosNombres=DATA.rashFlujos[0].flujos.map(f=>f[0]);
   const flujosColores=['#009CA3','#97BF0D','#F29400'];
