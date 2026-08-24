@@ -226,7 +226,8 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   {"mes":"Julio","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",78.36],["Colecta en punto – Entrega Domicilio c/aviso",19.4],["Colecta en punto – Entrega en punto c/aviso",2.24]]},
   {"mes":"Agosto","flujos":[["Colecta domicilio – Entrega a Domicilio c/aviso",50],["Colecta en punto – Entrega Domicilio c/aviso",50],["Colecta en punto – Entrega en punto c/aviso",0]]}
 ],
-"rashVolumenOperativo":[["Junio",138],["Julio",134],["Agosto",10]]
+"rashVolumenOperativo":[["Junio",138],["Julio",134],["Agosto",10]],
+"rashVolSemanal":{"labels":["08/06","15/06","22/06","29/06","06/07","13/07","20/07","27/07","03/08","10/08","17/08*"],"data":[17,61,55,1,2,60,47,21,1,6,5]}
 };
 
 const CHART_INSTANCES={};
@@ -388,6 +389,7 @@ function renderRash(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA & Efectividad</div>
     <div class="chart-box"><h3>Volumen (evolutivo por mes)</h3><div class="note">Solicitudes por mes</div><canvas id="rash-vol-operativo"></canvas></div>
+    <div class="chart-box"><h3>Volumen de envíos por semana</h3><div class="note">Desde el Go Live · por Fecha de Imposición</div><canvas id="rash-vol-semanal"></canvas></div>
     <div class="note-box">Alerta de adopción: el volumen no muestra crecimiento post lanzamiento y presenta una caída significativa en agosto. Se encuentra en desarrollo un refactor del flujo de creación de envíos orientado a simplificar la experiencia y reducir fricciones en la generación de pedidos.</div>
     ${buildSlaEfecCharts('rash','Junio → Agosto 2026')}
     <div class="note-box-info">Performance operativa consolidada: en julio, primer mes completo post lanzamiento, SLA y efectividad superaron el target del 95%, alcanzando 96,2% y 96,9% respectivamente.</div>
@@ -438,6 +440,8 @@ function renderRash(){
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('rash',sla,true);
   mkChart('rash-vol-operativo',{type:'line',data:{labels:DATA.rashVolumenOperativo.map(r=>r[0]),datasets:[{data:DATA.rashVolumenOperativo.map(r=>r[1]),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:4,datalabels:{formatter:cnt}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('rash-vol-semanal',{type:'bar',data:{labels:DATA.rashVolSemanal.labels,datasets:[{data:DATA.rashVolSemanal.data,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   const flujosLabels=DATA.rashFlujos.map(m=>m.mes);
   const flujosNombres=DATA.rashFlujos[0].flujos.map(f=>f[0]);
