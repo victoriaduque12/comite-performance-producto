@@ -767,7 +767,7 @@ function renderPostal(){
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:40,max:100,ticks:{callback:v=>v+'%'}}}}});
 
   mkChart('postal-dias',{type:'line',data:{labels:d.meses,datasets:[
-    {label:'Días hábiles',data:d.diasPrimeraVisita,borderColor:'#0099A8',backgroundColor:'rgba(0,153,168,.12)',fill:true,tension:.3}
+    {label:'Días hábiles',data:d.diasPrimeraVisita,borderColor:'#0099A8',backgroundColor:'rgba(0,153,168,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v.toFixed(2)}}
   ]},options:{responsive:true,plugins:{legend:{display:false}}}});
 
   mkChart('postal-noresponde-sem',{type:'bar',data:{labels:d.semanasAgosto.map(s=>s.rango),datasets:[{data:d.semanasAgosto.map(s=>s.noResponde),backgroundColor:['#8a97a0','#C0392B'],borderRadius:4}]},
@@ -779,8 +779,8 @@ function renderPostal(){
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
 
   mkChart('postal-nps-trend',{data:{labels:d.npsSemanal.map(s=>s[0]),datasets:[
-    {type:'bar',label:'Respuestas',data:d.npsSemanal.map(s=>s[1]),backgroundColor:'#056571',borderRadius:4,yAxisID:'y',datalabels:{formatter:cnt}},
-    {type:'line',label:'NPS',data:d.npsSemanal.map(s=>s[2]),borderColor:'#8FBF4C',tension:.3,yAxisID:'y1',datalabels:{formatter:v=>v+'%',align:'top'}}
+    {type:'bar',label:'Respuestas',data:d.npsSemanal.map(s=>s[1]),backgroundColor:'#056571',borderRadius:4,yAxisID:'y',datalabels:{formatter:cnt,anchor:'center',align:'center',color:'#fff',font:{weight:'700'}}},
+    {type:'line',label:'NPS',data:d.npsSemanal.map(s=>s[2]),borderColor:'#8FBF4C',tension:.3,yAxisID:'y1',datalabels:{formatter:v=>v+'%',align:'top',offset:8,color:'#4D7200',font:{weight:'700'}}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
 
   mkChart('postal-pareto-det',{type:'bar',data:{labels:d.paretoDetractores.map(m=>m[0]),datasets:[{data:d.paretoDetractores.map(m=>m[1]),backgroundColor:'#C0392B',borderRadius:4}]},
