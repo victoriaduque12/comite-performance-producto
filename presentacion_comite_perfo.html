@@ -772,8 +772,8 @@ function renderPostal(){
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
 
   mkChart('postal-nps-trend',{data:{labels:d.npsSemanal.map(s=>s[0]),datasets:[
-    {type:'bar',label:'Respuestas',data:d.npsSemanal.map(s=>s[1]),backgroundColor:'#056571',borderRadius:4,yAxisID:'y',datalabels:{formatter:cnt,anchor:'center',align:'center',color:'#fff',font:{weight:'700'}}},
-    {type:'line',label:'NPS',data:d.npsSemanal.map(s=>s[2]),borderColor:'#8FBF4C',tension:.3,yAxisID:'y1',datalabels:{formatter:v=>v+'%',align:'top',offset:8,color:'#4D7200',font:{weight:'700'}}}
+    {type:'bar',label:'Respuestas',data:d.npsSemanal.map(s=>s[1]),backgroundColor:'#056571',borderRadius:4,yAxisID:'y',order:2,datalabels:{formatter:cnt,anchor:'center',align:'center',color:'#fff',font:{weight:'700'}}},
+    {type:'line',label:'NPS',data:d.npsSemanal.map(s=>s[2]),borderColor:'#8FBF4C',tension:.3,yAxisID:'y1',order:1,datalabels:{formatter:v=>v+'%',align:'top',offset:8,color:'#4D7200',font:{weight:'700'}}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
 
   mkChart('postal-pareto-det',{type:'bar',data:{labels:d.paretoDetractores.map(m=>m[0]),datasets:[{data:d.paretoDetractores.map(m=>m[1]),backgroundColor:'#C0392B',borderRadius:4}]},
