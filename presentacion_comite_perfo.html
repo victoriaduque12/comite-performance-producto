@@ -452,11 +452,7 @@ function renderCDD(){
 
     <div class="section-title">🎫 Tickets CX</div>
     <div class="section-sub">Cliente: Gobierno Ciudad BS AS · Junio → Agosto 2026 (agosto parcial, corte 23/08)</div>
-    <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Tickets creados · Junio</div><div class="val">${DATA.cddTicketsCX.ticketsCreados[0]}</div></div>
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Tickets creados · Julio</div><div class="val">${DATA.cddTicketsCX.ticketsCreados[1]}</div></div>
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Tickets creados · Agosto*</div><div class="val">${DATA.cddTicketsCX.ticketsCreados[2]}</div></div>
-    </div>
+    <div class="chart-box"><h3>Tickets creados</h3><div class="note">Por mes</div><canvas id="cdd-tickets-creados"></canvas></div>
     <div class="chart-box"><h3>Volumen por motivo de contacto</h3><div class="note">Top 3 motivos, por mes</div><canvas id="cdd-tickets-motivos"></canvas></div>
     <div class="note-box-green">En agosto, los tickets por "Inconveniente en Sistema" bajaron a 1 (venían de 11 en junio y 6 en julio) — una mejora sostenida mes a mes.</div>`;
   paintFacVolCharts('cdd',rows);
@@ -498,6 +494,8 @@ function renderCDD(){
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 
   const tcx=DATA.cddTicketsCX;
+  mkChart('cdd-tickets-creados',{type:'bar',data:{labels:tcx.meses,datasets:[{data:tcx.ticketsCreados,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
   const tcxColors=['#056571','#C0392B','#F6A945'];
   mkChart('cdd-tickets-motivos',{type:'bar',data:{labels:tcx.meses,datasets:tcx.motivos.map((m,i)=>({
     label:m.nombre,data:m.valores,backgroundColor:tcxColors[i],borderRadius:4,datalabels:{formatter:cnt}
