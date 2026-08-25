@@ -466,14 +466,7 @@ function renderCDD(){
     targetLine:{value:95,label:'Target SLA 95%'}},
     scales:{x:{min:0,max:105,ticks:{callback:v=>v+'%'}}}}});
 
-  // Insight: provincia con mayor impacto = share × gap respecto al target, entre las que están debajo
-  const conGap=DATA.cddSlaProvincia.filter(p=>p.sla<95).map(p=>({...p,impacto:p.share*(95-p.sla)}));
-  conGap.sort((a,b)=>b.impacto-a.impacto);
-  const principal=conGap[0];
-  const arribaTarget=DATA.cddSlaProvincia.filter(p=>p.sla>=95).map(p=>p.provincia);
-  document.getElementById('cdd-provincia-insight').innerHTML=principal
-    ? `El principal gap se concentra en <b>${principal.provincia}</b> (${principal.share.toFixed(1)}% del volumen, SLA ${principal.sla.toFixed(1)}%) — es la que más pesa sobre el resultado general. ${arribaTarget.length?arribaTarget.join(', ')+' ya están por encima del target.':''}`
-    : 'Todas las provincias están sobre el target de 95%.';
+  document.getElementById('cdd-provincia-insight').innerHTML='El desvío del SLA en CABA está centralizado en la primera semana de agosto (SLA 84,2%), donde el principal motivo fue "No visitado". Desde la operación ya se abordó a los choferes y se sumó al área de transporte para poder apalancar el mensaje a los transportistas.';
   mkChart('cdd-motivos',{type:'bar',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:'#0099A8',borderRadius:4}]},
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v.toFixed(1)+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
