@@ -2454,7 +2454,7 @@ function renderNPS(){
 // ── CONSUMO MASIVO: FLOTA AMBA (automático, vía Google Sheets "CONTROL CARGA FLOTA" / hoja DESPACHO) ──
 // Alcance: CENTRO ∈ {A001,A042,A048,A050,A055} (AMBA), TODOS los clientes (no solo Molinos).
 const FLOTA_CENTROS_AMBA=['A001','A042','A048','A050','A055'];
-const HOY_FLOTA=(()=>{const d=new Date();d.setHours(23,59,59,999);return d;})(); // excluye filas con fecha futura (típico error de carga)
+const HOY_FLOTA=new Date(2026,7,18,23,59,59); // FECHA HASTA fija = 18/08/2026, para matchear el dashboard de referencia del otro equipo (desactualizado a esa fecha)
 let flotaPalletsInstance=null, flotaOcupInstance=null, flotaParadasInstance=null, flotaVueltaInstance=null, flotaDuracionInstance=null;
 function flotaNormKey(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase(); }
 function flotaParseFecha(v){
@@ -2552,7 +2552,7 @@ function renderFlota(){
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
     '<div class="pbi-body">'+
       '<div class="pbi-head" style="max-width:900px"><div class="pbi-bigtitle" style="font-size:18px">Indicadores operativos de flota (fuente: hoja DESPACHO, "CONTROL CARGA FLOTA")</div></div>'+
-      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Sheets (en vivo) · '+rows.length+' viajes "Última Milla" cargados en centros AMBA ('+FLOTA_CENTROS_AMBA.join(', ')+') · Período: '+mesLabels[0]+' → '+mesLabels[mesLabels.length-1]+(new Date().getMonth()+1===Number(mesKeys[mesKeys.length-1].split('-')[1])?' (último mes parcial)':'')+'</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Sheets (en vivo) · '+rows.length+' viajes "Última Milla" cargados en centros AMBA ('+FLOTA_CENTROS_AMBA.join(', ')+') · Período: '+mesLabels[0]+' → '+mesLabels[mesLabels.length-1]+' (hasta 18/08/2026)</div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(5,1fr)">'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Pallets / viaje</div><div class="pbi-mcard-v">'+(periodo.pallets_viaje!=null?periodo.pallets_viaje.toFixed(2):'—')+'</div></div>'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Ocupación pallets</div><div class="pbi-mcard-v">'+(periodo.ocupacion!=null?periodo.ocupacion.toFixed(1)+'%':'—')+'</div></div>'+
