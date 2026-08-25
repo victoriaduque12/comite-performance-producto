@@ -228,7 +228,8 @@ function flotaComputeStats(rowsRaw){
   // DIAGNÓSTICO temporal — ver en la consola del navegador (F12) por qué Duración puede salir vacía
   console.log('[FlotaAMBA] columnas resueltas:', K);
   console.log('[FlotaAMBA] columnas disponibles en la sheet:', keys);
-  console.log('[FlotaAMBA] muestra valor crudo TIEMPO EFECTIVO (primeras 5 filas post-filtro):', rows.slice(0,5).map(r=>r.tiempoMin));
+  console.log('[FlotaAMBA] valor crudo TIEMPO EFECTIVO sin parsear (primeras 8 filas de la sheet):', rowsRaw.slice(0,8).map(r=>({valor:r[K.tiempo], tipo:typeof r[K.tiempo], esArray:Array.isArray(r[K.tiempo])})));
+  console.log('[FlotaAMBA] resultado ya parseado a minutos (primeras 5 filas post-filtro):', rows.slice(0,5).map(r=>r.tiempoMin));
   console.log('[FlotaAMBA] total filas:', rows.length, '· con tiempo válido:', rows.filter(r=>r.tiempoMin!=null&&!isNaN(r.tiempoMin)&&r.tiempoMin>0).length);
   if(!rows.length) return {rows:[],mesLabels:[],stats:[]};
   const porMes={};
