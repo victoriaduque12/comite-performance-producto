@@ -154,6 +154,95 @@ body{font-family:'Montserrat',sans-serif;background:var(--surface);color:var(--b
 <script>
 const MO=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 const MS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// ── GOOGLE SHEETS JSONP FETCH (sin CORS) — solo usado por el bloque Flota AMBA (en vivo) ──
+let _jsonpIdx=0;
+function sheetFetch(sheetId,name,sheetName){
+  return new Promise((resolve,reject)=>{
+    const cb='_gviz'+(_jsonpIdx++);
+    const timeout=setTimeout(()=>{ delete window[cb]; if(s.parentNode)s.parentNode.removeChild(s); reject(new Error('Timeout ('+name+')')); },30000);
+    window[cb]=function(resp){
+      clearTimeout(timeout); delete window[cb]; if(s.parentNode)s.parentNode.removeChild(s);
+      try{
+        const cols=resp.table.cols.map(c=>c.label||c.id);
+        const rows=resp.table.rows.map(r=>{
+          const obj={};
+          cols.forEach((col,i)=>{ const cell=r.c&&r.c[i]; const v=cell?cell.v:null; obj[col]=(v===null||v===undefined)?null:v; });
+          return obj;
+        }).filter(r=>Object.values(r).some(v=>v!==null&&v!==''));
+        resolve(rows);
+      }catch(e){reject(new Error('Parse error ('+name+'): '+e.message));}
+    };
+    const s=document.createElement('script');
+    s.onerror=()=>{ clearTimeout(timeout); delete window[cb]; reject(new Error('Error de red ('+name+'): archivo no público o ID incorrecto')); };
+    s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb+'&tq=select+*'+(sheetName?'&sheet='+encodeURIComponent(sheetName):'');
+    document.head.appendChild(s);
+  });
+}
+const ID_FLOTA_AMBA='1IQSIcGSlumiV1Y5SiHTS05O_dCQP8nMSNleREoCK5k0'; // "CONTROL CARGA FLOTA" — hoja DESPACHO
+const FLOTA_CENTROS_AMBA=['A001','A042','A048','A050','A055'];
+function flotaNormKey(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase(); }
+function flotaParseFecha(v){
+  if(v==null) return null;
+  const str=String(v).trim();
+  const gvizMatch=str.match(/^Date\((\d+),(\d+),(\d+)/);
+  if(gvizMatch){ const [,y,m,d]=gvizMatch.map(Number); return new Date(y,m,d); }
+  const parts=str.split('/');
+  if(parts.length===3){ const [d,m,y]=parts.map(Number); if(d&&m&&y) return new Date(y,m-1,d); }
+  return null;
+}
+function flotaParseTiempo(v){
+  if(v==null) return null;
+  if(Array.isArray(v)){ const [h,m]=v; if(h==null) return null; return h*60+(m||0); }
+  if(typeof v==='number'){ return Math.round(v*24*60); }
+  if(typeof v==='string'){ const m=v.match(/^(\d+):(\d{2})/); if(m) return parseInt(m[1],10)*60+parseInt(m[2],10); }
+  return null;
+}
+function flotaFmtMin(min){
+  if(min==null||isNaN(min)) return '—';
+  const h=Math.floor(min/60), m=Math.round(min%60);
+  return h+'h '+String(m).padStart(2,'0')+'m';
+}
+function flotaComputeStats(rowsRaw){
+  if(!rowsRaw.length) return null;
+  const keys=Object.keys(rowsRaw[0]);
+  function findKey(...subs){ return keys.find(k=>{const nk=flotaNormKey(k); return subs.every(s=>nk.includes(s));}); }
+  const K={
+    centro:findKey('CENTRO'), fecha:findKey('FECHA'), paradas:findKey('TOTAL','PARADAS'),
+    pallet:findKey('PALLET'), desc:findKey('DESCRIPCION'), vueltas:findKey('VUELTAS'),
+    cap:findKey('CAP','POSICIONES'),
+    tiempo:keys.find(k=>{const nk=flotaNormKey(k); return nk.includes('TIEMPO')&&nk.includes('EFECTIVO')&&!nk.includes('UNIFICADO');})
+  };
+  const rows=rowsRaw.map(r=>({
+    centro:r[K.centro], fecha:flotaParseFecha(r[K.fecha]), paradas:Number(r[K.paradas]),
+    pallet:Number(r[K.pallet]), desc:String(r[K.desc]||''), vueltas:String(r[K.vueltas]||''),
+    cap:Number(r[K.cap]), tiempoMin:flotaParseTiempo(r[K.tiempo])
+  })).filter(r=>r.fecha && FLOTA_CENTROS_AMBA.includes(r.centro));
+  if(!rows.length) return {rows:[],mesLabels:[],stats:[]};
+  const porMes={};
+  rows.forEach(r=>{
+    const key=r.fecha.getFullYear()+'-'+String(r.fecha.getMonth()+1).padStart(2,'0');
+    (porMes[key]=porMes[key]||[]).push(r);
+  });
+  const mesKeys=Object.keys(porMes).sort();
+  const mesLabels=mesKeys.map(k=>{const [y,m]=k.split('-').map(Number); return MS[m-1]+" '"+String(y).slice(-2);});
+  const stats=mesKeys.map(k=>{
+    const g=porMes[k];
+    const n=g.length;
+    const pallets=g.reduce((a,r)=>a+(r.pallet||0),0);
+    const caps=g.reduce((a,r)=>a+(r.cap||0),0);
+    const paradas=g.reduce((a,r)=>a+(r.paradas||0),0);
+    const um=g.filter(r=>flotaNormKey(r.desc).includes('ULTIMA MILLA'));
+    const um2=um.filter(r=>r.vueltas && r.vueltas.trim().charAt(0)!=='1');
+    const tiempos=g.map(r=>r.tiempoMin).filter(v=>v!=null&&!isNaN(v)&&v>0);
+    const tProm=tiempos.length?tiempos.reduce((a,b)=>a+b,0)/tiempos.length:null;
+    return{ n, pallets_viaje: n?pallets/n:null, ocupacion: caps?(pallets/caps*100):null,
+      paradas_viaje: n?paradas/n:null, pct_vuelta2: um.length?(um2.length/um.length*100):null,
+      dur_prom: tProm, dur_min: tiempos.length?Math.min(...tiempos):null, dur_max: tiempos.length?Math.max(...tiempos):null };
+  });
+  return {rows,mesLabels,stats};
+}
+let flotaAmbaCache=null, flotaAmbaLoading=false;
 function cap(m){return m?m.charAt(0)+m.slice(1).toLowerCase():'';}
 function fmtARS(n){
   const v=Math.abs(n);
@@ -685,11 +774,73 @@ function renderConsumo(){
 
     <div class="section-title">⚙️ Indicadores operativos | Cliente: MOLINOS RIO DE LA PLATA S.A.</div>
     <div class="section-sub">SLA & Efectividad</div>
-    ${buildSlaEfecCharts('consumo','Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)')}`;
+    ${buildSlaEfecCharts('consumo','Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)')}
+
+    <div class="section-title">🚚 Indicadores operativos | Consumo Masivo — Todos los clientes AMBA</div>
+    <div class="section-sub">Fuente: hoja DESPACHO ("CONTROL CARGA FLOTA"), en vivo · Centros AMBA (A001, A042, A048, A050, A055) · No filtrado a Molinos</div>
+    <div id="flota-amba-box"><div class="chart-box"><div class="note">Cargando datos en vivo desde Google Sheets…</div></div></div>`;
   paintFacVolCharts('consumo',rows);
   paintMargenChart('consumo',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('consumo',sla,false);
+  renderFlotaAmbaBlock();
+}
+
+// ── CONSUMO MASIVO: bloque Flota AMBA (en vivo, todos los clientes) ──
+async function renderFlotaAmbaBlock(){
+  const box=document.getElementById('flota-amba-box');
+  if(!box) return;
+  if(!flotaAmbaCache && !flotaAmbaLoading){
+    flotaAmbaLoading=true;
+    try{
+      const raw=await sheetFetch(ID_FLOTA_AMBA,'flota_amba_despacho','DESPACHO');
+      flotaAmbaCache=flotaComputeStats(raw);
+    }catch(e){
+      flotaAmbaCache={error:e.message};
+    }
+    flotaAmbaLoading=false;
+  }
+  // Si el usuario ya cambió de tab mientras cargaba, no pisar otro panel
+  const boxNow=document.getElementById('flota-amba-box');
+  if(!boxNow) return;
+  if(!flotaAmbaCache || flotaAmbaCache.error){
+    boxNow.innerHTML='<div class="chart-box"><div class="note">No se pudo cargar la hoja DESPACHO de "CONTROL CARGA FLOTA" ('+(flotaAmbaCache&&flotaAmbaCache.error?flotaAmbaCache.error:'sin datos')+'). Verificar que esté compartida como "Cualquier persona con el enlace".</div></div>';
+    return;
+  }
+  const {mesLabels,stats,rows}=flotaAmbaCache;
+  if(!stats.length){
+    boxNow.innerHTML='<div class="chart-box"><div class="note">Sin viajes con fecha cargada para centros AMBA.</div></div>';
+    return;
+  }
+  const last=stats[stats.length-1];
+  boxNow.innerHTML=`
+    <div class="note" style="margin-bottom:10px">${rows.length} viajes cargados en centros AMBA · Evolución mensual, último corte: ${mesLabels[mesLabels.length-1]}</div>
+    <div class="cards-row" style="grid-template-columns:repeat(5,1fr)">
+      <div class="kcard"><div class="lbl">Pallets / viaje</div><div class="val" style="font-size:22px">${last.pallets_viaje!=null?last.pallets_viaje.toFixed(2):'—'}</div></div>
+      <div class="kcard"><div class="lbl">Ocupación pallets</div><div class="val" style="font-size:22px">${last.ocupacion!=null?last.ocupacion.toFixed(1)+'%':'—'}</div></div>
+      <div class="kcard"><div class="lbl">Paradas / viaje</div><div class="val" style="font-size:22px">${last.paradas_viaje!=null?last.paradas_viaje.toFixed(2):'—'}</div></div>
+      <div class="kcard"><div class="lbl">% 2ª vuelta o más</div><div class="val" style="font-size:22px">${last.pct_vuelta2!=null?last.pct_vuelta2.toFixed(1)+'%':'—'}</div></div>
+      <div class="kcard"><div class="lbl">Duración promedio</div><div class="val" style="font-size:18px">${flotaFmtMin(last.dur_prom)}</div></div>
+    </div>
+    <div class="note" style="margin:6px 0 14px">"% 2ª vuelta o más" calculado sobre viajes Última Milla (proxy de viaje urbano). "Ocupación pallets" = pallets totales / capacidad total del período.</div>
+    <div class="chart-box"><h3>Pallets por viaje</h3><canvas id="flota-pallets"></canvas></div>
+    <div class="chart-box"><h3>Ocupación de pallets</h3><div class="note">% de capacidad utilizada</div><canvas id="flota-ocup"></canvas></div>
+    <div class="chart-box"><h3>Paradas por viaje</h3><canvas id="flota-paradas"></canvas></div>
+    <div class="chart-box"><h3>% 2ª vuelta o más</h3><div class="note">Sobre viajes Última Milla</div><canvas id="flota-vuelta"></canvas></div>
+    <div class="chart-box"><h3>Duración del viaje</h3><div class="note">Promedio, mín y máx (horas)</div><canvas id="flota-duracion"></canvas></div>`;
+  mkChart('flota-pallets',{type:'bar',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.pallets_viaje!=null?+s.pallets_viaje.toFixed(2):null),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('flota-ocup',{type:'line',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.ocupacion!=null?+s.ocupacion.toFixed(1):null),borderColor:'#8FBF4C',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  mkChart('flota-paradas',{type:'bar',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.paradas_viaje!=null?+s.paradas_viaje.toFixed(2):null),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('flota-vuelta',{type:'line',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.pct_vuelta2!=null?+s.pct_vuelta2.toFixed(1):null),borderColor:'#C0392B',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  mkChart('flota-duracion',{data:{labels:mesLabels,datasets:[
+      {type:'line',label:'Promedio',data:stats.map(s=>s.dur_prom!=null?+(s.dur_prom/60).toFixed(2):null),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v+'h',align:'top',offset:6}},
+      {type:'line',label:'Mín',data:stats.map(s=>s.dur_min!=null?+(s.dur_min/60).toFixed(2):null),borderColor:'#8FBF4C',borderDash:[4,3],tension:.3,datalabels:{display:false}},
+      {type:'line',label:'Máx',data:stats.map(s=>s.dur_max!=null?+(s.dur_max/60).toFixed(2):null),borderColor:'#F6A945',borderDash:[4,3],tension:.3,datalabels:{display:false}}
+    ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'h'}}}}});
 }
 
 // ── COURIER (MELI CC) ──
