@@ -2503,6 +2503,11 @@ function renderFlota(){
     pallet:Number(r[K.pallet]), desc:String(r[K.desc]||''), vueltas:String(r[K.vueltas]||''),
     cap:Number(r[K.cap]), tiempoMin:flotaParseTiempo(r[K.tiempo])
   })).filter(r=>r.fecha && r.fecha<=HOY_FLOTA && FLOTA_CENTROS_AMBA.includes(r.centro) && flotaNormKey(r.desc).includes('ULTIMA MILLA'));
+  // DIAGNÓSTICO temporal — ver en la consola del navegador (F12) por qué Duración puede salir vacía
+  console.log('[FlotaAMBA] columnas resueltas:', K);
+  console.log('[FlotaAMBA] columnas disponibles en la sheet:', keys);
+  console.log('[FlotaAMBA] muestra valor crudo TIEMPO EFECTIVO (primeras 5 filas post-filtro):', rows.slice(0,5).map(r=>r.tiempoMin));
+  console.log('[FlotaAMBA] total filas:', rows.length, '· con tiempo válido:', rows.filter(r=>r.tiempoMin!=null&&!isNaN(r.tiempoMin)&&r.tiempoMin>0).length);
   if(!rows.length){
     cont.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
       '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin viajes Última Milla con fecha cargada para centros AMBA</div></div></div>';
