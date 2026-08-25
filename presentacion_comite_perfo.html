@@ -93,9 +93,9 @@ body{font-family:'Montserrat',sans-serif;background:var(--surface);color:var(--b
   <div class="tab-btn" data-tab="cdd" onclick="switchTab('cdd',this)">Carta Documento Digital</div>
   <div class="tab-btn" data-tab="rash" onclick="switchTab('rash',this)">Rash</div>
   <div class="tab-btn" data-tab="pickit" onclick="switchTab('pickit',this)">Entrega en Punto Pickit</div>
+  <div class="tab-btn" data-tab="postal" onclick="switchTab('postal',this)">Postal a Paquetería</div>
   <div class="tab-btn" data-tab="consumo" onclick="switchTab('consumo',this)">Consumo Masivo</div>
   <div class="tab-btn" data-tab="courier" onclick="switchTab('courier',this)">Courier (MELI CC)</div>
-  <div class="tab-btn" data-tab="postal" onclick="switchTab('postal',this)">Postal a Paquetería</div>
 </div>
 
 <!-- PORTADA: Plan de etapas -->
@@ -729,7 +729,7 @@ function renderPostal(){
     <div class="eyebrow">Última Milla</div>
     <div class="bigtitle">Postal a Paquetería</div>
     <div class="subdate">Proyecto modo MVP con Banco Macro</div>
-    <div class="note-box-info">Arrancamos en abril 2026 con 2 AP: 40023523 - BCO MACRO TC AMEX RENO PP, 40023526 - BCO MACRO TC MASTER RENO PP.<br>En junio sumamos 3 AP: 40023504 - BCO MACRO T/C AMEX PP, 40034724 - BCO MACRO TC AMEX PLATINUM PP, 40027141 - BCO MACRO TC VISA SIGNATURE PP.<br>En agosto sumamos 2 AP: 40026897 - BCO MACRO TC VISA PLATINUM PP y 40023505 - BCO MACRO TC MASTER PP, llegando a 7 AP en total.</div>
+    <div class="note-box-info">Arrancamos en <b>abril 2026</b> con <b>2 AP</b>: TC Amex Renovación y TC Master Renovación.<br>En <b>junio</b> sumamos <b>3 AP</b> más: TC Amex, TC Amex Platinum y TC Visa Signature.<br>En <b>agosto</b> sumamos <b>2 AP</b> más: TC Visa Platinum y TC Master, llegando a <b>7 AP en total</b>.</div>
 
     <div class="section-title">📊 Volumen y Efectividad</div>
     <div class="section-sub">Piezas impuestas y entregadas · Abril → Agosto 2026 (agosto parcial, corte 24/08)</div>
@@ -774,8 +774,8 @@ function renderPostal(){
     </div>`;
 
   mkChart('postal-piezas',{type:'bar',data:{labels:d.meses,datasets:[
-    {label:'Piezas impuestas',data:d.piezasImpuestas,backgroundColor:'#056571',borderRadius:4},
-    {label:'Entregadas',data:d.entregadas,backgroundColor:'#0099A8',borderRadius:4}
+    {label:'Piezas impuestas',data:d.piezasImpuestas,backgroundColor:'#056571',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
+    {label:'Entregadas',data:d.entregadas,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 
   mkChart('postal-efec',{type:'line',data:{labels:d.meses,datasets:[
