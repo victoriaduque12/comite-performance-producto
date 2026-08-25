@@ -356,23 +356,25 @@ function varHtml(actual,anterior){
   const col=p>=0?'#4D7200':'#C0392B';
   return `<div style="font-size:11px;font-weight:700;color:${col};margin-top:4px">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}% vs. mes anterior</div>`;
 }
-function buildKpiCards(rows){
+function buildKpiCards(rows,cliente){
+  const suf=cliente?' · '+cliente:'';
   const ult=rows[rows.length-1];
   const ant=rows.length>=2?rows[rows.length-2]:null;
   const pct=ult.venta?(ult.margen/ult.venta*100):0;
   const pctAnt=ant&&ant.venta?(ant.margen/ant.venta*100):null;
   return `<div class="cards-row">
-    <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta · ${cap(ult.mes)} ${ult.anio}</div><div class="val">${fmtARS(ult.venta)}</div>${ant?varHtml(ult.venta,ant.venta):''}</div>
-    <div class="kcard" style="border-top-color:${ult.margen>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto $</div><div class="val" style="color:${ult.margen>=0?'#4D7200':'#C0392B'}">${fmtARS(ult.margen)}</div>${ant?varHtml(ult.margen,ant.margen):''}</div>
-    <div class="kcard" style="border-top-color:${pct>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto %</div><div class="val" style="color:${pct>=0?'#4D7200':'#C0392B'}">${pct.toFixed(1)}%</div>${(ant&&pctAnt!=null)?varHtml(pct,pctAnt):''}</div>
+    <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta · ${cap(ult.mes)} ${ult.anio}${suf}</div><div class="val">${fmtARS(ult.venta)}</div>${ant?varHtml(ult.venta,ant.venta):''}</div>
+    <div class="kcard" style="border-top-color:${ult.margen>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto $${suf}</div><div class="val" style="color:${ult.margen>=0?'#4D7200':'#C0392B'}">${fmtARS(ult.margen)}</div>${ant?varHtml(ult.margen,ant.margen):''}</div>
+    <div class="kcard" style="border-top-color:${pct>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto %${suf}</div><div class="val" style="color:${pct>=0?'#4D7200':'#C0392B'}">${pct.toFixed(1)}%</div>${(ant&&pctAnt!=null)?varHtml(pct,pctAnt):''}</div>
   </div>`;
 }
-function buildFacVolCharts(idPrefix,rows,volLabel){
+function buildFacVolCharts(idPrefix,rows,volLabel,cliente){
   const ult=rows[rows.length-1], ant=rows.length>=2?rows[rows.length-2]:null;
   const volVar=ant?varHtml(ult.volumen,ant.volumen):'';
+  const suf=cliente?' · '+cliente:'';
   return `<div class="two-col">
-    <div class="chart-box"><h3>Evolución de Facturación</h3><div class="note">ARS por mes</div><canvas id="${idPrefix}-fac"></canvas></div>
-    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · ${volLabel||'unidades por mes'}</div><canvas id="${idPrefix}-vol"></canvas><div id="${idPrefix}-vol-var">${volVar}</div></div>
+    <div class="chart-box"><h3>Evolución de Facturación</h3><div class="note">ARS por mes${suf}</div><canvas id="${idPrefix}-fac"></canvas></div>
+    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · ${volLabel||'unidades por mes'}${suf}</div><canvas id="${idPrefix}-vol"></canvas><div id="${idPrefix}-vol-var">${volVar}</div></div>
   </div>`;
 }
 function paintFacVolCharts(idPrefix,rows){
@@ -382,8 +384,8 @@ function paintFacVolCharts(idPrefix,rows){
   mkChart(idPrefix+'-vol',{type:'line',data:{labels,datasets:[{data:rows.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 }
-function buildMargenChart(idPrefix,periodo){
-  return `<div class="chart-box"><h3>Evolución de Margen Bruto</h3><div class="note">Venta, Costo y Margen % · ${periodo}</div><canvas id="${idPrefix}-margen"></canvas></div>`;
+function buildMargenChart(idPrefix,periodo,cliente){
+  return `<div class="chart-box"><h3>Evolución de Margen Bruto</h3><div class="note">Venta, Costo y Margen % · ${periodo}${cliente?' · '+cliente:''}</div><canvas id="${idPrefix}-margen"></canvas></div>`;
 }
 function paintMargenChart(idPrefix,rows){
   const labels=rows.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2));
@@ -676,10 +678,10 @@ function renderConsumo(){
     <div class="chart-box"><h3>Ranking de Clientes</h3><div class="note">Junio 2026 · Facturación</div>
       ${cli.map(([n,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eef2f3;font-size:13px"><span>${n}</span><span style="font-weight:700;color:var(--teal)">${fmtARS(v)}</span></div>`).join('')}
     </div>
-    ${buildKpiCards(rows)}
+    ${buildKpiCards(rows,'Molinos Río de la Plata S.A.')}
     <div class="note-box"><b>${rows.filter(r=>r.margen<0).length} de ${rows.length} meses con margen negativo</b> — costo consistentemente por encima de la venta en todo el período cargado.</div>
-    ${buildMargenChart('consumo','Enero → Junio 2026')}
-    ${buildFacVolCharts('consumo',rows)}
+    ${buildMargenChart('consumo','Enero → Junio 2026','Molinos Río de la Plata S.A.')}
+    ${buildFacVolCharts('consumo',rows,null,'Molinos Río de la Plata S.A.')}
 
     <div class="section-title">⚙️ Indicadores operativos | Cliente: MOLINOS RIO DE LA PLATA S.A.</div>
     <div class="section-sub">SLA & Efectividad</div>
