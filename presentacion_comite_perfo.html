@@ -369,6 +369,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   "nps":{"respuestas":376,"promotores":70.7,"detractores":23.9,"pasivos":5.3,"nps":46.8},
   "npsRegion":[["AMBA",163,66.9,5.5,27.6,39.3],["CENTRO",113,77.9,6.2,15.9,61.9],["NORTE",81,66.7,4.9,28.4,38.3],["SUR",19,78.9,0,21.1,57.9]],
   "npsSemanal":[["Semana 3/08",87,40.2],["Semana 10/08",136,46.3],["Semana 17/08",127,59.1]],
+  "npsMensual":[["JUNIO",44.1],["JULIO",39.3],["AGOSTO",49.4]],
   "paretoDetractores":[["Error en domicilio",17.8],["Transportista no pasó por domicilio",16.7],["Cliente no estaba en domicilio",14.4],["Rapidez o puntualidad",7.8],["Cuidado y seguridad",4.4]],
   "paretoPromotores":[["Rapidez o puntualidad",31.2],["Sin mensaje",12.8],["Cuidado y seguridad",10.2],["Comunicación efectiva",6.4],["Llamada previa a la entrega",3.8]]
 },
@@ -960,6 +961,7 @@ function renderPostal(){
         <tbody>${d.npsRegion.map(r=>`<tr style="border-top:1px solid #eef2f3"><td style="padding:5px 0;font-weight:600">${r[0]}</td><td>${r[1]}</td><td>${r[2]}%</td><td>${r[3]}%</td><td>${r[4]}%</td><td style="font-weight:700;color:var(--teal)">${r[5]}%</td></tr>`).join('')}</tbody>
       </table>
     </div>
+    <div class="chart-box"><h3>Evolución NPS por mes</h3><div class="note">NPS vía WhatsApp — arrancó en Junio 2026</div><canvas id="postal-nps-mensual"></canvas></div>
     <div class="chart-box"><h3>Respuestas & Trend NPS</h3><div class="note">Por semana (3/08 → 17/08)</div><canvas id="postal-nps-trend"></canvas></div>
     <div class="two-col">
       <div class="chart-box"><h3>Top Motivos · Detractores</h3><div class="note">Pareto</div><canvas id="postal-pareto-det"></canvas></div>
@@ -987,6 +989,10 @@ function renderPostal(){
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
   mkChart('postal-motivos-ago',{type:'bar',data:{labels:d.motivosAgosto.map(m=>m[0]),datasets:[{data:d.motivosAgosto.map(m=>m[1]),backgroundColor:'#F6A945',borderRadius:4}]},
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
+
+  mkChart('postal-nps-mensual',{type:'line',data:{labels:d.npsMensual.map(m=>m[0]),datasets:[
+    {label:'NPS',data:d.npsMensual.map(m=>m[1]),borderColor:'#8FBF4C',backgroundColor:'rgba(143,191,76,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:8,color:'#4D7200',font:{weight:'700'}}}
+  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
 
   mkChart('postal-nps-trend',{data:{labels:d.npsSemanal.map(s=>s[0]),datasets:[
     {type:'bar',label:'Respuestas',data:d.npsSemanal.map(s=>s[1]),backgroundColor:'#056571',borderRadius:4,yAxisID:'y',order:2,datalabels:{formatter:cnt,anchor:'center',align:'center',color:'#fff',font:{weight:'700'}}},
