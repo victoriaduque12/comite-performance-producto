@@ -2502,10 +2502,10 @@ function renderFlota(){
     centro:r[K.centro], fecha:flotaParseFecha(r[K.fecha]), paradas:Number(r[K.paradas]),
     pallet:Number(r[K.pallet]), desc:String(r[K.desc]||''), vueltas:String(r[K.vueltas]||''),
     cap:Number(r[K.cap]), tiempoMin:flotaParseTiempo(r[K.tiempo])
-  })).filter(r=>r.fecha && r.fecha<=HOY_FLOTA && FLOTA_CENTROS_AMBA.includes(r.centro));
+  })).filter(r=>r.fecha && r.fecha<=HOY_FLOTA && FLOTA_CENTROS_AMBA.includes(r.centro) && flotaNormKey(r.desc).includes('ULTIMA MILLA'));
   if(!rows.length){
     cont.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
-      '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin viajes con fecha cargada para centros AMBA</div></div></div>';
+      '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin viajes Última Milla con fecha cargada para centros AMBA</div></div></div>';
     return;
   }
   // Agrupar por mes
@@ -2522,15 +2522,14 @@ function renderFlota(){
     const pallets=g.reduce((a,r)=>a+(r.pallet||0),0);
     const caps=g.reduce((a,r)=>a+(r.cap||0),0);
     const paradas=g.reduce((a,r)=>a+(r.paradas||0),0);
-    const um=g.filter(r=>flotaNormKey(r.desc).includes('ULTIMA MILLA'));
-    const um2=um.filter(r=>r.vueltas && r.vueltas.trim().charAt(0)!=='1');
+    const um2=g.filter(r=>r.vueltas && r.vueltas.trim().charAt(0)!=='1');
     const tiempos=g.map(r=>r.tiempoMin).filter(v=>v!=null&&!isNaN(v)&&v>0);
     const tProm=tiempos.length?tiempos.reduce((a,b)=>a+b,0)/tiempos.length:null;
     return{
       n, pallets_viaje: n?pallets/n:null,
       ocupacion: caps?(pallets/caps*100):null,
       paradas_viaje: n?paradas/n:null,
-      pct_vuelta2: um.length?(um2.length/um.length*100):null,
+      pct_vuelta2: n?(um2.length/n*100):null,
       dur_prom: tProm, dur_min: tiempos.length?Math.min(...tiempos):null, dur_max: tiempos.length?Math.max(...tiempos):null
     };
   });
@@ -2539,7 +2538,7 @@ function renderFlota(){
     '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
     '<div class="pbi-body">'+
       '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Distribución Consumo Masivo y Paletizados — todos los clientes AMBA</div><div class="pbi-bigtitle" style="font-size:18px">Indicadores operativos de flota (fuente: hoja DESPACHO, "CONTROL CARGA FLOTA")</div></div>'+
-      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Sheets (en vivo) · '+rows.length+' viajes cargados en centros AMBA ('+FLOTA_CENTROS_AMBA.join(', ')+') · Evolución mensual, último corte: '+mesLabels[mesLabels.length-1]+(new Date().getMonth()+1===Number(mesKeys[mesKeys.length-1].split('-')[1])?' (parcial)':'')+'</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Sheets (en vivo) · '+rows.length+' viajes "Última Milla" cargados en centros AMBA ('+FLOTA_CENTROS_AMBA.join(', ')+') · Evolución mensual, último corte: '+mesLabels[mesLabels.length-1]+(new Date().getMonth()+1===Number(mesKeys[mesKeys.length-1].split('-')[1])?' (parcial)':'')+'</div>'+
       '<div class="pbi-cards5" style="grid-template-columns:repeat(5,1fr)">'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Pallets / viaje</div><div class="pbi-mcard-v">'+(last.pallets_viaje!=null?last.pallets_viaje.toFixed(2):'—')+'</div></div>'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Ocupación pallets</div><div class="pbi-mcard-v">'+(last.ocupacion!=null?last.ocupacion.toFixed(1)+'%':'—')+'</div></div>'+
@@ -2547,7 +2546,7 @@ function renderFlota(){
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">% 2ª vuelta o más</div><div class="pbi-mcard-v">'+(last.pct_vuelta2!=null?last.pct_vuelta2.toFixed(1)+'%':'—')+'</div></div>'+
         '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Duración promedio</div><div class="pbi-mcard-v" style="font-size:20px">'+flotaFmtMin(last.dur_prom)+'</div></div>'+
       '</div>'+
-      '<div class="pbi-note" style="width:100%;max-width:900px">"% 2ª vuelta o más" calculado solo sobre viajes Última Milla (proxy de viaje urbano). "Ocupación pallets" = pallets totales / capacidad total del período (no promedio simple por viaje).</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">"Ocupación pallets" = pallets totales / capacidad total del período (no promedio simple por viaje). Alcance de todo este bloque: solo viajes con DESCRIPCION = "Última Milla" (misma metodología que el resto del comité usa para estos indicadores).</div>'+
       '<div class="pbi-chartwrap"><canvas id="flotaPalletsCanvas"></canvas></div>'+
       '<div class="pbi-chartwrap"><canvas id="flotaOcupCanvas"></canvas></div>'+
       '<div class="pbi-chartwrap"><canvas id="flotaParadasCanvas"></canvas></div>'+
