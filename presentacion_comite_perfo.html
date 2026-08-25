@@ -561,6 +561,15 @@ function renderCDD(){
     <div class="section-sub">Cliente: Gobierno Ciudad BS AS · Junio → Agosto 2026 (agosto parcial, corte 23/08)</div>
     <div class="chart-box"><h3>Tickets creados</h3><div class="note">Por mes</div><canvas id="cdd-tickets-creados"></canvas></div>
     <div class="chart-box"><h3>Volumen por motivo de contacto</h3><div class="note">Top 3 motivos, por mes</div><canvas id="cdd-tickets-motivos"></canvas></div>
+    <div class="info-box">
+      <b>Por qué contactan sobre el Acuse (principales motivos):</b>
+      <ul style="margin:6px 0 0 18px;padding:0">
+        <li style="margin-bottom:4px"><b>Acuses "en gris" en ADDOC</b> — no se pueden descargar por fallas de sincronización o disponibilidad del archivo; es el motivo más frecuente.</li>
+        <li style="margin-bottom:4px"><b>Pedido de original físico</b> — clientes institucionales (ej. Banco Chubut) lo necesitan para juicios ejecutivos, porque sus asesorías legales no reconocen la copia digital como prueba; no está contemplado en el servicio actual.</li>
+        <li style="margin-bottom:4px"><b>Acuses incompletos o ilegibles</b> — falta dorso, firma o foto cortada; obliga a re-gestionar la pieza con ADDOC.</li>
+        <li><b>Confusión con la fecha del sistema</b> — no queda claro si es fecha de rendición o de entrega real, pese a haberse estandarizado a "Fecha de rendición".</li>
+      </ul>
+    </div>
     <div class="note-box-green">En agosto, los tickets por "Inconveniente en Sistema" bajaron a 1 (venían de 11 en junio y 6 en julio) — una mejora sostenida mes a mes.</div>`;
   paintFacVolCharts('cdd',rows);
   paintMargenChart('cdd',rows);
