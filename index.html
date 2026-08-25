@@ -2627,7 +2627,7 @@ function renderFlota(){
     options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Pallets por viaje',font:{size:13}}}}});
   flotaOcupInstance=new Chart(document.getElementById('flotaOcupCanvas').getContext('2d'),{type:'line',
     data:{labels:mesLabels,datasets:[{label:'Ocupación pallets (%)',data:stats.map(s=>s.ocupacion!=null?+s.ocupacion.toFixed(1):null),borderColor:'#8FBF4C',backgroundColor:'#8FBF4C',tension:.3}]},
-    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Ocupación de pallets (% de capacidad utilizada)',font:{size:13}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Ocupación de Bodega (en pallets)',font:{size:13}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
   flotaParadasInstance=new Chart(document.getElementById('flotaParadasCanvas').getContext('2d'),{type:'bar',
     data:{labels:mesLabels,datasets:[{label:'Paradas por viaje',data:stats.map(s=>s.paradas_viaje!=null?+s.paradas_viaje.toFixed(2):null),backgroundColor:'#F6A945',borderRadius:4}]},
     options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Paradas por viaje',font:{size:13}}}}});
