@@ -340,14 +340,14 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "pickitSla":[["MARZO",2026,95.8,98.2,94.8,97,1],["ABRIL",2026,96.9,97.4,95.2,97,0.3],["MAYO",2026,97,97.5,96.2,96.4,0.9],["JUNIO",2026,98.5,98.2,96.4,97.2,0.8],["JULIO",2026,94.9,98.8,96.4,97.1,0.9],["AGOSTO",2026,99.2,94.8,92.3,91.1,1.2]],
 "consumoSla":[["ENERO",2026,81.2,98.9,96.4],["FEBRERO",2026,90.3,99.2,96.8],["MARZO",2026,80.1,99.7,96.8],["ABRIL",2026,82.6,99.5,97.3],["MAYO",2026,84.3,97.4,95.8]],
 "courierSla":[
-  ["Julio",27,2026,96.45,96.45,96.45,33007,31835,1172],
-  ["Julio",28,2026,74.08,86.64,86.64,30800,26946,3854],
-  ["Julio",29,2026,59.10,80.10,92.42,58420,55018,3402],
-  ["Julio",30,2026,36.46,66.11,84.96,52204,49059,3145],
-  ["Julio",31,2026,42.86,59.29,85.19,84450,77284,7166],
-  ["Agosto",32,2026,0,41.79,63.91,62235,61130,1105],
-  ["Agosto",33,2026,45.74,48.15,76.12,63960,62885,1075],
-  ["Agosto",34,2026,29.63,78,96.12,109604,104141,5463]
+  ["Julio",27,2026,96.45,96.45,96.45,33007,31835,1172, 11800,50,0.424,0,0.000,302,2.559],
+  ["Julio",28,2026,74.08,86.64,86.64,30800,26946,3854, 38476,144,0.374,61,0.159,220,0.572],
+  ["Julio",29,2026,59.10,80.10,92.42,58420,55018,3402, 44158,188,0.426,0,0.000,522,1.182],
+  ["Julio",30,2026,36.46,66.11,84.96,52204,49059,3145, 62191,180,0.289,0,0.000,954,1.534],
+  ["Julio",31,2026,42.86,59.29,85.19,84450,77284,7166, 64156,110,0.171,0,0.000,1037,1.616],
+  ["Agosto",32,2026,0,41.79,63.91,62235,61130,1105, 61130,169,0.276,0,0.000,927,1.516],
+  ["Agosto",33,2026,45.74,48.15,76.12,63960,62885,1075, 63858,146,0.229,0,0.000,866,1.356],
+  ["Agosto",34,2026,29.63,78,96.12,109604,104141,5463, 22389,50,0.223,0,0.000,388,1.733]
 ],
 "motivosCdd":[["No responde",32.15],["Titular Desconocido",28.15],["No se ubica domicilio",13.75],["Se mudó",9.82],["Zona Peligrosa",7.63],["Domicilio incompleto",2.62],["Domicilio inexistente",2.11],["Fallecido",1.09],["Requisitos incompletos",1.02],["Rechazado",0.8],["Persona no habilitada",0.43],["Sin Definir",0.29],["Difiere Entrega",0.14]],
 "cddSlaSemanal":[["Semana del 2",89],["Semana del 10",94.8],["Semana del 17",98.1]],
@@ -887,7 +887,9 @@ function renderCourier(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA (no aplica Efectividad en este producto)</div>
     <div class="chart-box"><h3>Evolución de SLA (detalle semanal)</h3><div class="note">Julio → Agosto 2026, Primera Milla</div><canvas id="courier-sla"></canvas></div>
-    <div class="chart-box"><h3>Equipos: Arribados, Liberados y Pendientes</h3><div class="note">Julio → Agosto 2026</div><canvas id="courier-vol"></canvas></div>`;
+    <div class="chart-box"><h3>Equipos: Arribados, Liberados y Pendientes</h3><div class="note">Julio → Agosto 2026</div><canvas id="courier-vol"></canvas></div>
+    <div class="chart-box"><h3>Canal Azul, Faltantes y Sobrantes — Unidades</h3><div class="note">Julio → Agosto 2026, sobre Equipos Analizados</div><canvas id="courier-azul-unid"></canvas></div>
+    <div class="chart-box"><h3>Canal Azul, Faltantes y Sobrantes — %</h3><div class="note">Julio → Agosto 2026</div><canvas id="courier-azul-pct"></canvas></div>`;
   paintMargenChart('courier',rows);
   const labels=sla.map(r=>['S'+r[1],r[0].slice(0,3)]);
   mkChart('courier-sla',{type:'line',data:{labels,datasets:[
@@ -900,6 +902,16 @@ function renderCourier(){
     {label:'Liberados',data:sla.map(r=>r[7]),backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
     {label:'Pendientes',data:sla.map(r=>r[8]),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
+  mkChart('courier-azul-unid',{type:'bar',data:{labels,datasets:[
+    {label:'Canal Azul',data:sla.map(r=>r[14]),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
+    {label:'Faltantes',data:sla.map(r=>r[10]),backgroundColor:'#C0392B',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
+    {label:'Sobrantes',data:sla.map(r=>r[12]),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
+  mkChart('courier-azul-pct',{type:'line',data:{labels,datasets:[
+    {label:'% Canal Azul',data:sla.map(r=>r[15]),borderColor:'#0099A8',tension:.3,spanGaps:true,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(2)+'%'}},
+    {label:'% Faltantes',data:sla.map(r=>r[11]),borderColor:'#C0392B',tension:.3,spanGaps:true,datalabels:{align:'bottom',offset:6,formatter:v=>v.toFixed(2)+'%'}},
+    {label:'% Sobrantes',data:sla.map(r=>r[13]),borderColor:'#F6A945',tension:.3,spanGaps:true,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(2)+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toFixed(1)+'%'}}}}});
 }
 
 // ── POSTAL A PAQUETERÍA (Banco Macro MVP) ──
