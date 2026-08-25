@@ -95,6 +95,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--surface);color:var(--b
   <div class="tab-btn" data-tab="pickit" onclick="switchTab('pickit',this)">Entrega en Punto Pickit</div>
   <div class="tab-btn" data-tab="consumo" onclick="switchTab('consumo',this)">Consumo Masivo</div>
   <div class="tab-btn" data-tab="courier" onclick="switchTab('courier',this)">Courier (MELI CC)</div>
+  <div class="tab-btn" data-tab="postal" onclick="switchTab('postal',this)">Postal a Paquetería</div>
 </div>
 
 <!-- PORTADA: Plan de etapas -->
@@ -148,6 +149,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--surface);color:var(--b
 <div class="panel" id="panel-pickit"></div>
 <div class="panel" id="panel-consumo"></div>
 <div class="panel" id="panel-courier"></div>
+<div class="panel" id="panel-postal"></div>
 
 <script>
 const MO=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
@@ -249,6 +251,21 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "motivosCdd":[["No responde",32.15],["Titular Desconocido",28.15],["No se ubica domicilio",13.75],["Se mudó",9.82],["Zona Peligrosa",7.63],["Domicilio incompleto",2.62],["Domicilio inexistente",2.11],["Fallecido",1.09],["Requisitos incompletos",1.02],["Rechazado",0.8],["Persona no habilitada",0.43],["Sin Definir",0.29],["Difiere Entrega",0.14]],
 "cddSlaSemanal":[["Semana del 2",89],["Semana del 10",94.8],["Semana del 17",98.1]],
 "pickitMotivosJulio":[["No responde al Llamado",130],["Siniestrado – Por Extravío",81],["Rechazado",17]],
+"postal":{
+  "meses":["Abril","Mayo","Junio","Julio","Agosto*"],
+  "piezasImpuestas":[8252,4135,7520,10444,9381],
+  "entregadas":[5003,2440,4648,6804,5729],
+  "efectEntregable":[79.3,78.7,78.6,81.9,80.5],
+  "efectImpuestas":[60.6,59.0,61.8,65.1,61.1],
+  "diasPrimeraVisita":[4.06,3.51,3.85,3.81,3.93],
+  "motivosJulio":[["No responde",41],["Error domicilio",34],["Titular Desconocido",10],["Se mudó",8],["Rechazado",2],["Zona Peligrosa",2],["Solicitada",1],["Fallecido",1]],
+  "motivosAgosto":[["No responde",45],["Error domicilio",31],["Titular Desconocido",9],["Se mudó",9],["Rechazado",2],["Solicitada",2],["Zona Peligrosa",1],["No Visitado",1],["Fallecido",1]],
+  "nps":{"respuestas":376,"promotores":70.7,"detractores":23.9,"pasivos":5.3,"nps":46.8},
+  "npsRegion":[["AMBA",163,66.9,5.5,27.6,39.3],["CENTRO",113,77.9,6.2,15.9,61.9],["NORTE",81,66.7,4.9,28.4,38.3],["SUR",19,78.9,0,21.1,57.9]],
+  "npsSemanal":[["S32",87,40.2],["S33",136,46.3],["S34",127,59.1],["S35",26,11.5]],
+  "paretoDetractores":[["Error en domicilio",17.8],["Transportista no pasó por domicilio",16.7],["Cliente no estaba en domicilio",14.4],["Rapidez o puntualidad",7.8],["Cuidado y seguridad",4.4]],
+  "paretoPromotores":[["Rapidez o puntualidad",31.2],["Sin mensaje",12.8],["Cuidado y seguridad",10.2],["Comunicación efectiva",6.4],["Llamada previa a la entrega",3.8]]
+},
 "pickitMotivosAgosto":[["Solicitada por Cliente",570],["No responde al Llamado",19],["Rechazado",11]],
 "kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
 "consumoClientes":[["MOLINOS RIO DE LA PLATA S.A.",162078806.87],["PROCTER & GAMBLE ARGENTINA S.R.L.",25840246.58],["BAT OPERACIONES S.A.U.",11850362.21],["TOYOTA MHM LTDA",4649704],["DIRECTV ARGENTINA SOCIEDAD ANONIMA",2293150.35],["GRIMBERG DENTALES S.A.",440395.77],["DEPORSUR S.A.",3994.7]],
@@ -314,6 +331,7 @@ function switchTab(tab,el){
   else if(tab==='pickit') renderPickit();
   else if(tab==='consumo') renderConsumo();
   else if(tab==='courier') renderCourier();
+  else if(tab==='postal') renderPostal();
 }
 
 // ── Helper: tarjetas Venta/Margen $/Margen % + gráficos Fac/Vol, a partir de filas MARGEN_HIST ──
@@ -679,6 +697,78 @@ function renderCourier(){
     {label:'Liberados',data:sla.map(r=>r[7]),backgroundColor:'#8FBF4C',borderRadius:4},
     {label:'Pendientes',data:sla.map(r=>r[8]),backgroundColor:'#F6A945',borderRadius:4}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
+}
+
+// ── POSTAL A PAQUETERÍA (Banco Macro MVP) ──
+function renderPostal(){
+  const d=DATA.postal;
+  const pc=document.getElementById('panel-postal');
+  pc.innerHTML=`
+    <div class="eyebrow">Última Milla</div>
+    <div class="bigtitle">Postal a Paquetería</div>
+    <div class="subdate">Proyecto modo MVP con Banco Macro</div>
+    <div class="note-box-info">Arrancamos en abril 2026 con 3 AP. En junio sumamos 2 AP más. En agosto sumamos 2 AP más (40026897 - BUE000538 - BCO MACRO TC VISA PLATINUM PP y 40023505 - ICS000050 - BCO MACRO TC MASTER PP), llegando a 7 AP en total.</div>
+
+    <div class="section-title">📊 Volumen y Efectividad</div>
+    <div class="section-sub">Piezas impuestas y entregadas · Abril → Agosto 2026 (agosto parcial, corte 24/08)</div>
+    <div class="chart-box"><h3>Piezas impuestas vs. Entregadas</h3><div class="note">Por mes</div><canvas id="postal-piezas"></canvas></div>
+    <div class="chart-box"><h3>Efectividad</h3><div class="note">% Efect / Entregable y % Efect / Impuestas, por mes</div><canvas id="postal-efec"></canvas></div>
+    <div class="chart-box"><h3>Días hábiles hasta 1ª visita</h3><div class="note">Promedio total, por mes</div><canvas id="postal-dias"></canvas></div>
+
+    <div class="section-title">⚙️ Motivos de No Entrega</div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Julio 2026</h3><div class="note">Motivo final</div><canvas id="postal-motivos-jul"></canvas></div>
+      <div class="chart-box"><h3>Agosto 2026</h3><div class="note">Motivo final (corte 24/08)</div><canvas id="postal-motivos-ago"></canvas></div>
+    </div>
+
+    <div class="section-title">💬 NPS | Encuestas de Satisfacción Clientes</div>
+    <div class="section-sub">Detalle Agosto 2026</div>
+    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${d.nps.respuestas}</div><div class="lbl">Respuestas</div></div>
+      <div class="kcard" style="border-top-color:#8FBF4C"><div class="val" style="color:#4D7200">${d.nps.promotores}%</div><div class="lbl">Promotores</div></div>
+      <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="color:#C0392B">${d.nps.detractores}%</div><div class="lbl">Detractores</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${d.nps.nps}%</div><div class="lbl">NPS</div></div>
+    </div>
+    <div class="chart-box"><h3>NPS por Región</h3><div class="note">Respuestas, Promotores, Pasivos, Detractores y NPS</div>
+      <table style="width:100%;font-size:12.5px;border-collapse:collapse">
+        <thead><tr style="text-align:left;color:var(--gray)"><th style="padding:4px 0">Región</th><th>Respuestas</th><th>Promotores</th><th>Pasivos</th><th>Detractores</th><th>NPS</th></tr></thead>
+        <tbody>${d.npsRegion.map(r=>`<tr style="border-top:1px solid #eef2f3"><td style="padding:5px 0;font-weight:600">${r[0]}</td><td>${r[1]}</td><td>${r[2]}%</td><td>${r[3]}%</td><td>${r[4]}%</td><td style="font-weight:700;color:var(--teal)">${r[5]}%</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div class="chart-box"><h3>Respuestas & Trend NPS</h3><div class="note">Por semana (S32 → S35)</div><canvas id="postal-nps-trend"></canvas></div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Top Motivos · Detractores</h3><div class="note">Pareto</div><canvas id="postal-pareto-det"></canvas></div>
+      <div class="chart-box"><h3>Top Motivos · Promotores</h3><div class="note">Pareto</div><canvas id="postal-pareto-prom"></canvas></div>
+    </div>`;
+
+  mkChart('postal-piezas',{type:'bar',data:{labels:d.meses,datasets:[
+    {label:'Piezas impuestas',data:d.piezasImpuestas,backgroundColor:'#056571',borderRadius:4},
+    {label:'Entregadas',data:d.entregadas,backgroundColor:'#0099A8',borderRadius:4}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+
+  mkChart('postal-efec',{type:'line',data:{labels:d.meses,datasets:[
+    {label:'% Efect / Entregable',data:d.efectEntregable,borderColor:'#F6A945',tension:.3,datalabels:{align:'top',offset:6}},
+    {label:'% Efect / Impuestas',data:d.efectImpuestas,borderColor:'#8FBF4C',tension:.3,datalabels:{align:'bottom',offset:6}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:40,max:100,ticks:{callback:v=>v+'%'}}}}});
+
+  mkChart('postal-dias',{type:'line',data:{labels:d.meses,datasets:[
+    {label:'Días hábiles',data:d.diasPrimeraVisita,borderColor:'#0099A8',backgroundColor:'rgba(0,153,168,.12)',fill:true,tension:.3}
+  ]},options:{responsive:true,plugins:{legend:{display:false}}}});
+
+  mkChart('postal-motivos-jul',{type:'bar',data:{labels:d.motivosJulio.map(m=>m[0]),datasets:[{data:d.motivosJulio.map(m=>m[1]),backgroundColor:'#0099A8',borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
+  mkChart('postal-motivos-ago',{type:'bar',data:{labels:d.motivosAgosto.map(m=>m[0]),datasets:[{data:d.motivosAgosto.map(m=>m[1]),backgroundColor:'#F6A945',borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
+
+  mkChart('postal-nps-trend',{data:{labels:d.npsSemanal.map(s=>s[0]),datasets:[
+    {type:'bar',label:'Respuestas',data:d.npsSemanal.map(s=>s[1]),backgroundColor:'#056571',borderRadius:4,yAxisID:'y',datalabels:{formatter:cnt}},
+    {type:'line',label:'NPS',data:d.npsSemanal.map(s=>s[2]),borderColor:'#8FBF4C',tension:.3,yAxisID:'y1',datalabels:{formatter:v=>v+'%',align:'top'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+
+  mkChart('postal-pareto-det',{type:'bar',data:{labels:d.paretoDetractores.map(m=>m[0]),datasets:[{data:d.paretoDetractores.map(m=>m[1]),backgroundColor:'#C0392B',borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
+  mkChart('postal-pareto-prom',{type:'bar',data:{labels:d.paretoPromotores.map(m=>m[0]),datasets:[{data:d.paretoPromotores.map(m=>m[1]),backgroundColor:'#8FBF4C',borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
 }
 </script>
 </body>
