@@ -666,14 +666,13 @@ function renderConsumo(){
   const pc=document.getElementById('panel-consumo');
   pc.innerHTML=`
     <div class="eyebrow">Supply Chain</div>
-    <div class="bigtitle">Distribución Consumo Masivo y Paletizados</div>
+    <div class="bigtitle">Distribución Consumo Masivo y Paletizados | Molinos Río de la Plata S.A.</div>
 
     <div class="section-title">📊 Indicadores de negocio</div>
     <div class="section-sub">Ranking de clientes, venta, margen, volumen y facturación</div>
     <div class="chart-box"><h3>Ranking de Clientes</h3><div class="note">Junio 2026 · Facturación</div>
       ${cli.map(([n,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eef2f3;font-size:13px"><span>${n}</span><span style="font-weight:700;color:var(--teal)">${fmtARS(v)}</span></div>`).join('')}
     </div>
-    <div class="note-box-info">Margen, Volumen y Facturación de acá en adelante corresponden únicamente al cliente <b>Molinos Río de la Plata S.A.</b> (el de mayor peso).</div>
     ${buildKpiCards(rows)}
     <div class="note-box"><b>${rows.filter(r=>r.margen<0).length} de ${rows.length} meses con margen negativo</b> — costo consistentemente por encima de la venta en todo el período cargado.</div>
     ${buildMargenChart('consumo','Enero → Junio 2026')}
