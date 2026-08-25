@@ -181,6 +181,7 @@ function sheetFetch(sheetId,name,sheetName){
 }
 const ID_FLOTA_AMBA='1IQSIcGSlumiV1Y5SiHTS05O_dCQP8nMSNleREoCK5k0'; // "CONTROL CARGA FLOTA" — hoja DESPACHO
 const FLOTA_CENTROS_AMBA=['A001','A042','A048','A050','A055'];
+const HOY_FLOTA=(()=>{const d=new Date();d.setHours(23,59,59,999);return d;})(); // excluye filas con fecha futura (típico error de carga)
 function flotaNormKey(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase(); }
 function flotaParseFecha(v){
   if(v==null) return null;
@@ -217,7 +218,7 @@ function flotaComputeStats(rowsRaw){
     centro:r[K.centro], fecha:flotaParseFecha(r[K.fecha]), paradas:Number(r[K.paradas]),
     pallet:Number(r[K.pallet]), desc:String(r[K.desc]||''), vueltas:String(r[K.vueltas]||''),
     cap:Number(r[K.cap]), tiempoMin:flotaParseTiempo(r[K.tiempo])
-  })).filter(r=>r.fecha && FLOTA_CENTROS_AMBA.includes(r.centro));
+  })).filter(r=>r.fecha && r.fecha<=HOY_FLOTA && FLOTA_CENTROS_AMBA.includes(r.centro));
   if(!rows.length) return {rows:[],mesLabels:[],stats:[]};
   const porMes={};
   rows.forEach(r=>{
