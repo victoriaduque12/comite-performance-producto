@@ -484,6 +484,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-btn" data-tab="adopcion" style="display:none" onclick="switchTab('adopcion',this)">🌱 Adopción</div>
         <div class="tab-btn" data-tab="issues" style="display:none" onclick="switchTab('issues',this)">🐞 Issues</div>
         <div class="tab-btn" data-tab="nps" style="display:none" onclick="switchTab('nps',this)">💬 NPS</div>
+        <div class="tab-btn" data-tab="flota" style="display:none" onclick="switchTab('flota',this)">🚚 Flota AMBA</div>
         <div class="tab-btn" data-tab="estabilidad" style="display:none" onclick="switchTab('estabilidad',this)">🛠️ KPIs Estabilidad</div>
         <div class="tab-btn" data-tab="cxbi" onclick="switchTab('cxbi',this)">🎯 Experiencia del Cliente BI</div>
       </div>
@@ -499,6 +500,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         <div class="tab-full"     id="tab-adopcion"><div class="pbi-full" id="adopcion-content"></div></div>
         <div class="tab-full"     id="tab-issues"><div class="pbi-full" id="issues-content"></div></div>
         <div class="tab-full"     id="tab-nps"><div class="pbi-full" id="nps-content"></div></div>
+        <div class="tab-full"     id="tab-flota"><div class="pbi-full" id="flota-content"></div></div>
         <div class="tab-full"     id="tab-estabilidad"><iframe id="ifr-estabilidad" src="kpis_estabilidad_cdd.html?v=2" style="width:100%;height:900px;border:none" title="KPIs Estabilidad CDD"></iframe></div>
       </div>
     </div>
@@ -576,6 +578,7 @@ const ID_MOTIVOS='1-VccjQJTRR16fL_JqlIiyRoBIQw9LmZlizFCLp-Qqu0';
 const ID_PICKIT_VOL='16TWKmyh55EeyPIBxNWI0TGNFytRKgS1kHFu6gVJ-to4';
 const ID_PICKIT_FAC='1L25cfqlFXdVKTIrcVguAJuYyaYEoiTbIz5uHMTkXUOo';
 const ID_RASH_ISSUES='1k6tXmQJtodeTLzhFCyBr4fG4TyH1Hz3vGwZVp2zpzIE';
+const ID_FLOTA_AMBA='1IQSIcGSlumiV1Y5SiHTS05O_dCQP8nMSNleREoCK5k0'; // "CONTROL CARGA FLOTA" — hoja DESPACHO
 const PBI_REPORT_URL='https://app.powerbi.com/groups/me/reports/2ea1b575-1feb-4464-8a24-dac0ac0387e1/d050495042d3d060d741?ctid=91a5b5c8-673e-4a80-871c-5ed3412dd451&experience=power-bi';
 // Rash: snapshot de Volumen portado desde rash_kpi_dashboard.html (dashboard que se va a eliminar).
 // Pendiente: SLA, Efectividad y Motivos de No Entrega — todavía no están en las sheets del comité.
@@ -963,7 +966,7 @@ let META_NUMS={
 };
 
 // ── STATE ──
-let allVentas=[], allSlaEfec=[], allKpisAd=[], allMotivos=[], allPickitVol=[], allPickitFac=[], allRashIssues=[], allCourierSla=[], cur='overview', prodActual='', allProductos=[], cliActual='', allClientes=[];
+let allVentas=[], allSlaEfec=[], allKpisAd=[], allMotivos=[], allPickitVol=[], allPickitFac=[], allRashIssues=[], allCourierSla=[], allFlotaAmba=[], cur='overview', prodActual='', allProductos=[], cliActual='', allClientes=[];
 
 // Normaliza: minúsculas, sin tildes, espacios colapsados, trim
 function norm(s){
@@ -1252,6 +1255,13 @@ async function loadAll(){
     }
     catch(e){ console.warn('sla_courier error:',e.message); }
 
+    let flotaAmbaData=[];
+    try{
+      flotaAmbaData=await sheetFetch(ID_FLOTA_AMBA,'flota_amba_despacho','DESPACHO');
+      console.log('flota_amba_despacho cargado: '+flotaAmbaData.length+' filas');
+    }
+    catch(e){ console.warn('flota_amba_despacho error:',e.message,'– Verificar que la hoja CONTROL CARGA FLOTA esté compartida públicamente'); }
+
     const PROD_ALIAS={
       'Entrega en un Punto':'Logística a Punto Pickit (cliente Pickit)',
       'Entrega en Un Punto':'Logística a Punto Pickit (cliente Pickit)',
@@ -1294,6 +1304,7 @@ async function loadAll(){
     allPickitFac=pickitFacData;
     allRashIssues=rashIssuesData;
     allCourierSla=courierSlaData;
+    allFlotaAmba=flotaAmbaData;
     allProductos=[...new Set(ventas.map(v=>v.producto).filter(p=>p&&p!=='Otros'))].sort();
     allClientes=[...new Set(ventas.map(v=>v.cliente).filter(Boolean))].sort();
     buildSidebar(mats);
@@ -1565,6 +1576,9 @@ function go(id,el){
     const b=document.querySelector('.tab-btn[data-tab="'+t+'"]');
     if(b) b.style.display = esRash ? '' : 'none';
   });
+  const esConsumoMasivo = id==='Distribucion Consumo Masivo y Palletizado';
+  const flotaBtn=document.querySelector('.tab-btn[data-tab="flota"]');
+  if(flotaBtn) flotaBtn.style.display = esConsumoMasivo ? '' : 'none';
   const estabBtn=document.querySelector('.tab-btn[data-tab="estabilidad"]');
   if(estabBtn) estabBtn.style.display = (id==='Carta Documento Digital') ? '' : 'none';
   const inversaBtn=document.querySelector('.tab-btn[data-tab="inversa"]');
@@ -1595,6 +1609,9 @@ function switchTab(tab,el){
   } else if(tab==='nps'){
     document.getElementById('tab-nps').classList.add('on');
     renderNPS();
+  } else if(tab==='flota'){
+    document.getElementById('tab-flota').classList.add('on');
+    renderFlota();
   } else if(tab==='inversa'){
     document.getElementById('tab-inversa').classList.add('on');
     renderInversa();
@@ -2432,6 +2449,129 @@ function renderNPS(){
   const ctx2=document.getElementById('npsParetoCanvas').getContext('2d');
   npsParetoInstance=new Chart(ctx2,{type:'bar',data:{labels:n.paretoLabels,datasets:[{label:'Menciones',data:n.paretoData,backgroundColor:'#0099A8',borderRadius:4}]},
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},title:{display:true,text:'Motivos de inconveniente (Pareto)'}}}});
+}
+
+// ── CONSUMO MASIVO: FLOTA AMBA (automático, vía Google Sheets "CONTROL CARGA FLOTA" / hoja DESPACHO) ──
+// Alcance: CENTRO ∈ {A001,A042,A048,A050,A055} (AMBA), TODOS los clientes (no solo Molinos).
+const FLOTA_CENTROS_AMBA=['A001','A042','A048','A050','A055'];
+let flotaPalletsInstance=null, flotaOcupInstance=null, flotaParadasInstance=null, flotaVueltaInstance=null, flotaDuracionInstance=null;
+function flotaNormKey(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase(); }
+function flotaParseFecha(v){
+  if(v==null) return null;
+  const str=String(v).trim();
+  const gvizMatch=str.match(/^Date\((\d+),(\d+),(\d+)/);
+  if(gvizMatch){ const [,y,m,d]=gvizMatch.map(Number); return new Date(y,m,d); }
+  const parts=str.split('/');
+  if(parts.length===3){ const [d,m,y]=parts.map(Number); if(d&&m&&y) return new Date(y,m-1,d); }
+  return null;
+}
+function flotaParseTiempo(v){
+  if(v==null) return null;
+  if(Array.isArray(v)){ const [h,m]=v; if(h==null) return null; return h*60+(m||0); }
+  if(typeof v==='number'){ return Math.round(v*24*60); } // fracción de día → minutos
+  if(typeof v==='string'){ const m=v.match(/^(\d+):(\d{2})/); if(m) return parseInt(m[1],10)*60+parseInt(m[2],10); }
+  return null;
+}
+function flotaFmtMin(min){
+  if(min==null||isNaN(min)) return '—';
+  const h=Math.floor(min/60), m=Math.round(min%60);
+  return h+'h '+String(m).padStart(2,'0')+'m';
+}
+function renderFlota(){
+  const cont=document.getElementById('flota-content');
+  [flotaPalletsInstance,flotaOcupInstance,flotaParadasInstance,flotaVueltaInstance,flotaDuracionInstance].forEach(i=>{if(i)i.destroy();});
+  const rowsRaw=allFlotaAmba||[];
+  if(!rowsRaw.length){
+    cont.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
+      '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin datos todavía</div>'+
+      '<div class="pbi-card-sub">No se pudo cargar la hoja DESPACHO de "CONTROL CARGA FLOTA" (revisar que esté compartida como "Cualquier persona con el enlace").</div></div></div>';
+    return;
+  }
+  // Resolución flexible de columnas (por si cambian mayúsculas/acentos)
+  const keys=Object.keys(rowsRaw[0]);
+  function findKey(...subs){ return keys.find(k=>{const nk=flotaNormKey(k); return subs.every(s=>nk.includes(s));}); }
+  const K={
+    centro:findKey('CENTRO'), fecha:findKey('FECHA'), paradas:findKey('TOTAL','PARADAS'),
+    pallet:findKey('PALLET'), desc:findKey('DESCRIPCION'), vueltas:findKey('VUELTAS'),
+    cap:findKey('CAP','POSICIONES'),
+    tiempo:keys.find(k=>{const nk=flotaNormKey(k); return nk.includes('TIEMPO')&&nk.includes('EFECTIVO')&&!nk.includes('UNIFICADO');})
+  };
+  // Filtrar: centros AMBA + fila con FECHA válida (excluye carga de prueba sin fecha)
+  const rows=rowsRaw.map(r=>({
+    centro:r[K.centro], fecha:flotaParseFecha(r[K.fecha]), paradas:Number(r[K.paradas]),
+    pallet:Number(r[K.pallet]), desc:String(r[K.desc]||''), vueltas:String(r[K.vueltas]||''),
+    cap:Number(r[K.cap]), tiempoMin:flotaParseTiempo(r[K.tiempo])
+  })).filter(r=>r.fecha && FLOTA_CENTROS_AMBA.includes(r.centro));
+  if(!rows.length){
+    cont.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
+      '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin viajes con fecha cargada para centros AMBA</div></div></div>';
+    return;
+  }
+  // Agrupar por mes
+  const porMes={};
+  rows.forEach(r=>{
+    const key=r.fecha.getFullYear()+'-'+String(r.fecha.getMonth()+1).padStart(2,'0');
+    (porMes[key]=porMes[key]||[]).push(r);
+  });
+  const mesKeys=Object.keys(porMes).sort();
+  const mesLabels=mesKeys.map(k=>{const [y,m]=k.split('-').map(Number); return MS[m-1]+" '"+String(y).slice(-2);});
+  const stats=mesKeys.map(k=>{
+    const g=porMes[k];
+    const n=g.length;
+    const pallets=g.reduce((a,r)=>a+(r.pallet||0),0);
+    const caps=g.reduce((a,r)=>a+(r.cap||0),0);
+    const paradas=g.reduce((a,r)=>a+(r.paradas||0),0);
+    const um=g.filter(r=>flotaNormKey(r.desc).includes('ULTIMA MILLA'));
+    const um2=um.filter(r=>r.vueltas && r.vueltas.trim().charAt(0)!=='1');
+    const tiempos=g.map(r=>r.tiempoMin).filter(v=>v!=null&&!isNaN(v)&&v>0);
+    const tProm=tiempos.length?tiempos.reduce((a,b)=>a+b,0)/tiempos.length:null;
+    return{
+      n, pallets_viaje: n?pallets/n:null,
+      ocupacion: caps?(pallets/caps*100):null,
+      paradas_viaje: n?paradas/n:null,
+      pct_vuelta2: um.length?(um2.length/um.length*100):null,
+      dur_prom: tProm, dur_min: tiempos.length?Math.min(...tiempos):null, dur_max: tiempos.length?Math.max(...tiempos):null
+    };
+  });
+  const last=stats[stats.length-1];
+  cont.innerHTML=
+    '<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
+    '<div class="pbi-body">'+
+      '<div class="pbi-head" style="max-width:900px"><div class="pbi-eyebrow">Distribución Consumo Masivo y Paletizados — todos los clientes AMBA</div><div class="pbi-bigtitle" style="font-size:18px">Indicadores operativos de flota (fuente: hoja DESPACHO, "CONTROL CARGA FLOTA")</div></div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Sheets (en vivo) · '+rows.length+' viajes cargados en centros AMBA ('+FLOTA_CENTROS_AMBA.join(', ')+') · Evolución mensual, último corte: '+mesLabels[mesLabels.length-1]+(new Date().getMonth()+1===Number(mesKeys[mesKeys.length-1].split('-')[1])?' (parcial)':'')+'</div>'+
+      '<div class="pbi-cards5" style="grid-template-columns:repeat(5,1fr)">'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Pallets / viaje</div><div class="pbi-mcard-v">'+(last.pallets_viaje!=null?last.pallets_viaje.toFixed(2):'—')+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Ocupación pallets</div><div class="pbi-mcard-v">'+(last.ocupacion!=null?last.ocupacion.toFixed(1)+'%':'—')+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Paradas / viaje</div><div class="pbi-mcard-v">'+(last.paradas_viaje!=null?last.paradas_viaje.toFixed(2):'—')+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">% 2ª vuelta o más</div><div class="pbi-mcard-v">'+(last.pct_vuelta2!=null?last.pct_vuelta2.toFixed(1)+'%':'—')+'</div></div>'+
+        '<div class="pbi-mcard"><div class="pbi-mcard-lbl">Duración promedio</div><div class="pbi-mcard-v" style="font-size:20px">'+flotaFmtMin(last.dur_prom)+'</div></div>'+
+      '</div>'+
+      '<div class="pbi-note" style="width:100%;max-width:900px">"% 2ª vuelta o más" calculado solo sobre viajes Última Milla (proxy de viaje urbano). "Ocupación pallets" = pallets totales / capacidad total del período (no promedio simple por viaje).</div>'+
+      '<div class="pbi-chartwrap"><canvas id="flotaPalletsCanvas"></canvas></div>'+
+      '<div class="pbi-chartwrap"><canvas id="flotaOcupCanvas"></canvas></div>'+
+      '<div class="pbi-chartwrap"><canvas id="flotaParadasCanvas"></canvas></div>'+
+      '<div class="pbi-chartwrap"><canvas id="flotaVueltaCanvas"></canvas></div>'+
+      '<div class="pbi-chartwrap"><canvas id="flotaDuracionCanvas"></canvas></div>'+
+    '</div>';
+  flotaPalletsInstance=new Chart(document.getElementById('flotaPalletsCanvas').getContext('2d'),{type:'bar',
+    data:{labels:mesLabels,datasets:[{label:'Pallets por viaje',data:stats.map(s=>s.pallets_viaje!=null?+s.pallets_viaje.toFixed(2):null),backgroundColor:'#0099A8',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Pallets por viaje',font:{size:13}}}}});
+  flotaOcupInstance=new Chart(document.getElementById('flotaOcupCanvas').getContext('2d'),{type:'line',
+    data:{labels:mesLabels,datasets:[{label:'Ocupación pallets (%)',data:stats.map(s=>s.ocupacion!=null?+s.ocupacion.toFixed(1):null),borderColor:'#8FBF4C',backgroundColor:'#8FBF4C',tension:.3}]},
+    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Ocupación de pallets (% de capacidad utilizada)',font:{size:13}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  flotaParadasInstance=new Chart(document.getElementById('flotaParadasCanvas').getContext('2d'),{type:'bar',
+    data:{labels:mesLabels,datasets:[{label:'Paradas por viaje',data:stats.map(s=>s.paradas_viaje!=null?+s.paradas_viaje.toFixed(2):null),backgroundColor:'#F6A945',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Paradas por viaje',font:{size:13}}}}});
+  flotaVueltaInstance=new Chart(document.getElementById('flotaVueltaCanvas').getContext('2d'),{type:'line',
+    data:{labels:mesLabels,datasets:[{label:'% 2ª vuelta o más',data:stats.map(s=>s.pct_vuelta2!=null?+s.pct_vuelta2.toFixed(1):null),borderColor:'#c23b3b',backgroundColor:'#c23b3b',tension:.3}]},
+    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'% 2ª vuelta o más (sobre viajes Última Milla)',font:{size:13}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  flotaDuracionInstance=new Chart(document.getElementById('flotaDuracionCanvas').getContext('2d'),{type:'line',
+    data:{labels:mesLabels,datasets:[
+      {label:'Duración promedio (h)',data:stats.map(s=>s.dur_prom!=null?+(s.dur_prom/60).toFixed(2):null),borderColor:'#0099A8',backgroundColor:'#0099A8',tension:.3},
+      {label:'Mín',data:stats.map(s=>s.dur_min!=null?+(s.dur_min/60).toFixed(2):null),borderColor:'#8FBF4C',borderDash:[4,3],tension:.3},
+      {label:'Máx',data:stats.map(s=>s.dur_max!=null?+(s.dur_max/60).toFixed(2):null),borderColor:'#F6A945',borderDash:[4,3],tension:.3}
+    ]},
+    options:{responsive:true,plugins:{legend:{position:'bottom'},title:{display:true,text:'Duración del viaje (horas) — promedio, mín y máx',font:{size:13}}},scales:{y:{ticks:{callback:v=>v+'h'}}}}});
 }
 
 // ── ENTREGA EN PUNTO PICKIT: INVERSA (pendiente — falta armar la sheet) ──
