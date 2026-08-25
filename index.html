@@ -1950,10 +1950,12 @@ function renderResumen(prod,v,fac,vol,clis){
 
 // ── SLA & EFECTIVIDAD (desde Supabase) ──
 // ── SLA Courier (MELI CC): varios tipos de SLA, medidos por semana ──
-let courierSlaChartInstance=null, courierVolChartInstance=null;
+let courierSlaChartInstance=null, courierVolChartInstance=null, courierAzulUnidChartInstance=null, courierAzulPctChartInstance=null;
 function renderSlaCourier(pc){
   if(courierSlaChartInstance){courierSlaChartInstance.destroy();courierSlaChartInstance=null;}
   if(courierVolChartInstance){courierVolChartInstance.destroy();courierVolChartInstance=null;}
+  if(courierAzulUnidChartInstance){courierAzulUnidChartInstance.destroy();courierAzulUnidChartInstance=null;}
+  if(courierAzulPctChartInstance){courierAzulPctChartInstance.destroy();courierAzulPctChartInstance=null;}
   const rows=allCourierSla.filter(r=>(r['producto']||'').trim()==='Courier Personas (Customs Clearance)');
   const parseNum=v=>{
     if(v===null||v===undefined||v==='') return null;
@@ -1988,6 +1990,10 @@ function renderSlaCourier(pc){
       '<div class="pbi-chartwrap"><canvas id="courierSlaCanvas"></canvas></div>'+
       '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Equipos: Arribados, Liberados y Pendientes</div></div>'+
       '<div class="pbi-chartwrap"><canvas id="courierVolCanvas"></canvas></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Canal Azul, Faltantes y Sobrantes — Unidades</div></div>'+
+      '<div class="pbi-chartwrap"><canvas id="courierAzulUnidCanvas"></canvas></div>'+
+      '<div class="pbi-head" style="max-width:900px;margin-top:6px"><div class="pbi-bigtitle" style="font-size:15px;font-weight:600">Canal Azul, Faltantes y Sobrantes — %</div></div>'+
+      '<div class="pbi-chartwrap"><canvas id="courierAzulPctCanvas"></canvas></div>'+
       '<div class="pbi-note" style="width:100%;max-width:900px">Fuente: Google Drive · hoja "Courier" (dentro de SLA & Efectividad Productos)</div>'+
     '</div>';
 
@@ -2030,6 +2036,42 @@ function renderSlaCourier(pc){
       data:{labels:eqLabels,datasets:eqDatasets},
       options:{responsive:true,plugins:{legend:{position:'bottom'},title:{display:true,text:'Equipos · Courier Personas (MELI CC)',font:{size:13}}},
         scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}
+    });
+  }
+
+  // Canal Azul / Faltantes / Sobrantes — unidades y %
+  const azulTiposUnid=['Equipos Canal Azul','Equipos Faltantes','Equipos Sobrantes'];
+  const azulTiposPct=['% Canal Azul','% Faltantes','% Sobrantes'];
+  const conAzul=rows.filter(r=>azulTiposUnid.some(t=>parseNum(r[t])!==null))
+    .sort((a,b)=>Number(a.anio)-Number(b.anio)||Number(a.semana)-Number(b.semana));
+  if(conAzul.length){
+    const azLabels=conAzul.map(r=>['S'+r.semana,r.mes.slice(0,3)]);
+    const azColors=['#0099A8','#C0392B','#F6A945'];
+    const ctxAzulUnid=document.getElementById('courierAzulUnidCanvas').getContext('2d');
+    courierAzulUnidChartInstance=new Chart(ctxAzulUnid,{
+      type:'bar',
+      data:{labels:azLabels,datasets:azulTiposUnid.map((t,i)=>({
+        label:t.replace('Equipos ',''),
+        data:conAzul.map(r=>parseNum(r[t])),
+        backgroundColor:azColors[i],
+        borderRadius:4
+      }))},
+      options:{responsive:true,plugins:{legend:{position:'bottom'},title:{display:true,text:'Canal Azul, Faltantes y Sobrantes · Unidades',font:{size:13}}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}
+    });
+    const ctxAzulPct=document.getElementById('courierAzulPctCanvas').getContext('2d');
+    courierAzulPctChartInstance=new Chart(ctxAzulPct,{
+      type:'line',
+      data:{labels:azLabels,datasets:azulTiposPct.map((t,i)=>({
+        label:t,
+        data:conAzul.map(r=>parseNum(r[t])),
+        borderColor:azColors[i],
+        backgroundColor:azColors[i],
+        tension:.3,
+        spanGaps:true
+      }))},
+      options:{responsive:true,plugins:{legend:{position:'bottom'},title:{display:true,text:'Canal Azul, Faltantes y Sobrantes · %',font:{size:13}}},
+        scales:{y:{ticks:{callback:v=>v.toFixed(1)+'%'}}}}
     });
   }
 }
