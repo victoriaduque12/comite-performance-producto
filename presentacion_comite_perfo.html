@@ -196,7 +196,13 @@ function flotaParseTiempo(v){
   if(v==null) return null;
   if(Array.isArray(v)){ const [h,m]=v; if(h==null) return null; return h*60+(m||0); }
   if(typeof v==='number'){ return Math.round(v*24*60); }
-  if(typeof v==='string'){ const m=v.match(/^(\d+):(\d{2})/); if(m) return parseInt(m[1],10)*60+parseInt(m[2],10); }
+  if(typeof v==='string'){
+    const s=v.trim();
+    const dm=s.match(/^Date\(\d+,\d+,\d+,(\d+),(\d+),(\d+)/);
+    if(dm) return parseInt(dm[1],10)*60+parseInt(dm[2],10);
+    const m=s.match(/^(\d+):(\d{2})/);
+    if(m) return parseInt(m[1],10)*60+parseInt(m[2],10);
+  }
   return null;
 }
 function flotaFmtMin(min){
