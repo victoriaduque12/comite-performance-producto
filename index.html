@@ -2454,6 +2454,7 @@ function renderNPS(){
 // ── CONSUMO MASIVO: FLOTA AMBA (automático, vía Google Sheets "CONTROL CARGA FLOTA" / hoja DESPACHO) ──
 // Alcance: CENTRO ∈ {A001,A042,A048,A050,A055} (AMBA), TODOS los clientes (no solo Molinos).
 const FLOTA_CENTROS_AMBA=['A001','A042','A048','A050','A055'];
+const HOY_FLOTA=(()=>{const d=new Date();d.setHours(23,59,59,999);return d;})(); // excluye filas con fecha futura (típico error de carga)
 let flotaPalletsInstance=null, flotaOcupInstance=null, flotaParadasInstance=null, flotaVueltaInstance=null, flotaDuracionInstance=null;
 function flotaNormKey(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase(); }
 function flotaParseFecha(v){
@@ -2501,7 +2502,7 @@ function renderFlota(){
     centro:r[K.centro], fecha:flotaParseFecha(r[K.fecha]), paradas:Number(r[K.paradas]),
     pallet:Number(r[K.pallet]), desc:String(r[K.desc]||''), vueltas:String(r[K.vueltas]||''),
     cap:Number(r[K.cap]), tiempoMin:flotaParseTiempo(r[K.tiempo])
-  })).filter(r=>r.fecha && FLOTA_CENTROS_AMBA.includes(r.centro));
+  })).filter(r=>r.fecha && r.fecha<=HOY_FLOTA && FLOTA_CENTROS_AMBA.includes(r.centro));
   if(!rows.length){
     cont.innerHTML='<div class="pbi-toolbar"><div class="pbi-title"><span style="font-size:20px">🚚</span> Flota AMBA · Consumo Masivo</div></div>'+
       '<div class="pbi-body"><div class="pbi-card"><div class="pbi-card-title">Sin viajes con fecha cargada para centros AMBA</div></div></div>';
