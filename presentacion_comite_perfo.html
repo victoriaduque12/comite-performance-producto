@@ -721,11 +721,11 @@ function renderPostal(){
     <div class="chart-box"><h3>Días hábiles hasta 1ª visita</h3><div class="note">Promedio total, por mes</div><canvas id="postal-dias"></canvas></div>
 
     <div class="section-title">📱 Apertura por semana · Agosto 2026</div>
-    <div class="section-sub">Comparativa de las 2 primeras semanas (ya con todas las piezas en distribución) — el ${d.fonoPodFecha} se sumó la funcionalidad de teléfono en POD</div>
+    <div class="section-sub">Comparativa: Semana 1 (${d.semanasAgosto[0].rango}) vs. Semana 2 (${d.semanasAgosto[1].rango}) — el ${d.fonoPodFecha} se sumó la funcionalidad de teléfono en POD</div>
     <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Piezas impuestas</div><div class="val" style="font-size:22px">${d.semanasAgosto[0].piezas.toLocaleString()} → ${d.semanasAgosto[1].piezas.toLocaleString()}</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Piezas impuestas</div><div class="val" style="font-size:22px">${d.semanasAgosto[0].piezas.toLocaleString()} → ${d.semanasAgosto[1].piezas.toLocaleString()}</div><div class="sub">Semana 1 (${d.semanasAgosto[0].rango}) → Semana 2 (${d.semanasAgosto[1].rango})</div></div>
       <div class="kcard" style="border-top-color:#8FBF4C"><div class="lbl">% Efect / Entregable</div><div class="val" style="font-size:22px;color:#4D7200">${d.semanasAgosto[0].efectEntregable}% → ${d.semanasAgosto[1].efectEntregable}%</div>${varHtml(d.semanasAgosto[1].efectEntregable,d.semanasAgosto[0].efectEntregable)}</div>
-      <div class="kcard" style="border-top-color:#C0392B"><div class="lbl">No responde</div><div class="val" style="font-size:22px;color:#C0392B">${d.semanasAgosto[0].noResponde} → ${d.semanasAgosto[1].noResponde}</div>${varHtml(d.semanasAgosto[1].noResponde,d.semanasAgosto[0].noResponde)}</div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">No responde</div><div class="val" style="font-size:22px;color:var(--orange)">${d.semanasAgosto[0].noResponde} → ${d.semanasAgosto[1].noResponde}</div><div style="font-size:11px;font-weight:700;color:#4D7200;margin-top:4px">▼ ${(100-(d.semanasAgosto[1].noResponde/d.semanasAgosto[0].noResponde*100)).toFixed(1)}% de mejora</div></div>
     </div>
     <div class="chart-box"><h3>No responde por semana</h3><div class="note">Cantidad absoluta</div><canvas id="postal-noresponde-sem"></canvas></div>
     <div class="note-box-green">Primer indicio positivo: aunque las piezas impuestas bajaron 17,2% entre semanas, el "No responde" cayó mucho más fuerte (-42,9%) — pasó de representar 17,6% de las piezas impuestas a 12,1%. La efectividad/entregable también subió (+5,3 p.p.). Es una base chica (2 semanas), pero la dirección acompaña la hipótesis de que el teléfono en POD está ayudando a bajar el "no responde".</div>
@@ -770,7 +770,7 @@ function renderPostal(){
     {label:'Días hábiles',data:d.diasPrimeraVisita,borderColor:'#0099A8',backgroundColor:'rgba(0,153,168,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v.toFixed(2)}}
   ]},options:{responsive:true,plugins:{legend:{display:false}}}});
 
-  mkChart('postal-noresponde-sem',{type:'bar',data:{labels:d.semanasAgosto.map(s=>s.rango),datasets:[{data:d.semanasAgosto.map(s=>s.noResponde),backgroundColor:['#8a97a0','#C0392B'],borderRadius:4}]},
+  mkChart('postal-noresponde-sem',{type:'bar',data:{labels:d.semanasAgosto.map((s,i)=>'Semana '+(i+1)+' ('+s.rango+')'),datasets:[{data:d.semanasAgosto.map(s=>s.noResponde),backgroundColor:['#F6A945','#8FBF4C'],borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 
   mkChart('postal-motivos-jul',{type:'bar',data:{labels:d.motivosJulio.map(m=>m[0]),datasets:[{data:d.motivosJulio.map(m=>m[1]),backgroundColor:'#0099A8',borderRadius:4}]},
