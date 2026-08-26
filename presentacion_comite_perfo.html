@@ -597,7 +597,7 @@ function renderCDD(){
     targetLine:{value:95,label:'Target SLA 95%'}},
     scales:{x:{min:0,max:105,ticks:{callback:v=>v+'%'}}}}});
 
-  document.getElementById('cdd-provincia-insight').innerHTML='El desvío del SLA en CABA está centralizado en la primera semana de agosto (SLA 84,2%), donde el principal motivo fue "No visitado". Desde la operación ya se abordó a los choferes y se sumó al área de transporte para poder apalancar el mensaje a los transportistas.';
+  document.getElementById('cdd-provincia-insight').innerHTML='El desvío del SLA en CABA está centralizado en la primera semana de agosto, donde el principal motivo fue "No visitado". Desde la operación ya se abordó a los choferes y se sumó al área de transporte para poder apalancar el mensaje a los transportistas.';
   mkChart('cdd-motivos',{type:'bar',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:'#0099A8',borderRadius:4}]},
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v.toFixed(1)+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
