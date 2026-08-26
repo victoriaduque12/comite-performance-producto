@@ -506,7 +506,8 @@ function paintMargenChart(idPrefix,rows){
   mkChart(idPrefix+'-margen',{data:{labels,datasets:[
     {type:'bar',label:'Venta',data:rows.map(r=>r.venta),backgroundColor:'#056571',order:2,yAxisID:'y',datalabels:{color:'#fff',anchor:'center',align:'center',font:{size:10,weight:'700'}}},
     {type:'bar',label:'Costo',data:rows.map(r=>r.costo),backgroundColor:'#c9d3d6',order:2,yAxisID:'y',datalabels:{color:'#056571',anchor:'center',align:'center',font:{size:10,weight:'700'}}},
-    {type:'line',label:'Margen %',data:margenPcts,borderColor:lineColor,backgroundColor:lineColor,borderWidth:2.5,tension:.35,yAxisID:'y1',order:1,pointRadius:4}
+    {type:'line',label:'Margen %',data:margenPcts,borderColor:lineColor,backgroundColor:lineColor,borderWidth:2.5,tension:.35,yAxisID:'y1',order:1,pointRadius:4,
+      datalabels:{color:lineColor,align:'top',offset:6,formatter:v=>(Number.isInteger(v)?v:v.toFixed(1))+'%'}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},
     scales:{
       y:{position:'left',ticks:{callback:v=>fmtARS(v)},title:{display:true,text:'ARS'}},
