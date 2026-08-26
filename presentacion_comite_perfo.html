@@ -758,13 +758,8 @@ function renderPickit(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y Performance Punto</div>
     ${buildSlaEfecCharts('pickit','Marzo → Agosto 2026')}
-    <div class="two-col">
-      <div class="chart-box"><h3>Motivos de No Entrega · Julio 2026</h3><div class="note">Motivo final</div><canvas id="pickit-motivos-jul"></canvas>
-        <div class="note-box-info" style="margin-top:10px">Creció "No responde al Llamado" porque es, junto con "Rechazado", el único motivo de no entrega que hoy tenemos mapeado con Pickit.</div>
-      </div>
-      <div class="chart-box"><h3>Motivos de No Entrega · Agosto 2026</h3><div class="note">Motivo final</div><canvas id="pickit-motivos-ago"></canvas>
-        <div class="note-box-info" style="margin-top:10px">El motivo principal en agosto es "Solicitada por Cliente" — son los rescates que pidió Adidas (cancelaciones solicitadas por el cliente).</div>
-      </div>
+    <div class="chart-box"><h3>Motivos de No Entrega · Agosto 2026</h3><div class="note">Motivo final</div><canvas id="pickit-motivos-ago"></canvas>
+      <div class="note-box-info" style="margin-top:10px">El motivo principal en agosto es "Solicitada por Cliente" — son los rescates que pidió Adidas (cancelaciones solicitadas por el cliente).</div>
     </div>
     <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
   paintFacVolCharts('pickit',rows);
@@ -778,8 +773,6 @@ function renderPickit(){
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#0099A8',tension:.3},
     {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[5,6]),max:100,ticks:{callback:v=>v+'%'}}}}});
-  mkChart('pickit-motivos-jul',{type:'bar',data:{labels:DATA.pickitMotivosJulio.map(m=>m[0]),datasets:[{data:DATA.pickitMotivosJulio.map(m=>m[1]),backgroundColor:'#0099A8',borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:cnt}}}});
   mkChart('pickit-motivos-ago',{type:'bar',data:{labels:DATA.pickitMotivosAgosto.map(m=>m[0]),datasets:[{data:DATA.pickitMotivosAgosto.map(m=>m[1]),backgroundColor:'#F6A945',borderRadius:4}]},
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:cnt}}}});
 }
