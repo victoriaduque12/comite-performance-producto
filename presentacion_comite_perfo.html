@@ -711,7 +711,7 @@ function renderRash(){
     datalabels:i===0
       ?{anchor:'center',align:'center',color:'#fff',font:{size:11,weight:'700'}}
       :{anchor:'end',align:'end',offset:i===1?2:16,color:flujosColores[i],font:{size:10,weight:'700'}}
-  }))},options:{responsive:true,layout:{padding:{top:26}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+  }))},options:{responsive:true,layout:{padding:{top:48}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('rash-issues',{type:'bar',data:{labels:ri.porSemana.map(x=>x[0]),datasets:[{data:ri.porSemana.map(x=>x[1]),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[{data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
