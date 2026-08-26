@@ -424,7 +424,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   {"mes":"Agosto","flujos":[["Colecta domicilio – Entrega a Domicilio",50],["Colecta en punto – Entrega Domicilio",50],["Colecta en punto – Entrega en punto",0]]}
 ],
 "rashVolumenOperativo":[["Junio",138],["Julio",134],["Agosto",10]],
-"rashVolSemanal":{"labels":["15/06","22/06","29/06","06/07","13/07","20/07","27/07","03/08","10/08","17/08*"],"data":[68,50,19,2,66,51,14,5,0,5]}
+"rashVolSemanal":{"labels":["15/06","22/06","29/06","06/07","13/07","20/07","27/07","03/08","10/08","17/08"],"data":[68,50,19,2,66,51,14,5,0,5]}
 };
 
 const CHART_INSTANCES={};
@@ -640,7 +640,7 @@ function renderRash(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA & Efectividad</div>
     <div class="chart-box"><h3>Volumen (evolutivo por mes)</h3><div class="note">Solicitudes por mes</div><canvas id="rash-vol-operativo"></canvas></div>
-    <div class="chart-box"><h3>Volumen de envíos por semana</h3><div class="note">Desde el Go Live · por Fecha de solicitud Pick Up</div><canvas id="rash-vol-semanal"></canvas></div>
+    <div class="chart-box"><h3>Volumen de envíos por semana</h3><div class="note">Desde el Go Live · por Fecha de solicitud Pick Up · corte al 24/08</div><canvas id="rash-vol-semanal"></canvas></div>
     <div class="note-box">Alerta de adopción: el volumen no muestra crecimiento post lanzamiento y presenta una caída significativa en agosto. Se encuentra en desarrollo un refactor del flujo de creación de envíos orientado a simplificar la experiencia y reducir fricciones en la generación de pedidos.</div>
     ${buildSlaEfecCharts('rash','Junio → Agosto 2026')}
     <div class="note-box-info">Performance operativa consolidada: en julio, primer mes completo post lanzamiento, SLA y efectividad superaron el target del 95%, alcanzando 96,2% y 96,9% respectivamente.</div>
