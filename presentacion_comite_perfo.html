@@ -221,9 +221,13 @@ function flotaComputeStats(rowsRaw){
     tiempo:keys.find(k=>{const nk=flotaNormKey(k); return nk.includes('TIEMPO')&&nk.includes('EFECTIVO')&&!nk.includes('UNIFICADO');})
   };
   const rows=rowsRaw.map(r=>({
-    centro:r[K.centro], fecha:flotaParseFecha(r[K.fecha]), paradas:Number(r[K.paradas]),
-    pallet:Number(r[K.pallet]), desc:String(r[K.desc]||''), vueltas:String(r[K.vueltas]||''),
-    cap:Number(r[K.cap]), tiempoMin:flotaParseTiempo(r[K.tiempo])
+    centro:r[K.centro], fecha:flotaParseFecha(r[K.fecha]),
+    paradas: r[K.paradas]!=null ? Number(r[K.paradas]) : null,
+    pallet: r[K.pallet]!=null ? Number(r[K.pallet]) : null,
+    desc:String(r[K.desc]||''),
+    vueltas: r[K.vueltas]!=null ? String(r[K.vueltas]).trim() : null,
+    cap: r[K.cap]!=null ? Number(r[K.cap]) : null,
+    tiempoMin:flotaParseTiempo(r[K.tiempo])
   })).filter(r=>r.fecha && r.fecha<=HOY_FLOTA && FLOTA_CENTROS_AMBA.includes(r.centro) && flotaNormKey(r.desc).includes('ULTIMA MILLA'));
   // DIAGNÓSTICO temporal — ver en la consola del navegador (F12) por qué Duración puede salir vacía
   console.log('[FlotaAMBA] columnas resueltas:', K);
@@ -242,16 +246,19 @@ function flotaComputeStats(rowsRaw){
   const stats=mesKeys.map(k=>{
     const g=porMes[k];
     const n=g.length;
-    const pallets=g.reduce((a,r)=>a+(r.pallet||0),0);
+    const gConPallet=g.filter(r=>r.pallet!=null&&!isNaN(r.pallet));
+    const pallets=gConPallet.reduce((a,r)=>a+r.pallet,0);
     const gConCap=g.filter(r=>r.cap!=null&&r.cap>0);
     const palletsConCap=gConCap.reduce((a,r)=>a+(r.pallet||0),0);
-    const caps=gConCap.reduce((a,r)=>a+(r.cap||0),0);
-    const paradas=g.reduce((a,r)=>a+(r.paradas||0),0);
-    const um2=g.filter(r=>r.vueltas && r.vueltas.trim().charAt(0)!=='1');
+    const caps=gConCap.reduce((a,r)=>a+r.cap,0);
+    const gConParadas=g.filter(r=>r.paradas!=null&&!isNaN(r.paradas));
+    const paradas=gConParadas.reduce((a,r)=>a+r.paradas,0);
+    const gConVuelta=g.filter(r=>r.vueltas);
+    const um2=gConVuelta.filter(r=>r.vueltas.charAt(0)!=='1');
     const tiempos=g.map(r=>r.tiempoMin).filter(v=>v!=null&&!isNaN(v)&&v>0);
     const tProm=tiempos.length?tiempos.reduce((a,b)=>a+b,0)/tiempos.length:null;
-    return{ n, pallets_viaje: n?pallets/n:null, ocupacion: caps?(palletsConCap/caps*100):null,
-      paradas_viaje: n?paradas/n:null, pct_vuelta2: n?(um2.length/n*100):null,
+    return{ n, pallets_viaje: gConPallet.length?pallets/gConPallet.length:null, ocupacion: caps?(palletsConCap/caps*100):null,
+      paradas_viaje: gConParadas.length?paradas/gConParadas.length:null, pct_vuelta2: gConVuelta.length?(um2.length/gConVuelta.length*100):null,
       dur_prom: tProm, dur_min: tiempos.length?Math.min(...tiempos):null, dur_max: tiempos.length?Math.max(...tiempos):null };
   });
   return {rows,mesLabels,stats};
@@ -837,18 +844,21 @@ async function renderFlotaAmbaBlock(){
     return;
   }
   // Totales del período completo (para las tarjetas resumen)
-  const totPallets=rows.reduce((a,r)=>a+(r.pallet||0),0);
+  const rowsConPallet=rows.filter(r=>r.pallet!=null&&!isNaN(r.pallet));
+  const totPallets=rowsConPallet.reduce((a,r)=>a+r.pallet,0);
   const rowsConCap=rows.filter(r=>r.cap!=null&&r.cap>0);
-  const totCap=rowsConCap.reduce((a,r)=>a+(r.cap||0),0);
+  const totCap=rowsConCap.reduce((a,r)=>a+r.cap,0);
   const totPalletsCap=rowsConCap.reduce((a,r)=>a+(r.pallet||0),0);
-  const totParadas=rows.reduce((a,r)=>a+(r.paradas||0),0);
-  const totVuelta2=rows.filter(r=>r.vueltas && r.vueltas.trim().charAt(0)!=='1').length;
+  const rowsConParadas=rows.filter(r=>r.paradas!=null&&!isNaN(r.paradas));
+  const totParadas=rowsConParadas.reduce((a,r)=>a+r.paradas,0);
+  const rowsConVuelta=rows.filter(r=>r.vueltas);
+  const totVuelta2=rowsConVuelta.filter(r=>r.vueltas.charAt(0)!=='1').length;
   const totTiempos=rows.map(r=>r.tiempoMin).filter(v=>v!=null&&!isNaN(v)&&v>0);
   const periodo={
-    pallets_viaje: rows.length?totPallets/rows.length:null,
+    pallets_viaje: rowsConPallet.length?totPallets/rowsConPallet.length:null,
     ocupacion: totCap?(totPalletsCap/totCap*100):null,
-    paradas_viaje: rows.length?totParadas/rows.length:null,
-    pct_vuelta2: rows.length?(totVuelta2/rows.length*100):null,
+    paradas_viaje: rowsConParadas.length?totParadas/rowsConParadas.length:null,
+    pct_vuelta2: rowsConVuelta.length?(totVuelta2/rowsConVuelta.length*100):null,
     dur_prom: totTiempos.length?totTiempos.reduce((a,b)=>a+b,0)/totTiempos.length:null
   };
   boxNow.innerHTML=`
