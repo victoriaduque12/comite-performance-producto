@@ -452,11 +452,11 @@ function switchTab(tab,el){
 }
 
 // ── Helper: tarjetas Venta/Margen $/Margen % + gráficos Fac/Vol, a partir de filas MARGEN_HIST ──
-function varHtml(actual,anterior){
+function varHtml(actual,anterior,etiqueta='mes anterior'){
   if(anterior==null||anterior===0) return '';
   const p=(actual-anterior)/Math.abs(anterior)*100;
   const col=p>=0?'#4D7200':'#C0392B';
-  return `<div style="font-size:11px;font-weight:700;color:${col};margin-top:4px">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}% vs. mes anterior</div>`;
+  return `<div style="font-size:11px;font-weight:700;color:${col};margin-top:4px">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}% vs. ${etiqueta}</div>`;
 }
 function buildKpiCards(rows,cliente){
   const suf=cliente?' · '+cliente:'';
@@ -947,7 +947,7 @@ function renderPostal(){
     <div class="section-sub">Comparativa: Semana 1 (${d.semanasAgosto[0].rango}) vs. Semana 2 (${d.semanasAgosto[1].rango}) — el ${d.fonoPodFecha} se sumó la funcionalidad de teléfono en POD</div>
     <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Piezas impuestas</div><div class="val" style="font-size:22px">${d.semanasAgosto[0].piezas.toLocaleString()} → ${d.semanasAgosto[1].piezas.toLocaleString()}</div><div class="sub">Semana 1 (${d.semanasAgosto[0].rango}) → Semana 2 (${d.semanasAgosto[1].rango})</div></div>
-      <div class="kcard" style="border-top-color:#8FBF4C"><div class="lbl">% Efect / Entregable</div><div class="val" style="font-size:22px;color:#4D7200">${d.semanasAgosto[0].efectEntregable}% → ${d.semanasAgosto[1].efectEntregable}%</div>${varHtml(d.semanasAgosto[1].efectEntregable,d.semanasAgosto[0].efectEntregable)}</div>
+      <div class="kcard" style="border-top-color:#8FBF4C"><div class="lbl">% Efect / Entregable</div><div class="val" style="font-size:22px;color:#4D7200">${d.semanasAgosto[0].efectEntregable}% → ${d.semanasAgosto[1].efectEntregable}%</div>${varHtml(d.semanasAgosto[1].efectEntregable,d.semanasAgosto[0].efectEntregable,'semana anterior')}</div>
       <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">No responde</div><div class="val" style="font-size:22px;color:var(--orange)">${d.semanasAgosto[0].noResponde} → ${d.semanasAgosto[1].noResponde}</div><div style="font-size:11px;font-weight:700;color:#4D7200;margin-top:4px">▼ ${(100-(d.semanasAgosto[1].noResponde/d.semanasAgosto[0].noResponde*100)).toFixed(1)}% de mejora</div></div>
     </div>
     <div class="note-box-green">Primer indicio positivo: aunque las piezas impuestas bajaron 17,2% entre semanas, el "No responde" cayó mucho más fuerte (-42,9%) — pasó de representar 17,6% de las piezas impuestas a 12,1%. La efectividad/entregable también subió (+5,3 p.p.). Es una base chica (2 semanas), pero la dirección acompaña la hipótesis de que el teléfono en POD está ayudando a bajar el "no responde".</div>
