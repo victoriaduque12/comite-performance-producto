@@ -723,10 +723,13 @@ function renderPickit(){
   const volRows=DATA.pickitVol.filter(([m])=>m!=='Total general');
   const facMap=Object.fromEntries(DATA.pickitFac.map(([m,v])=>[m.toUpperCase(),v]));
   const rows=volRows.map(([m,v])=>({mes:m,anio:2026,volumen:v,venta:facMap[m]||0}));
+  const volRowsSinJulio=rows.filter(r=>r.mes!=='JULIO'); // Volumen se muestra 1 mes atrás de la Facturación (se factura a mes vencido)
   const sla=DATA.pickitSla;
   const facRows=rows.filter(r=>r.venta);
   const ultFac=facRows.slice(-1)[0]||rows[rows.length-1];
   const facAnt=facRows.length>=2?facRows[facRows.length-2]:null;
+  const ultVol=volRowsSinJulio[volRowsSinJulio.length-1];
+  const volAnt=volRowsSinJulio[volRowsSinJulio.length-2];
   const pc=document.getElementById('panel-pickit');
   pc.innerHTML=`
     <div class="eyebrow">Última Milla</div>
@@ -738,7 +741,7 @@ function renderPickit(){
     <div class="section-sub">Facturación y volumen · Cliente: Adidas</div>
     <div class="cards-row" style="grid-template-columns:1fr 1fr">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(ultFac.mes)} ${ultFac.anio}</div><div class="val">${fmtARS(ultFac.venta)}</div>${facAnt?varHtml(ultFac.venta,facAnt.venta):''}</div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(rows[rows.length-1].mes)} ${rows[rows.length-1].anio}</div><div class="val">${rows[rows.length-1].volumen.toLocaleString()}</div>${rows.length>=2?varHtml(rows[rows.length-1].volumen,rows[rows.length-2].volumen):''}</div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(ultVol.mes)} ${ultVol.anio}</div><div class="val">${ultVol.volumen.toLocaleString()}</div>${volAnt?varHtml(ultVol.volumen,volAnt.volumen):''}</div>
     </div>
     ${buildFacVolCharts('pickit',rows,'Envíos en punto Pick It')}
 
@@ -755,7 +758,6 @@ function renderPickit(){
     </div>
     <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
   paintFacVolCharts('pickit',rows);
-  const volRowsSinJulio=rows.filter(r=>r.mes!=='JULIO');
   mkChart('pickit-vol',{type:'line',data:{labels:volRowsSinJulio.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsSinJulio.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   const vUlt=volRowsSinJulio[volRowsSinJulio.length-1], vAnt=volRowsSinJulio[volRowsSinJulio.length-2];
