@@ -2575,14 +2575,16 @@ function renderFlota(){
     const g=porMes[k];
     const n=g.length;
     const pallets=g.reduce((a,r)=>a+(r.pallet||0),0);
-    const caps=g.reduce((a,r)=>a+(r.cap||0),0);
+    const gConCap=g.filter(r=>r.cap!=null&&r.cap>0);
+    const palletsConCap=gConCap.reduce((a,r)=>a+(r.pallet||0),0);
+    const caps=gConCap.reduce((a,r)=>a+(r.cap||0),0);
     const paradas=g.reduce((a,r)=>a+(r.paradas||0),0);
     const um2=g.filter(r=>r.vueltas && r.vueltas.trim().charAt(0)!=='1');
     const tiempos=g.map(r=>r.tiempoMin).filter(v=>v!=null&&!isNaN(v)&&v>0);
     const tProm=tiempos.length?tiempos.reduce((a,b)=>a+b,0)/tiempos.length:null;
     return{
       n, pallets_viaje: n?pallets/n:null,
-      ocupacion: caps?(pallets/caps*100):null,
+      ocupacion: caps?(palletsConCap/caps*100):null,
       paradas_viaje: n?paradas/n:null,
       pct_vuelta2: n?(um2.length/n*100):null,
       dur_prom: tProm, dur_min: tiempos.length?Math.min(...tiempos):null, dur_max: tiempos.length?Math.max(...tiempos):null
