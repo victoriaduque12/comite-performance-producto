@@ -347,7 +347,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,92.5,25.04,18.2]],
 "rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
 "pickitSla":[["MARZO",2026,95.8,98.2,94.8,97,1],["ABRIL",2026,96.9,97.4,95.2,97,0.3],["MAYO",2026,97,97.5,96.2,96.4,0.9],["JUNIO",2026,98.5,98.2,96.4,97.2,0.8],["JULIO",2026,94.9,98.8,96.4,97.1,0.9],["AGOSTO",2026,99.2,95.4,93.1,91.1,1.2]],
-"consumoSla":[["ENERO",2026,81.2,98.9,96.4],["FEBRERO",2026,90.3,99.2,96.8],["MARZO",2026,80.1,99.7,96.8],["ABRIL",2026,82.6,99.5,97.3],["MAYO",2026,84.3,97.4,95.8]],
+"consumoSla":[["ENERO",2026,81.2,98.9,96.4],["FEBRERO",2026,90.3,99.2,96.8],["MARZO",2026,80.1,99.7,96.8],["ABRIL",2026,82.6,99.5,97.3],["MAYO",2026,84.3,97.4,95.8],["JUNIO",2026,91.4,93.3,91.9],["JULIO",2026,87.6,91.6,87.6],["AGOSTO",2026,85.6,95.5,88.2]],
 "courierSla":[
   ["Julio",27,2026,96.45,96.45,96.45,33007,31835,1172, 11800,50,0.424,0,0.000,302,2.559],
   ["Julio",28,2026,74.08,86.64,86.64,30800,26946,3854, 38476,144,0.374,61,0.159,220,0.572],
@@ -800,7 +800,7 @@ function renderConsumo(){
 
     <div class="section-title">⚙️ Indicadores operativos | Cliente: MOLINOS RIO DE LA PLATA S.A.</div>
     <div class="section-sub">SLA & Efectividad</div>
-    ${buildSlaEfecCharts('consumo','Enero → Mayo 2026 (junio/julio sin carga todavía en la sheet)')}
+    ${buildSlaEfecCharts('consumo','Enero → Agosto 2026')}
 
     <div class="section-title">🚚 Indicadores operativos | Consumo Masivo — Todos los clientes AMBA</div>
     <div id="flota-amba-box"><div class="chart-box"><div class="note">Cargando datos en vivo desde Google Sheets…</div></div></div>`;
