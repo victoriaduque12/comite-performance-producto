@@ -559,9 +559,6 @@ function renderCDD(){
       <canvas id="cdd-sla-share-provincia" style="max-height:380px"></canvas>
     </div>
     <div class="note-box" id="cdd-provincia-insight"></div>
-    <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Julio 2026 · % sobre piezas no entregadas (excluye "Entregado")</div>
-      <canvas id="cdd-motivos"></canvas>
-    </div>
 
     <div class="section-title">🛠️ Indicadores de plataforma</div>
     <div class="section-sub">KPIs de estabilidad técnica</div>
@@ -609,8 +606,6 @@ function renderCDD(){
     scales:{x:{min:0,max:105,ticks:{callback:v=>v+'%'}}}}});
 
   document.getElementById('cdd-provincia-insight').innerHTML='El desvío del SLA en CABA está centralizado en la primera semana de agosto, donde el principal motivo fue "No visitado". Desde la operación ya se abordó a los choferes y se sumó al área de transporte para poder apalancar el mensaje a los transportistas.';
-  mkChart('cdd-motivos',{type:'bar',data:{labels:DATA.motivosCdd.map(m=>m[0]),datasets:[{data:DATA.motivosCdd.map(m=>m[1]),backgroundColor:'#0099A8',borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v.toFixed(1)+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('cdd-inc-mes',{type:'bar',data:{labels:incLabels,datasets:[{label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
