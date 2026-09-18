@@ -528,7 +528,7 @@ function paintMargenChart(idPrefix,rows){
 // ── CDD ──
 function renderCDD(){
   const rows=DATA.margen.filter(r=>r.producto==='Carta Documento Digital').sort((a,b)=>MO.indexOf(a.mes)-MO.indexOf(b.mes));
-  const sla=DATA.cddSla;
+  const sla=DATA.cddSla.filter(r=>r[1]===2026);
   const km=DATA.kpisEstabMensual;
   const tc=DATA.cddTopCliente;
   const pc=document.getElementById('panel-cdd');
@@ -550,7 +550,7 @@ function renderCDD(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
-    ${buildSlaEfecCharts('cdd','Octubre 2025 → Septiembre 2026',true)}
+    ${buildSlaEfecCharts('cdd','Enero → Septiembre 2026',true)}
     <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA | Desglose por semana en septiembre</div>
     <div class="chart-box"><h3>SLA · Detalle semanal Septiembre 2026</h3><div class="note">Corte parcial, se ajusta el próximo lunes de ser necesario</div><canvas id="cdd-sla-semanal"></canvas></div>
     <div class="note-box-info">La caída en la semana del 1 al 6 (89,4%) se debe a un problema puntual con los transportistas en la operación de Última Milla AMBA — según Control Operativo, prácticamente todos los desvíos de esa semana fueron por "No visitado". Mirando solo esa semana aislada el impacto es claro, pero a partir de la semana siguiente el SLA ya volvió a estar bien encaminado.</div>
