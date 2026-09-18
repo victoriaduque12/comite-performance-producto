@@ -701,10 +701,10 @@ function renderRash(){
   const flujosColores=['#0099A8','#8FBF4C','#F29400'];
   mkChart('rash-flujos',{type:'bar',data:{labels:flujosLabels,datasets:flujosNombres.map((n,i)=>({
     label:n,data:DATA.rashFlujos.map(m=>m.flujos.find(f=>f[0]===n)[1]),backgroundColor:flujosColores[i],
-    datalabels:i===0
-      ?{anchor:'center',align:'center',color:'#fff',font:{size:11,weight:'700'}}
-      :{anchor:'end',align:'end',offset:i===1?2:16,color:flujosColores[i],font:{size:10,weight:'700'}}
-  }))},options:{responsive:true,layout:{padding:{top:48}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+    datalabels:{anchor:'center',align:'center',color:'#fff',font:{size:11,weight:'700'},
+      display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,
+      formatter:v=>(Number.isInteger(v)?v:v.toFixed(1))+'%'}
+  }))},options:{responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[{data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 }
