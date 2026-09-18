@@ -283,13 +283,16 @@ function pctMin(rows,idxs){
   const lo=Math.min(...vals);
   return lo>=50?50:(lo>=20?20:0);
 }
-function buildSlaEfecCharts(idPrefix,periodo){
+function buildSlaEfecCharts(idPrefix,periodo,soloSla){
+  if(soloSla){
+    return `<div class="chart-box"><h3>Evolución de SLA</h3><div class="note">${periodo}</div><canvas id="${idPrefix}-sla"></canvas></div>`;
+  }
   return `<div class="two-col">
     <div class="chart-box"><h3>Evolución de SLA</h3><div class="note">${periodo}</div><canvas id="${idPrefix}-sla"></canvas></div>
     <div class="chart-box"><h3>Evolución de Efectividad</h3><div class="note">${periodo}</div><canvas id="${idPrefix}-efec"></canvas></div>
   </div>`;
 }
-function paintSlaEfecCharts(idPrefix,sla,target){
+function paintSlaEfecCharts(idPrefix,sla,target,soloSla){
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   const slaDs=[{type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#0099A8',tension:.3}];
   const efecDs=[
@@ -301,7 +304,7 @@ function paintSlaEfecCharts(idPrefix,sla,target){
   }
   const sharedMin=pctMin(sla,[2,3,4]);
   mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
-  mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
+  if(!soloSla) mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
 }
 Chart.register(ChartDataLabels);
 const targetLinePlugin={
@@ -359,7 +362,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   ["Agosto",34,2026,29.63,78,96.12,109604,104141,5463, 22389,50,0.223,0,0.000,388,1.733]
 ],
 "motivosCdd":[["No responde",32.15],["Titular Desconocido",28.15],["No se ubica domicilio",13.75],["Se mudó",9.82],["Zona Peligrosa",7.63],["Domicilio incompleto",2.62],["Domicilio inexistente",2.11],["Fallecido",1.09],["Requisitos incompletos",1.02],["Rechazado",0.8],["Persona no habilitada",0.43],["Sin Definir",0.29],["Difiere Entrega",0.14]],
-"cddSlaSemanal":[["Semana del 2",89],["Semana del 10",94.8],["Semana del 17",98.1]],
+"cddSlaSemanal":[["Semana 1 al 6",89.4],["Semana 7 al 13",96.8],["Semana 14 al 18",96.7]],
 "pickitMotivosJulio":[["No responde al Llamado",130],["Siniestrado – Por Extravío",81],["Rechazado",17]],
 "postal":{
   "meses":["Abril","Mayo","Junio","Julio","Agosto*"],
@@ -545,9 +548,10 @@ function renderCDD(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
-    ${buildSlaEfecCharts('cdd','Octubre 2025 → Agosto 2026')}
-    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA | Desglose por semana en agosto</div>
-    <div class="chart-box"><h3>SLA · Detalle semanal Agosto 2026</h3><div class="note">Corte parcial, se ajusta el próximo lunes de ser necesario</div><canvas id="cdd-sla-semanal"></canvas></div>
+    ${buildSlaEfecCharts('cdd','Octubre 2025 → Septiembre 2026',true)}
+    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA | Desglose por semana en septiembre</div>
+    <div class="chart-box"><h3>SLA · Detalle semanal Septiembre 2026</h3><div class="note">Corte parcial, se ajusta el próximo lunes de ser necesario</div><canvas id="cdd-sla-semanal"></canvas></div>
+    <div class="note-box-info">La caída en la semana del 1 al 6 (89,4%) se debe a un problema puntual con los transportistas en la operación de Última Milla AMBA — según Control Operativo, prácticamente todos los desvíos de esa semana fueron por "No visitado". Mirando solo esa semana aislada el impacto es claro, pero a partir de la semana siguiente el SLA ya volvió a estar bien encaminado.</div>
     <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Agosto 2026</div>
     <div class="chart-box"><h3>SLA y Share de Volumen por Provincia</h3><div class="note">Ordenado por Share de Volumen de mayor a menor · línea punteada = Target SLA 95%</div>
       <canvas id="cdd-sla-share-provincia" style="max-height:380px"></canvas>
@@ -584,7 +588,7 @@ function renderCDD(){
   paintFacVolCharts('cdd',rows);
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  paintSlaEfecCharts('cdd',sla,true);
+  paintSlaEfecCharts('cdd',sla,true,true);
   mkChart('cdd-sla-semanal',{type:'bar',data:{labels:DATA.cddSlaSemanal.map(r=>r[0]),datasets:[{data:DATA.cddSlaSemanal.map(r=>r[1]),backgroundColor:'#0099A8',borderRadius:4}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:50,max:100,ticks:{callback:v=>v+'%'}}}}});
 
