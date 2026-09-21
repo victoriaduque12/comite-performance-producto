@@ -444,7 +444,8 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   "enviosPromedio":17.76,
   "b2bPct":28.2,"b2cPct":71.8,"b2bCount":146,"b2cCount":372,
   "segConEnvios":17,"segSinEnvios":501,"segSinOnboarding":336,
-  "altasEnPendiente":336,"segRecurrentes":8
+  "altasEnPendiente":336,"segRecurrentes":8,
+  "foraAmbaCount":299,"foraAmbaPct":57.7,"ambaCount":208,"ambaPct":40.2,"sinClasificarGeo":11
 },
 "rashFlujos":[
   {"mes":"Junio","flujos":[["Colecta domicilio – Entrega a Domicilio",98.53],["Colecta en punto – Entrega Domicilio",0.74],["Colecta en punto – Entrega en punto",0.74]]},
@@ -559,7 +560,10 @@ function renderCDD(){
       <div class="sub">${tc.nombre}</div>
     </div>
     ${buildMargenChart('cdd','Enero → Julio 2026')}
-    ${buildFacVolCharts('cdd',rows)}
+    <div class="two-col">
+      <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · unidades por mes</div><canvas id="cdd-vol"></canvas><div id="cdd-vol-var"></div></div>
+      <div class="chart-box"><h3>Volumen por Cliente</h3><div class="note">Share acumulado</div><canvas id="cdd-vol-cliente"></canvas></div>
+    </div>
     <div class="note-box-info">Recuperación económica desde mayo: luego de la volatilidad observada durante el primer cuatrimestre, el servicio registra dos meses consecutivos con margen positivo.</div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
@@ -593,6 +597,10 @@ function renderCDD(){
     </div>
     <div class="note-box-green">En agosto, los tickets por "Inconveniente en Sistema" bajaron a 1 (venían de 11 en junio y 6 en julio) — una mejora sostenida mes a mes.</div>`;
   paintFacVolCharts('cdd',rows);
+  mkChart('cdd-vol-cliente',{type:'doughnut',data:{
+    labels:['Gobierno Ciudad Bs. As.','Banco Chubut'],
+    datasets:[{data:[92.2,7.8],backgroundColor:['#0099A8','#F6A945']}]
+  },options:{responsive:true,plugins:{legend:{position:'bottom'},datalabels:{color:'#fff',font:{weight:'700'},formatter:v=>v.toFixed(1)+'%'}}}});
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('cdd',sla,true,true);
@@ -649,7 +657,7 @@ function renderRash(){
     <div class="section-sub">Venta, margen, volumen y facturación</div>
     ${buildKpiCards(rows)}
     ${buildMargenChart('rash','Junio 2026')}
-    ${buildFacVolCharts('rash',rows,'Envíos por mes')}
+    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · Envíos por mes</div><canvas id="rash-vol"></canvas><div id="rash-vol-var"></div></div>
     <div class="note-box-info">Producto aún en etapa de maduración: el volumen actual todavía no permite evaluar una tendencia económica representativa. El foco continúa puesto en adopción, generación de volumen y evolución del producto.</div>
     <div class="info-box">
       <p style="margin:0 0 8px">El desvío de margen no parece originarse en los costos internos, sino en el <b>costo de última milla</b>, que en julio rondó los <b>$17.000 por paquete</b> — un valor llamativamente alto. Además hay una <b>diferencia con el volumen real operado</b>: el sistema muestra 134 envíos operados en julio, mientras que facturación registra 82, algo que podría explicarse por clientes con <b>cuenta corriente</b> facturados un mes después de operados, distorsionando el margen mensual.</p>
@@ -693,14 +701,17 @@ function renderRash(){
       </div>
     </div>
 
+    <div class="chart-box" style="margin-top:14px"><h3 style="font-size:13px;color:var(--gray)">Evolución de altas</h3><div class="note">Junio → Septiembre (parcial) — la adquisición continúa, aunque todavía no se traduce proporcionalmente en envíos</div><canvas id="rash-altas-mes" style="max-height:180px"></canvas></div>
+
     <div class="note-box" style="margin-top:18px">Principal oportunidad en la activación: el ${a.tasaFinalizacion}% de los usuarios completa el onboarding, pero solo el ${a.tasaActivacion}% de los usuarios activos realizó al menos un envío. El foco está puesto en reducir las fricciones entre el alta y la creación del primer envío.</div>
 
     <div class="section-title" style="margin-top:22px">MIX USUARIOS</div>
-    <div class="cards-row" style="grid-template-columns:repeat(2,1fr)">
+    <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="val" style="font-size:26px">${a.b2cPct}%</div><div class="lbl">B2C (personas)</div></div>
       <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:26px;color:var(--orange)">${a.b2bPct}%</div><div class="lbl">B2B (empresas) — foco estratégico del producto</div></div>
+      <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="font-size:26px;color:#C0392B">${a.foraAmbaCount} <span style="font-size:15px;font-weight:600">(${a.foraAmbaPct}%)</span></div><div class="lbl">Origen fuera de AMBA</div></div>
     </div>
-    <div class="chart-box" style="margin-top:10px"><h3 style="font-size:13px;color:var(--gray)">Evolución de altas</h3><div class="note">Junio → Septiembre (parcial) — la adquisición continúa, aunque todavía no se traduce proporcionalmente en envíos</div><canvas id="rash-altas-mes" style="max-height:180px"></canvas></div>`;
+    <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${a.ambaPct}%) tienen origen en AMBA, ${a.foraAmbaCount} (${a.foraAmbaPct}%) están fuera de AMBA, y ${a.sinClasificarGeo} no se pudieron clasificar con certeza por localidad ambigua.</div>`;
   paintFacVolCharts('rash',rows);
   paintMargenChart('rash',rows);
   mkChart('rash-vol-operativo',{type:'line',data:{labels:DATA.rashVolumenOperativo.map(r=>r[0]),datasets:[{data:DATA.rashVolumenOperativo.map(r=>r[1]),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:4,datalabels:{formatter:cnt}}]},
