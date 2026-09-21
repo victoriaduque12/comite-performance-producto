@@ -650,6 +650,18 @@ function renderRash(){
     ${buildMargenChart('rash','Junio 2026')}
     ${buildFacVolCharts('rash',rows,'Envíos por mes')}
     <div class="note-box-info">Producto aún en etapa de maduración: el volumen actual todavía no permite evaluar una tendencia económica representativa. El foco continúa puesto en adopción, generación de volumen y evolución del producto.</div>
+    <div class="info-box">
+      <b>Revisión de margen con Control de Gestión:</b>
+      <ul style="margin:6px 0 0 18px;padding:0">
+        <li style="margin-bottom:4px">Los costos internos tienen poca incidencia y no parecen explicar el margen bajo. El principal desvío aparece en el <b>costo de calle / última milla</b>, que está muy elevado.</li>
+        <li style="margin-bottom:4px">Para julio, la facturación muestra 82 envíos con ~$1,46M de costo urbano — un costo cercano a <b>$17.000 por paquete</b>, que llamó la atención por ser muy elevado.</li>
+        <li style="margin-bottom:4px"><b>Diferencia entre fuentes sin reconciliar</b>: Customer muestra 134 envíos operados en julio, mientras que ventas/facturación muestra 82.</li>
+        <li style="margin-bottom:4px">Hipótesis 1 (a validar con Roberto): parte de la diferencia podría explicarse por clientes con cuenta corriente — envíos operados en julio pero facturados en agosto. Si el costo se reconoce en julio y el ingreso recién en agosto, el margen mensual queda distorsionado.</li>
+        <li style="margin-bottom:4px">Hipótesis 2: costos de última milla efectivamente altos en envíos puntuales (rutas de bajo volumen, muchos km, destinos costosos).</li>
+        <li>CDG va a pasar el detalle de costeo a nivel paquete/ruta de los 82 envíos de julio para identificar outliers y determinar si es un problema de asignación/costeo o un costo operativo real.</li>
+      </ul>
+      <div style="margin-top:8px"><b>Conclusión por ahora:</b> no conviene concluir todavía que Rash tiene un problema estructural de margen. Primero hay que conciliar volumen operado vs. facturado, validar el impacto de cuenta corriente y revisar el costo de última milla a nivel envío/ruta.</div>
+    </div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA & Efectividad</div>
