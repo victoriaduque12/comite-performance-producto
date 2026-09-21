@@ -356,6 +356,17 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,92.5,25.04,18.2],["SEPTIEMBRE",2026,93.1,23.3,18.2]],
 "rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
 "pickitSla":[["MARZO",2026,95.8,98.2,94.8,97,1],["ABRIL",2026,96.9,97.4,95.2,97,0.3],["MAYO",2026,97,97.5,96.2,96.4,0.9],["JUNIO",2026,98.5,98.2,96.4,97.2,0.8],["JULIO",2026,94.9,98.8,96.4,97.1,0.9],["AGOSTO",2026,99.2,99.1,93.0,94.1,1.3],["SEPTIEMBRE",2026,99.4,99.9,92.1,93.4,0.3]],
+"pickitRedireccionamiento":{
+  "fechaDesde":"12/08/2026",
+  "totalRedireccionados":55,
+  "totalEntregados":36,
+  "estados":[["Entregado",36],["Devuelto a Remitente",10],["Vencido",6],["En Punto Pickit",2],["Crossdock",1]],
+  "semanas":{
+    "labels":["10/08","17/08","24/08","31/08","07/09","14/09"],
+    "redireccionados":[7,10,17,2,10,9],
+    "entregados":[5,6,12,0,7,6]
+  }
+},
 "consumoSla":[["ENERO",2026,81.2,98.9,96.4],["FEBRERO",2026,90.3,99.2,96.8],["MARZO",2026,80.1,99.7,96.8],["ABRIL",2026,82.6,99.5,97.3],["MAYO",2026,84.3,97.4,95.8],["JUNIO",2026,91.4,93.3,91.9],["JULIO",2026,87.6,91.6,87.6],["AGOSTO",2026,85.6,95.5,88.2]],
 "courierSla":[
   {"mes":"Junio","anio":2026,"slaTransito":54.6,"slaLiberacion48":93.1,"slaTraslado":100.0,"sla24":43.1,"arribados":73112,"faltantes":294,"pctFaltantes":0.4021227705,"sobrantes":2,"pctSobrantes":0.002735529051,"azul":302,"pctAzul":0.4130648867},
@@ -718,6 +729,7 @@ function renderPickit(){
     return mesSiguiente && facMap[mesSiguiente]!=null;
   });
   const sla=DATA.pickitSla;
+  const rd=DATA.pickitRedireccionamiento;
   const facRows=rows.filter(r=>r.venta);
   const ultFac=facRows.slice(-1)[0]||rows[rows.length-1];
   const facAnt=facRows.length>=2?facRows[facRows.length-2]:null;
@@ -741,7 +753,16 @@ function renderPickit(){
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y Performance Punto</div>
     ${buildSlaEfecCharts('pickit','Marzo → Septiembre 2026')}
-    <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>`;
+    <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>
+
+    <div class="section-title">📦 Redireccionamiento AMBA</div>
+    <div class="section-sub">Activo desde el 12/08/2026 (logística Pickit)</div>
+    <div class="cards-row" style="grid-template-columns:1fr 1fr">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Total redireccionados</div><div class="val">${rd.totalRedireccionados}</div></div>
+      <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Entregados / retirados por el buyer</div><div class="val" style="color:#4D7200">${rd.totalEntregados} <span style="font-size:16px;font-weight:600">(${(rd.totalEntregados/rd.totalRedireccionados*100).toFixed(1)}%)</span></div></div>
+    </div>
+    <div class="chart-box"><h3>Redireccionamientos por semana</h3><div class="note">Total vs. entregados/retirados por el buyer</div><canvas id="pickit-redirec-semana"></canvas></div>
+    <div class="chart-box"><h3>Estado actual de los redireccionamientos</h3><div class="note">Sobre el total acumulado desde el 12/08</div><canvas id="pickit-redirec-estado"></canvas></div>`;
   paintFacVolCharts('pickit',rows);
   mkChart('pickit-vol',{type:'line',data:{labels:volRowsConfirmados.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsConfirmados.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
@@ -753,6 +774,13 @@ function renderPickit(){
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#0099A8',tension:.3},
     {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[5,6]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  mkChart('pickit-redirec-semana',{type:'bar',data:{labels:rd.semanas.labels,datasets:[
+    {label:'Redireccionados',data:rd.semanas.redireccionados,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}},
+    {label:'Entregados/retirados',data:rd.semanas.entregados,backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:cnt}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+  mkChart('pickit-redirec-estado',{type:'bar',data:{labels:rd.estados.map(e=>e[0]),datasets:[
+    {data:rd.estados.map(e=>e[1]),backgroundColor:['#4D7200','#C0392B','#F6A945','#0099A8','#8a97a0'],borderRadius:4,datalabels:{formatter:cnt}}
+  ]},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}}}});
 }
 
 // ── CONSUMO MASIVO ──
