@@ -563,7 +563,7 @@ function renderCDD(){
     ${buildMargenChart('cdd','Enero → Julio 2026')}
     <div class="two-col">
       <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · unidades por mes</div><canvas id="cdd-vol"></canvas><div id="cdd-vol-var"></div></div>
-      <div class="chart-box"><h3>Volumen por Cliente</h3><div class="note">Enero → Julio 2026</div><canvas id="cdd-vol-cliente"></canvas></div>
+      <div class="chart-box"><h3>Volumen por Cliente — % mensual</h3><div class="note">Enero → Julio 2026</div><canvas id="cdd-vol-cliente"></canvas></div>
     </div>
     <div class="note-box-info">Recuperación económica desde mayo: luego de la volatilidad observada durante el primer cuatrimestre, el servicio registra dos meses consecutivos con margen positivo.</div>
 
@@ -598,10 +598,15 @@ function renderCDD(){
     </div>
     <div class="note-box-green">En agosto, los tickets por "Inconveniente en Sistema" bajaron a 1 (venían de 11 en junio y 6 en julio) — una mejora sostenida mes a mes.</div>`;
   paintFacVolCharts('cdd',rows);
-  mkChart('cdd-vol-cliente',{type:'doughnut',data:{
-    labels:['Gobierno Ciudad Bs. As.','Banco Chubut'],
-    datasets:[{data:[91.3,8.7],backgroundColor:['#0099A8','#F6A945']}]
-  },options:{responsive:true,plugins:{legend:{position:'bottom'},datalabels:{color:'#fff',font:{weight:'700'},formatter:v=>v.toFixed(1)+'%'}}}});
+  mkChart('cdd-vol-cliente',{type:'bar',data:{
+    labels:['Ene','Feb','Mar','Abr','May','Jun','Jul'],
+    datasets:[
+      {label:'Gobierno Ciudad Bs. As.',data:[100,100,100,100,96.9,79.6,75.7],backgroundColor:'#0099A8',
+        datalabels:{color:'#fff',font:{weight:'700'},formatter:v=>v.toFixed(0)+'%'}},
+      {label:'Banco Chubut',data:[0,0,0,0,3.1,20.4,24.3],backgroundColor:'#F6A945',
+        datalabels:{color:'#fff',font:{weight:'700'},formatter:v=>v>0?v.toFixed(0)+'%':''}}
+    ]
+  },options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('cdd',sla,true,true);
