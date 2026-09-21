@@ -818,7 +818,7 @@ function renderConsumo(){
     ${buildKpiCards(rows,'Molinos Río de la Plata S.A.')}
     <div class="note-box"><b>${rows.filter(r=>r.margen<0).length} de ${rows.length} meses con margen negativo</b> — costo consistentemente por encima de la venta en todo el período cargado.</div>
     ${buildMargenChart('consumo','Enero → Julio 2026','Molinos Río de la Plata S.A.')}
-    ${buildFacVolCharts('consumo',rows,null,'Molinos Río de la Plata S.A.')}
+    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · unidades por mes · Molinos Río de la Plata S.A.</div><canvas id="consumo-vol"></canvas><div id="consumo-vol-var"></div></div>
 
     <div class="section-title">⚙️ Indicadores operativos | Cliente: MOLINOS RIO DE LA PLATA S.A.</div>
     <div class="section-sub">SLA & Efectividad</div>
