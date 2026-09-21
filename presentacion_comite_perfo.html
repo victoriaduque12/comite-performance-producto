@@ -404,13 +404,14 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "kpisEstabMensual":[["ABRIL",2026,5,4],["MAYO",2026,7,6],["JUNIO",2026,9,10],["JULIO",2026,1,2],["AGOSTO",2026,2,2],["SEPTIEMBRE",2026,0,0]],
 "cddTopCliente":{"nombre":"GOBIERNO CIUDAD BS AS","monto":106300000,"periodo":"Total histórico"},
 "cddTicketsCX":{
-  "meses":["Junio","Julio","Agosto*"],
-  "ticketsCreados":[21,22,12],
-  "inconvenienteSistema":[11,6,1],
+  "meses":["Junio","Julio","Agosto","Septiembre*"],
+  "ticketsCreados":[21,22,12,4],
+  "inconvenienteSistema":[11,6,1,0],
   "motivos":[
-    {"nombre":"Acuse","valores":[8,7,7]},
-    {"nombre":"Inconveniente en Sistema","valores":[11,6,1]},
-    {"nombre":"Estado de la Entrega","valores":[0,3,3]}
+    {"nombre":"Acuse","valores":[8,7,7,2]},
+    {"nombre":"Inconveniente en Sistema","valores":[11,6,1,0]},
+    {"nombre":"Estado de la Entrega","valores":[0,3,3,1]},
+    {"nombre":"Demora en Rendición","valores":[0,0,0,1]}
   ]
 },
 "cddSlaProvincia":[
@@ -567,7 +568,7 @@ function renderCDD(){
     <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA | Desglose por semana en septiembre</div>
     <div class="chart-box"><h3>SLA · Detalle semanal Septiembre 2026</h3><div class="note">Corte parcial</div><canvas id="cdd-sla-semanal"></canvas></div>
     <div class="note-box-info">La caída en la semana del 1 al 6 (89,4%) se debe a un problema puntual con los transportistas en la operación de Última Milla AMBA — según Control Operativo, prácticamente todos los desvíos de esa semana fueron por "No visitado". Mirando solo esa semana aislada el impacto es claro, pero a partir de la semana siguiente el SLA ya volvió a estar bien encaminado.</div>
-    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Agosto 2026</div>
+    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Septiembre 2026</div>
     <div class="chart-box"><h3>SLA y Share de Volumen por Provincia</h3><div class="note">Ordenado por Share de Volumen de mayor a menor · línea punteada = Target SLA 95%</div>
       <canvas id="cdd-sla-share-provincia" style="max-height:380px"></canvas>
     </div>
