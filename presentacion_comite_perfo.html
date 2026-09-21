@@ -360,7 +360,8 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "pickitFac":[["MARZO",3492517.88],["ABRIL",135897691.99],["MAYO",138654667.16],["JUNIO",282860218.36],["JULIO",158680482.77],["AGOSTO",212721572.57]],
 "pickitLogisticaInversa":{
   "fac":[["JUNIO",236890.47],["JULIO",696069.33],["AGOSTO",14173185.26]],
-  "vol":[["JUNIO",183],["JULIO",1945],["AGOSTO",2120]]
+  "vol":[["JUNIO",183],["JULIO",1945],["AGOSTO",2120]],
+  "sla":[["JUNIO",15.6],["JULIO",8.7],["AGOSTO",21.7],["SEPTIEMBRE",25.9]]
 },
 "cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,92.5,25.04,18.2],["SEPTIEMBRE",2026,93.1,23.3,18.2]],
 "rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
@@ -793,6 +794,7 @@ function renderPickit(){
       <div class="chart-box"><h3>Evolución de Facturación - Inversa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-li-fac"></canvas></div>
       <div class="chart-box"><h3>Evolución de Volumen - Inversa PUDO</h3><div class="note">Envíos por mes</div><canvas id="pickit-li-vol"></canvas></div>
     </div>
+    <div class="chart-box"><h3>Evolución de SLA - Inversa PUDO</h3><div class="note">Junio → Septiembre 2026</div><canvas id="pickit-li-sla"></canvas></div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y Performance Punto</div>
@@ -813,6 +815,8 @@ function renderPickit(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtARS(v)}}}}});
   mkChart('pickit-li-vol',{type:'line',data:{labels:liLabels,datasets:[{data:li.vol.map(([,v])=>v),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('pickit-li-sla',{type:'line',data:{labels:li.sla.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{data:li.sla.map(([,v])=>v),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v.toFixed(1)+'%'}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('pickit-vol',{type:'line',data:{labels:volRowsConfirmados.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsConfirmados.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   const vUlt=volRowsConfirmados[volRowsConfirmados.length-1], vAnt=volRowsConfirmados[volRowsConfirmados.length-2];
