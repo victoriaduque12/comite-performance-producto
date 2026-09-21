@@ -299,8 +299,14 @@ function paintSlaEfecCharts(idPrefix,sla,target,soloSla){
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3,datalabels:{align:'top',offset:6}},
     {type:'line',label:'Efectividad 1ª vuelta',data:sla.map(r=>r[4]),borderColor:'#8FBF4C',tension:.3,datalabels:{align:'bottom',offset:6}}
   ];
-  if(target){
-    slaDs.push({type:'line',label:'Target 95%',data:labels.map(()=>95),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
+  let slaTarget=null, efecTarget=null;
+  if(target===true){ slaTarget=95; }
+  else if(target && typeof target==='object'){ slaTarget=target.sla; efecTarget=target.efectividad; }
+  if(slaTarget!=null){
+    slaDs.push({type:'line',label:'Target '+slaTarget+'%',data:labels.map(()=>slaTarget),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
+  }
+  if(efecTarget!=null){
+    efecDs.push({type:'line',label:'Target '+efecTarget+'%',data:labels.map(()=>efecTarget),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
   }
   const sharedMin=pctMin(sla,[2,3,4]);
   mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
@@ -745,7 +751,7 @@ function renderPickit(){
   const vUlt=volRowsConfirmados[volRowsConfirmados.length-1], vAnt=volRowsConfirmados[volRowsConfirmados.length-2];
   document.getElementById('pickit-vol-var').innerHTML=vAnt?varHtml(vUlt.volumen,vAnt.volumen):'';
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  paintSlaEfecCharts('pickit',sla,false);
+  paintSlaEfecCharts('pickit',sla,{sla:98,efectividad:99});
   mkChart('pickit-pp',{data:{labels,datasets:[
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#0099A8',tension:.3},
     {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
