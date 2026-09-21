@@ -776,10 +776,10 @@ function renderPickit(){
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[5,6]),max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('pickit-redirec-semana',{type:'bar',data:{labels:rd.semanas.labels,datasets:[
     {label:'Redireccionados',data:rd.semanas.redireccionados,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}},
-    {label:'Entregados/retirados',data:rd.semanas.entregados,backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:cnt}}
+    {label:'Retirados',data:rd.semanas.entregados,backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:cnt}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
   mkChart('pickit-redirec-estado',{type:'bar',data:{labels:rd.estados.map(e=>e[0]),datasets:[
-    {data:rd.estados.map(e=>e[1]),backgroundColor:['#4D7200','#C0392B','#F6A945','#0099A8','#8a97a0'],borderRadius:4,datalabels:{formatter:cnt}}
+    {data:rd.estados.map(e=>e[1]),backgroundColor:['#4D7200','#C0392B','#F6A945','#0099A8','#8a97a0'],borderRadius:4,datalabels:{formatter:cnt,anchor:'center',align:'center',color:'#fff',font:{weight:'700'}}}
   ]},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}}}});
 }
 
