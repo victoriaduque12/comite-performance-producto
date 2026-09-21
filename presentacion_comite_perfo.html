@@ -604,7 +604,7 @@ function renderCDD(){
     labels:provOrdenadas.map(p=>p.provincia),
     datasets:[
       {label:'SLA',data:provOrdenadas.map(p=>p.sla),
-        backgroundColor:provOrdenadas.map(p=>p.sla>=95?'#8FBF4C':'#C0392B'),
+        backgroundColor:provOrdenadas.map(p=>p.sla>=95?'#8FBF4C':(p.provincia==='Capital Federal'?'#F6A945':'#C0392B')),
         borderRadius:4,
         datalabels:{formatter:(v)=>v.toFixed(1)+'%',anchor:'end',align:'end'}},
       {label:'Share de Volumen',data:provOrdenadas.map(p=>p.share),backgroundColor:'#0099A8',borderRadius:4,
