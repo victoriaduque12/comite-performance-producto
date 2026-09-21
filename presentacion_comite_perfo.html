@@ -779,7 +779,10 @@ function renderPickit(){
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(ultFac.mes)} ${ultFac.anio}</div><div class="val">${fmtARS(ultFac.venta)}</div>${facAnt?varHtml(ultFac.venta,facAnt.venta):''}</div>
       <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(ultVol.mes)} ${ultVol.anio}</div><div class="val">${ultVol.volumen.toLocaleString()}</div>${volAnt?varHtml(ultVol.volumen,volAnt.volumen):''}</div>
     </div>
-    ${buildFacVolCharts('pickit',rows,'Envíos en punto Pick It')}
+    <div class="two-col">
+      <div class="chart-box"><h3>Evolución de Facturación - Directa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-fac"></canvas></div>
+      <div class="chart-box"><h3>Evolución de Volumen - Directa PUDO</h3><div class="note">Volumen facturado · Envíos en punto Pick It</div><canvas id="pickit-vol"></canvas><div id="pickit-vol-var"></div></div>
+    </div>
 
     <div class="section-sub" style="margin-top:18px">Facturación y volumen · Logística Inversa PUDO · Cliente: Adidas · Junio → Agosto 2026</div>
     <div class="cards-row" style="grid-template-columns:1fr 1fr">
@@ -787,8 +790,8 @@ function renderPickit(){
       <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · Agosto 2026</div><div class="val">${li.vol[li.vol.length-1][1].toLocaleString()}</div>${varHtml(li.vol[li.vol.length-1][1],li.vol[li.vol.length-2][1])}</div>
     </div>
     <div class="two-col">
-      <div class="chart-box"><h3>Evolución de Facturación</h3><div class="note">ARS por mes</div><canvas id="pickit-li-fac"></canvas></div>
-      <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Envíos por mes</div><canvas id="pickit-li-vol"></canvas></div>
+      <div class="chart-box"><h3>Evolución de Facturación - Inversa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-li-fac"></canvas></div>
+      <div class="chart-box"><h3>Evolución de Volumen - Inversa PUDO</h3><div class="note">Envíos por mes</div><canvas id="pickit-li-vol"></canvas></div>
     </div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
