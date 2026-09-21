@@ -563,7 +563,7 @@ function renderCDD(){
     ${buildMargenChart('cdd','Enero → Julio 2026')}
     <div class="two-col">
       <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · unidades por mes</div><canvas id="cdd-vol"></canvas><div id="cdd-vol-var"></div></div>
-      <div class="chart-box"><h3>Volumen por Cliente</h3><div class="note">Share acumulado</div><canvas id="cdd-vol-cliente"></canvas></div>
+      <div class="chart-box"><h3>Volumen por Cliente</h3><div class="note">Enero → Julio 2026</div><canvas id="cdd-vol-cliente"></canvas></div>
     </div>
     <div class="note-box-info">Recuperación económica desde mayo: luego de la volatilidad observada durante el primer cuatrimestre, el servicio registra dos meses consecutivos con margen positivo.</div>
 
@@ -600,7 +600,7 @@ function renderCDD(){
   paintFacVolCharts('cdd',rows);
   mkChart('cdd-vol-cliente',{type:'doughnut',data:{
     labels:['Gobierno Ciudad Bs. As.','Banco Chubut'],
-    datasets:[{data:[92.2,7.8],backgroundColor:['#0099A8','#F6A945']}]
+    datasets:[{data:[91.3,8.7],backgroundColor:['#0099A8','#F6A945']}]
   },options:{responsive:true,plugins:{legend:{position:'bottom'},datalabels:{color:'#fff',font:{weight:'700'},formatter:v=>v.toFixed(1)+'%'}}}});
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
