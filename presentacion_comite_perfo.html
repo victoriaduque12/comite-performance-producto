@@ -296,7 +296,8 @@ function paintSlaEfecCharts(idPrefix,sla,target,soloSla){
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   const slaDs=[{type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#0099A8',tension:.3}];
   if(sla.some(r=>r[5]!=null)){
-    slaDs.push({type:'line',label:'SLA corregido (sin entregas coordinadas)',data:sla.map(r=>r[5]!=null?r[5]:null),spanGaps:true,borderColor:'#4D7200',borderDash:[4,3],tension:.3,datalabels:{align:'top',offset:6}});
+    slaDs[0].datalabels={align:'bottom',offset:6,color:'#0099A8',backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4}};
+    slaDs.push({type:'line',label:'SLA corregido (sin entregas coordinadas)',data:sla.map(r=>r[5]!=null?r[5]:null),spanGaps:true,borderColor:'#4D7200',borderDash:[4,3],tension:.3,datalabels:{align:'top',offset:8,color:'#4D7200',backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4}}});
   }
   const efecDs=[
     {type:'line',label:'Efectividad',data:sla.map(r=>r[3]),borderColor:'#F6A945',tension:.3,datalabels:{align:'top',offset:6}},
