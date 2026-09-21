@@ -602,9 +602,9 @@ function renderCDD(){
     labels:['Ene','Feb','Mar','Abr','May','Jun','Jul'],
     datasets:[
       {label:'Gobierno Ciudad Bs. As.',data:[100,100,100,100,96.9,79.6,75.7],backgroundColor:'#0099A8',
-        datalabels:{color:'#fff',font:{weight:'700'},formatter:v=>v.toFixed(0)+'%'}},
+        datalabels:{anchor:'center',align:'center',color:'#fff',font:{weight:'700'},formatter:v=>v.toFixed(0)+'%'}},
       {label:'Banco Chubut',data:[0,0,0,0,3.1,20.4,24.3],backgroundColor:'#F6A945',
-        datalabels:{color:'#fff',font:{weight:'700'},formatter:v=>v>0?v.toFixed(0)+'%':''}}
+        datalabels:{anchor:'center',align:'center',color:'#fff',font:{weight:'700'},display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,formatter:v=>v.toFixed(0)+'%'}}
     ]
   },options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
   paintMargenChart('cdd',rows);
