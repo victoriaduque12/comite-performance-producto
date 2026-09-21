@@ -717,7 +717,7 @@ function renderRash(){
       <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:26px;color:var(--orange)">${a.b2bPct}%</div><div class="lbl">B2B (empresas) — foco estratégico del producto</div></div>
       <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="font-size:26px;color:#C0392B">${a.foraAmbaCount} <span style="font-size:15px;font-weight:600">(${a.foraAmbaPct}%)</span></div><div class="lbl">Origen fuera de AMBA</div></div>
     </div>
-    <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${a.ambaPct}%) tienen origen en AMBA, ${a.foraAmbaCount} (${a.foraAmbaPct}%) están fuera de AMBA, y ${a.sinClasificarGeo} no se pudieron clasificar con certeza por localidad ambigua.</div>`;
+    <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${a.ambaPct}%) tienen origen en AMBA, ${a.foraAmbaCount} (${a.foraAmbaPct}%) están fuera de AMBA. Los principales orígenes fuera de AMBA son: <b>Córdoba</b> (93 · 30,1%), <b>Buenos Aires — interior</b> (61 · 19,7%), <b>Santa Fe</b> (58 · 18,8%) y <b>Mendoza</b> (20 · 6,5%).</div>`;
   paintFacVolCharts('rash',rows);
   paintMargenChart('rash',rows);
   mkChart('rash-vol-operativo',{type:'line',data:{labels:DATA.rashVolumenOperativo.map(r=>r[0]),datasets:[{data:DATA.rashVolumenOperativo.map(r=>r[1]),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:4,datalabels:{formatter:cnt}}]},
