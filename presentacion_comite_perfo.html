@@ -295,7 +295,7 @@ function buildSlaEfecCharts(idPrefix,periodo,soloSla){
 function paintSlaEfecCharts(idPrefix,sla,target,soloSla){
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   const slaDs=[{type:'line',label:'SLA',data:sla.map(r=>r[2]),borderColor:'#0099A8',tension:.3}];
-  if(sla.some(r=>r[5]!=null)){
+  if(sla.length && sla[0].length===6 && sla.some(r=>r[5]!=null)){
     slaDs[0].datalabels={align:'bottom',offset:6,color:'#0099A8',backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4}};
     slaDs.push({type:'line',label:'SLA corregido (sin entregas coordinadas)',data:sla.map(r=>r[5]!=null?r[5]:null),spanGaps:true,borderColor:'#4D7200',borderDash:[4,3],tension:.3,datalabels:{align:'top',offset:8,color:'#4D7200',backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4}}});
   }
@@ -807,11 +807,12 @@ function renderPickit(){
     <div class="section-sub" style="margin-top:14px">SLA y Efectividad - Inversa PUDO</div>
     <div class="chart-box"><h3>Evolución de SLA - Inversa PUDO</h3><div class="note">Junio → Septiembre 2026</div><canvas id="pickit-li-sla"></canvas></div>
     <div class="info-box">
-      <p style="margin:0 0 8px">El SLA arrancó bajo por dos motivos principales: <b>falta de imposición/ECO en devoluciones físicas</b> — paquetes que llegaban físicamente a OCASA/CBN o al cross-dock pero no quedaban correctamente impuestos en SAP/UCAS, dejando la devolución trabada sistémicamente aunque el físico existiera — y <b>configuración incorrecta o incompleta de cross-docks</b>, donde el flujo esperaba un evento intermedio que nunca llegaba (por tener un solo cross-dock configurado o faltar el <code>IN</code> correspondiente), frenando la transacción.</p>
-      <p style="margin:0 0 8px">Se corrigieron las configuraciones de cross-dock y los eventos faltantes para que la devolución pudiera continuar sistémicamente. Se definió como control operativo no cerrar una devolución sin ECO generado, revisando excepciones antes del cierre. Y se aumentó la frecuencia de envío de devoluciones físicas a CBN, priorizando el flujo de inversa por su impacto en el reintegro al buyer.</p>
+      <p style="margin:0 0 8px">El SLA arrancó bajo por dos motivos principales: <b>falta de imposición en devoluciones físicas</b> — paquetes que llegaban físicamente a CBN pero no quedaban correctamente impuestos en SAP, dejando la devolución trabada sistémicamente aunque el físico existiera.</p>
+      <p style="margin:0 0 8px">Se corrigieron las configuraciones y los eventos faltantes para que la devolución pudiera continuar sistémicamente. Se aumentó la frecuencia de envío de devoluciones físicas de Pickit a CBN, priorizando el flujo de inversa por su impacto en el reintegro al buyer.</p>
       <p style="margin:0"><b>Resultado:</b> el SLA pasó de 17,6% en junio a 90,1% en septiembre.</p>
     </div>
     <div class="chart-box"><h3>% Efectividad de Retiro - Inversa PUDO</h3><div class="note">1ª visita vs. Final · Junio → Septiembre 2026</div><canvas id="pickit-li-efect"></canvas></div>
+    <div class="note-box-info">En curso revisión con Pickit para entender por qué la primera visita es baja comparada con la efectividad de retiro final. ¿Qué cambia de la primera visita a la siguiente?</div>
 
     <div class="section-title">📦 Redireccionamiento AMBA</div>
     <div class="section-sub">Activo desde el 12/08/2026 (logística Pickit)</div>
@@ -827,7 +828,7 @@ function renderPickit(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtARS(v)}}}}});
   mkChart('pickit-li-vol',{type:'line',data:{labels:liLabels,datasets:[{data:li.vol.map(([,v])=>v),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('pickit-li-sla',{type:'line',data:{labels:li.sla.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{data:li.sla.map(([,v])=>v),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v.toFixed(1)+'%'}}]},
+  mkChart('pickit-li-sla',{type:'line',data:{labels:li.sla.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{label:'SLA',data:li.sla.map(([,v])=>v),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v.toFixed(1)+'%'}}]},
     options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('pickit-li-efect',{type:'line',data:{labels:li.efectRetiro.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[
     {label:'1ª visita',data:li.efectRetiro.map(([,v1])=>v1),borderColor:'#F6A945',tension:.3,datalabels:{align:'bottom',offset:6}},
