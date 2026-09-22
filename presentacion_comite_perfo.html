@@ -361,7 +361,8 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "pickitLogisticaInversa":{
   "fac":[["JUNIO",236890.47],["JULIO",696069.33],["AGOSTO",14173185.26]],
   "vol":[["JUNIO",183],["JULIO",1945],["AGOSTO",2120]],
-  "sla":[["JUNIO",15.6],["JULIO",8.7],["AGOSTO",21.7],["SEPTIEMBRE",25.9]]
+  "sla":[["JUNIO",17.6],["JULIO",26.2],["AGOSTO",79.7],["SEPTIEMBRE",90.1]],
+  "efectRetiro":[["JUNIO",17.7,63],["JULIO",15.9,89],["AGOSTO",31.6,94],["SEPTIEMBRE",26.8,85]]
 },
 "cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,92.5,25.04,18.2],["SEPTIEMBRE",2026,93.1,23.3,18.2]],
 "rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
@@ -794,12 +795,23 @@ function renderPickit(){
       <div class="chart-box"><h3>Evolución de Facturación - Inversa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-li-fac"></canvas></div>
       <div class="chart-box"><h3>Evolución de Volumen - Inversa PUDO</h3><div class="note">Envíos por mes</div><canvas id="pickit-li-vol"></canvas></div>
     </div>
-    <div class="chart-box"><h3>Evolución de SLA - Inversa PUDO</h3><div class="note">Junio → Septiembre 2026</div><canvas id="pickit-li-sla"></canvas></div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
-    <div class="section-sub">SLA, Efectividad y Performance Punto</div>
-    ${buildSlaEfecCharts('pickit','Marzo → Septiembre 2026')}
-    <div class="chart-box"><h3>Performance Punto</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>
+    <div class="section-sub">SLA, Efectividad y Performance Punto - Directa PUDO</div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Evolución de SLA - Directa PUDO</h3><div class="note">Marzo → Septiembre 2026</div><canvas id="pickit-sla"></canvas></div>
+      <div class="chart-box"><h3>Evolución de Efectividad - Directa PUDO</h3><div class="note">Marzo → Septiembre 2026</div><canvas id="pickit-efec"></canvas></div>
+    </div>
+    <div class="chart-box"><h3>Performance Punto - Directa PUDO</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>
+
+    <div class="section-sub" style="margin-top:14px">SLA y Efectividad - Inversa PUDO</div>
+    <div class="chart-box"><h3>Evolución de SLA - Inversa PUDO</h3><div class="note">Junio → Septiembre 2026</div><canvas id="pickit-li-sla"></canvas></div>
+    <div class="info-box">
+      <p style="margin:0 0 8px">El SLA arrancó bajo por dos motivos principales: <b>falta de imposición/ECO en devoluciones físicas</b> — paquetes que llegaban físicamente a OCASA/CBN o al cross-dock pero no quedaban correctamente impuestos en SAP/UCAS, dejando la devolución trabada sistémicamente aunque el físico existiera — y <b>configuración incorrecta o incompleta de cross-docks</b>, donde el flujo esperaba un evento intermedio que nunca llegaba (por tener un solo cross-dock configurado o faltar el <code>IN</code> correspondiente), frenando la transacción.</p>
+      <p style="margin:0 0 8px">Se corrigieron las configuraciones de cross-dock y los eventos faltantes para que la devolución pudiera continuar sistémicamente. Se definió como control operativo no cerrar una devolución sin ECO generado, revisando excepciones antes del cierre. Y se aumentó la frecuencia de envío de devoluciones físicas a CBN, priorizando el flujo de inversa por su impacto en el reintegro al buyer.</p>
+      <p style="margin:0"><b>Resultado:</b> el SLA pasó de 17,6% en junio a 90,1% en septiembre.</p>
+    </div>
+    <div class="chart-box"><h3>% Efectividad de Retiro - Inversa PUDO</h3><div class="note">1ª visita vs. Final · Junio → Septiembre 2026</div><canvas id="pickit-li-efect"></canvas></div>
 
     <div class="section-title">📦 Redireccionamiento AMBA</div>
     <div class="section-sub">Activo desde el 12/08/2026 (logística Pickit)</div>
@@ -816,7 +828,11 @@ function renderPickit(){
   mkChart('pickit-li-vol',{type:'line',data:{labels:liLabels,datasets:[{data:li.vol.map(([,v])=>v),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('pickit-li-sla',{type:'line',data:{labels:li.sla.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{data:li.sla.map(([,v])=>v),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v.toFixed(1)+'%'}}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+    options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  mkChart('pickit-li-efect',{type:'line',data:{labels:li.efectRetiro.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[
+    {label:'1ª visita',data:li.efectRetiro.map(([,v1])=>v1),borderColor:'#F6A945',tension:.3,datalabels:{align:'bottom',offset:6}},
+    {label:'Final',data:li.efectRetiro.map(([,,vf])=>vf),borderColor:'#8FBF4C',tension:.3,datalabels:{align:'top',offset:6}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
   mkChart('pickit-vol',{type:'line',data:{labels:volRowsConfirmados.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsConfirmados.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   const vUlt=volRowsConfirmados[volRowsConfirmados.length-1], vAnt=volRowsConfirmados[volRowsConfirmados.length-2];
