@@ -821,7 +821,7 @@ function renderPickit(){
     </div>
     <div class="chart-box"><h3>Redireccionamientos por semana</h3><div class="note">Total vs. entregados/retirados por el buyer</div><canvas id="pickit-redirec-semana"></canvas></div>
     <div class="chart-box"><h3>Estado actual de los redireccionamientos</h3><div class="note">Sobre el total acumulado desde el 12/08</div><canvas id="pickit-redirec-estado"></canvas></div>`;
-  paintFacVolCharts('pickit',rows);
+  paintFacVolCharts('pickit',rows.filter(r=>r.mes!=='MARZO'));
   const liLabels=li.fac.map(([m])=>MS[MO.indexOf(m)]+" '26");
   const liFacLabels=li.fac.map(([m])=>MS[MO.indexOf(m)]+" '26"+(m==='AGOSTO'?'*':''));
   mkChart('pickit-li-fac',{type:'bar',data:{labels:liFacLabels,datasets:[{data:li.fac.map(([,v])=>v),
