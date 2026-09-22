@@ -356,7 +356,7 @@ Chart.defaults.set('plugins.datalabels',{
 });
 
 const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":"ENERO","venta":18259848,"costo":8632040.2936,"margen":9627807.7064,"volumen":1556},{"producto":"Carta Documento Digital","anio":2026,"mes":"FEBRERO","venta":4752987.4,"costo":9422503.7904,"margen":-4669516.3904,"volumen":392},{"producto":"Carta Documento Digital","anio":2026,"mes":"MARZO","venta":32780164.34,"costo":24271878.6594,"margen":8508285.6806,"volumen":3681},{"producto":"Carta Documento Digital","anio":2026,"mes":"ABRIL","venta":7535836.82,"costo":11735068.723,"margen":-4199231.903,"volumen":840},{"producto":"Carta Documento Digital","anio":2026,"mes":"MAYO","venta":22604343.76,"costo":16904431.7088,"margen":5699912.0512,"volumen":2651},{"producto":"Carta Documento Digital","anio":2026,"mes":"JUNIO","venta":29247864.54,"costo":18508584.4189,"margen":10739280.1211,"volumen":2853},{"producto":"Carta Documento Digital","anio":2026,"mes":"JULIO","venta":26692152.1,"costo":20520547.8227,"margen":6171604.2773,"volumen":2423},{"producto":"Courier Personas (Customs Clearance)","anio":2026,"mes":"JUNIO","venta":199640125.09,"costo":199492517.5653,"margen":147607.5247,"volumen":63964},{"producto":"Courier Personas (Customs Clearance)","anio":2026,"mes":"JULIO","venta":685855483,"costo":535387759.1783,"margen":150467723.8217,"volumen":206330},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ENERO","venta":141345333.0,"costo":311083997.9615,"margen":-169738664.9615,"volumen":641},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"FEBRERO","venta":109946758.63,"costo":281048878.8902,"margen":-171102120.2602,"volumen":232},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MARZO","venta":177655294.95,"costo":318884652.1976,"margen":-141229357.2476,"volumen":2302},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"ABRIL","venta":189504030.12,"costo":352309087.4298,"margen":-162805057.3098,"volumen":2419},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"MAYO","venta":101861180.56,"costo":318708656.8331,"margen":-216847476.2731,"volumen":1842},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"JUNIO","venta":162078806.87,"costo":248683627.7026,"margen":-86604820.8326,"volumen":1778},{"producto":"Distribucion Consumo Masivo y Palletizado","anio":2026,"mes":"JULIO","venta":51403077.77,"costo":261349072.8656,"margen":-209945995.0956,"volumen":784},{"producto":"Rash","anio":2026,"mes":"JUNIO","venta":2575383.03,"costo":3051117.2415,"margen":-475734.2115,"volumen":138},{"producto":"Rash","anio":2026,"mes":"JULIO","venta":1162605.18,"costo":2710944.7412,"margen":-1548339.5612,"volumen":82}],
-"pickitVol":[["MARZO",16000],["ABRIL",13635],["MAYO",23504],["JUNIO",17235],["JULIO",22148]],
+"pickitVol":[["MARZO",16000],["ABRIL",13635],["MAYO",23504],["JUNIO",17235],["JULIO",15435],["AGOSTO",22581]],
 "pickitFac":[["MARZO",3492517.88],["ABRIL",135897691.99],["MAYO",138654667.16],["JUNIO",282860218.36],["JULIO",158680482.77],["AGOSTO",212721572.57]],
 "pickitLogisticaInversa":{
   "fac":[["JULIO",696069.33],["AGOSTO",14173185.26]],
@@ -767,14 +767,7 @@ function renderPickit(){
   const facMap=Object.fromEntries(DATA.pickitFac.map(([m,v])=>[m.toUpperCase(),v]));
   const mesesConDatos=MESES_PICKIT.filter(m=>volMap[m]!=null||facMap[m]!=null);
   const rows=mesesConDatos.map(m=>({mes:m,anio:2026,volumen:volMap[m]!=null?volMap[m]:null,venta:facMap[m]||0}));
-  // Volumen se muestra 1 mes atrás de la Facturación (Pickit factura a mes vencido).
-  // Un mes de volumen se considera "confirmado" recién cuando existe la facturación del mes siguiente.
-  const volRowsConfirmados=rows.filter(r=>{
-    if(r.volumen==null) return false;
-    const idx=MESES_PICKIT.indexOf(r.mes);
-    const mesSiguiente=MESES_PICKIT[idx+1];
-    return mesSiguiente && facMap[mesSiguiente]!=null;
-  });
+  const volRowsConfirmados=rows.filter(r=>r.volumen!=null);
   const sla=DATA.pickitSla;
   const rd=DATA.pickitRedireccionamiento;
   const facRows=rows.filter(r=>r.venta);
