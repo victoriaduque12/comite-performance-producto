@@ -1069,10 +1069,9 @@ function renderPostal(){
 
     <div class="section-title">📱 MVP Teléfono en POD</div>
     <div class="section-sub">El ${d.fonoPodFecha} se sumó la funcionalidad de teléfono en POD en 4 APs (2 de alta y 2 de renovación) — comparativa Julio vs. Agosto vs. Septiembre sobre esos mismos APs</div>
-    <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Piezas impuestas</div><div class="val" style="font-size:20px">${d.fonoPod.impuestas.join(' → ')}</div><div class="sub">Julio → Agosto → Septiembre</div></div>
-      <div class="kcard" style="border-top-color:#8FBF4C"><div class="lbl">% Efectividad</div><div class="val" style="font-size:20px;color:#4D7200">${d.fonoPod.efectividad.map(v=>v+'%').join(' → ')}</div></div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">No responde</div><div class="val" style="font-size:20px;color:var(--orange)">${d.fonoPod.noResponde.join(' → ')}</div></div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Piezas impuestas</h3><div class="note">Julio → Agosto → Septiembre</div><canvas id="postal-fonopod-impuestas"></canvas></div>
+      <div class="chart-box"><h3>% Efectividad</h3><div class="note">Julio → Agosto → Septiembre</div><canvas id="postal-fonopod-efect"></canvas></div>
     </div>
     <div class="chart-box"><h3>Motivos de No Entrega</h3><div class="note">Principales motivos, % por mes</div><canvas id="postal-fonopod-motivos"></canvas></div>
     <div class="note-box-info">Septiembre todavía tiene 2.868 piezas en curso (sin visita) al momento del corte — los números del mes son parciales y probablemente mejoren a medida que se completen las gestiones.</div>
@@ -1118,6 +1117,12 @@ function renderPostal(){
     {label:'Días hábiles',data:d.diasPrimeraVisita,borderColor:'#0099A8',backgroundColor:'rgba(0,153,168,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v.toFixed(2)}}
   ]},options:{responsive:true,plugins:{legend:{display:false}}}});
 
+  mkChart('postal-fonopod-impuestas',{type:'bar',data:{labels:d.fonoPod.meses,datasets:[
+    {data:d.fonoPod.impuestas,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
+  ]},options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('postal-fonopod-efect',{type:'line',data:{labels:d.fonoPod.meses,datasets:[
+    {data:d.fonoPod.efectividad,borderColor:'#8FBF4C',backgroundColor:'rgba(143,191,76,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v+'%',color:'#4D7200',font:{weight:'700'}}}
+  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
   mkChart('postal-fonopod-motivos',{type:'bar',data:{labels:d.fonoPod.motivos.labels,datasets:[
     {label:'Julio',data:d.fonoPod.motivos.Julio,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v+'%'}},
     {label:'Agosto',data:d.fonoPod.motivos.Agosto,backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v+'%'}},
