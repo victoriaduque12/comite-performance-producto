@@ -389,12 +389,12 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "cddSlaSemanal":[["Semana 1 al 6",89.4],["Semana 7 al 13",96.8],["Semana 14 al 18",96.7]],
 "pickitMotivosJulio":[["No responde al Llamado",130],["Siniestrado – Por Extravío",81],["Rechazado",17]],
 "postal":{
-  "meses":["Abril","Mayo","Junio","Julio","Agosto*"],
-  "piezasImpuestas":[8252,4135,7520,10444,9381],
-  "entregadas":[5003,2440,4648,6804,5729],
-  "efectEntregable":[79.3,78.7,78.6,81.9,80.5],
-  "efectImpuestas":[60.6,59.0,61.8,65.1,61.1],
-  "diasPrimeraVisita":[4.06,3.51,3.85,3.81,3.93],
+  "meses":["Abril","Mayo","Junio","Julio","Agosto","Septiembre*"],
+  "piezasImpuestas":[8252,4135,7520,10444,14221,12971],
+  "entregadas":[5003,2440,4648,6804,9282,5851],
+  "efectEntregable":[79.3,78.7,78.6,81.9,82.1,79.9],
+  "efectImpuestas":[60.6,59.0,61.8,65.1,65.3,45.1],
+  "diasPrimeraVisita":[4.06,3.51,3.85,3.81,4.28,3.63],
   "fonoPodFecha":"10/08/2026",
   "semanasAgosto":[
     {"rango":"1/08 → 10/08","piezas":4256,"entregadas":2733,"efectEntregable":78.5,"efectImpuestas":64.2,"noResponde":749},
@@ -1015,10 +1015,10 @@ function renderPostal(){
     <div class="eyebrow">Última Milla</div>
     <div class="bigtitle">Postal a Paquetería</div>
     <div class="subdate">Proyecto modo MVP con Banco Macro</div>
-    <div class="note-box-info">Arrancamos en <b>abril 2026</b> con <b>2 AP</b>: TC Amex Renovación y TC Master Renovación.<br>En <b>junio</b> sumamos <b>3 AP</b> más: TC Amex, TC Amex Platinum y TC Visa Signature.<br>En <b>agosto</b> sumamos <b>2 AP</b> más: TC Visa Platinum y TC Master, llegando a <b>7 AP en total</b>.</div>
+    <div class="note-box-info">Arrancamos en <b>abril 2026</b> con <b>2 AP</b>: TC Amex Renovación y TC Master Renovación.<br>En <b>junio</b> sumamos <b>3 AP</b> más: TC Amex, TC Amex Platinum y TC Visa Signature.<br>En <b>agosto</b> sumamos <b>2 AP</b> más: TC Visa Platinum y TC Master.<br>En <b>septiembre</b> sumamos <b>2 AP</b> más: T.DEBITO SOC. MILITAR y T.CREDITO SOC. MILITAR, llegando a <b>9 AP en total</b>.</div>
 
     <div class="section-title">📊 Volumen y Efectividad</div>
-    <div class="section-sub">Piezas impuestas y entregadas · Abril → Agosto 2026 (agosto parcial, corte 24/08)</div>
+    <div class="section-sub">Piezas impuestas y entregadas · Abril → Sept 2026 (Sept parcial, corte 22/09)</div>
     <div class="chart-box"><h3>Piezas impuestas vs. Entregadas</h3><div class="note">Por mes</div><canvas id="postal-piezas"></canvas></div>
     <div class="chart-box"><h3>Efectividad</h3><div class="note">% Efect / Entregable y % Efect / Impuestas, por mes</div><canvas id="postal-efec"></canvas></div>
     <div class="info-box">
@@ -1026,6 +1026,7 @@ function renderPostal(){
       <b>% Efect / Impuestas</b> = Entregado / Total de piezas impuestas.
     </div>
     <div class="chart-box"><h3>Días hábiles hasta 1ª visita</h3><div class="note">Promedio total, por mes</div><canvas id="postal-dias"></canvas></div>
+    <div class="note-box-info">En términos generales venimos cumpliendo los tiempos objetivo, aunque vemos que AMBA es una región para mirar más de cerca: el compromiso para primera visita es de 4 días y en agosto el promedio fue de 4,66 días hábiles, por lo que ahí se está haciendo un seguimiento más detallado para cumplir con lo propuesto.</div>
 
     <div class="section-title">📱 Apertura por semana · Agosto 2026</div>
     <div class="section-sub">Comparativa: Semana 1 (${d.semanasAgosto[0].rango}) vs. Semana 2 (${d.semanasAgosto[1].rango}) — el ${d.fonoPodFecha} se sumó la funcionalidad de teléfono en POD</div>
