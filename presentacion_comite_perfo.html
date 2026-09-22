@@ -426,12 +426,12 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   ],
   "motivosJulio":[["No responde",41],["Error domicilio",34],["Titular Desconocido",10],["Se mudó",8],["Rechazado",2],["Zona Peligrosa",2],["Solicitada",1],["Fallecido",1]],
   "motivosAgosto":[["No responde",45],["Error domicilio",31],["Titular Desconocido",9],["Se mudó",9],["Rechazado",2],["Solicitada",2],["Zona Peligrosa",1],["No Visitado",1],["Fallecido",1]],
-  "nps":{"respuestas":376,"promotores":70.7,"detractores":23.9,"pasivos":5.3,"nps":46.8},
-  "npsRegion":[["AMBA",163,66.9,5.5,27.6,39.3],["CENTRO",113,77.9,6.2,15.9,61.9],["NORTE",81,66.7,4.9,28.4,38.3],["SUR",19,78.9,0,21.1,57.9]],
-  "npsSemanal":[["Semana 3/08",87,40.2],["Semana 10/08",136,46.3],["Semana 17/08",127,59.1]],
-  "npsMensual":[["JUNIO",44.1],["JULIO",39.3],["AGOSTO",49.4]],
-  "paretoDetractores":[["Error en domicilio",17.8],["Transportista no pasó por domicilio",16.7],["Cliente no estaba en domicilio",14.4],["Rapidez o puntualidad",7.8],["Cuidado y seguridad",4.4]],
-  "paretoPromotores":[["Rapidez o puntualidad",31.2],["Sin mensaje",12.8],["Cuidado y seguridad",10.2],["Comunicación efectiva",6.4],["Llamada previa a la entrega",3.8]]
+  "nps":{"respuestas":1078,"promotores":70.8,"detractores":25.0,"pasivos":4.2,"nps":45.8},
+  "npsRegion":[["AMBA",362,66.0,5.8,28.2,37.8],["CENTRO",417,73.9,3.6,22.5,51.3],["NORTE",259,73.7,3.1,23.2,50.6],["SUR",40,62.5,5.0,32.5,30.0]],
+  "npsSemanal":[["Semana 36",240,42.1],["Semana 37",360,52.8],["Semana 38",419,41.5],["Semana 39",59,49.2]],
+  "npsMensual":[["JUNIO",44.1],["JULIO",39.3],["AGOSTO",39.7],["SEPTIEMBRE*",45.8]],
+  "paretoDetractores":[["Transportista no pasó por domicilio",34.6],["Error en domicilio",29.8],["Cliente no estaba en domicilio",18.9],["Sin mensaje",8.3],["Cuidado y seguridad",5.7]],
+  "paretoPromotores":[["Rapidez o puntualidad",31.6],["Cuidado y seguridad",27.6],["Sin mensaje",24.4],["Atención y seguimiento deficiente",7.8],["Llamada previa a la entrega",4.9]]
 },
 "pickitMotivosAgosto":[["Solicitada por Cliente",570],["No responde al Llamado",19],["Rechazado",11]],
 "kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
@@ -1099,7 +1099,7 @@ function renderPostal(){
     <div class="chart-box"><h3>Motivos de No Entrega · Septiembre — Con POD vs. Sin POD</h3><div class="note">Principales motivos, %</div><canvas id="postal-fonopod-motivos-comp"></canvas></div>
 
     <div class="section-title">💬 NPS | Encuestas de Satisfacción Clientes</div>
-    <div class="section-sub">Detalle Agosto 2026</div>
+    <div class="section-sub">Detalle Septiembre 2026</div>
     <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${d.nps.respuestas}</div><div class="lbl">Respuestas</div></div>
       <div class="kcard" style="border-top-color:#8FBF4C"><div class="val" style="color:#4D7200">${d.nps.promotores}%</div><div class="lbl">Promotores</div></div>
@@ -1113,7 +1113,7 @@ function renderPostal(){
       </table>
     </div>
     <div class="chart-box"><h3>Evolución NPS por mes</h3><div class="note">NPS vía WhatsApp — arrancó en Junio 2026</div><canvas id="postal-nps-mensual"></canvas></div>
-    <div class="chart-box"><h3>Respuestas & Trend NPS | Agosto</h3><div class="note">Por semana (3/08 → 17/08)</div><canvas id="postal-nps-trend"></canvas></div>
+    <div class="chart-box"><h3>Respuestas & Trend NPS | Septiembre</h3><div class="note">Por semana</div><canvas id="postal-nps-trend"></canvas></div>
     <div class="two-col">
       <div class="chart-box"><h3>Top Motivos · Detractores</h3><div class="note">Pareto</div><canvas id="postal-pareto-det"></canvas></div>
       <div class="chart-box"><h3>Top Motivos · Promotores</h3><div class="note">Pareto</div><canvas id="postal-pareto-prom"></canvas></div>
