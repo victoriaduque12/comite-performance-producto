@@ -364,6 +364,12 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   "sla":[["JUNIO",17.6],["JULIO",26.2],["AGOSTO",79.7],["SEPTIEMBRE",90.1]],
   "efectRetiro":[["JUNIO",17.7,63],["JULIO",15.9,89],["AGOSTO",31.6,94],["SEPTIEMBRE",26.8,85]]
 },
+"consumoFlotaMolinos":[
+  {"mes":"Junio","pallets":1837,"ocupacion":59.3,"palletsParada":4.5,"palletsViaje":6.5,"paradasViaje":1.7,"duracionViaje":6.3,"pct2vueltas":3.0,"paradasJornada":1.7,"duracionJornada":6.2},
+  {"mes":"Julio","pallets":1861,"ocupacion":70.9,"palletsParada":4.5,"palletsViaje":6.8,"paradasViaje":1.8,"duracionViaje":5.9,"pct2vueltas":2.4,"paradasJornada":1.8,"duracionJornada":6.3},
+  {"mes":"Agosto","pallets":1836,"ocupacion":77.1,"palletsParada":3.9,"palletsViaje":7.0,"paradasViaje":1.8,"duracionViaje":7.3,"pct2vueltas":2.4,"paradasJornada":2.0,"duracionJornada":7.5},
+  {"mes":"Septiembre*","pallets":1041,"ocupacion":83.0,"palletsParada":3.2,"palletsViaje":7.3,"paradasViaje":2.0,"duracionViaje":7.6,"pct2vueltas":0.8,"paradasJornada":2.3,"duracionJornada":7.6}
+],
 "cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,92.5,25.04,18.2],["SEPTIEMBRE",2026,93.1,23.3,18.2]],
 "rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
 "pickitSla":[["MARZO",2026,95.8,98.2,94.8,97,1],["ABRIL",2026,96.9,97.4,95.2,97,0.3],["MAYO",2026,97,97.5,96.2,96.4,0.9],["JUNIO",2026,98.5,98.2,96.4,97.2,0.8],["JULIO",2026,94.9,98.8,96.4,97.1,0.9],["AGOSTO",2026,99.2,99.1,93.0,94.1,1.3],["SEPTIEMBRE",2026,99.4,99.9,92.1,93.4,0.3]],
@@ -873,6 +879,7 @@ function renderConsumo(){
   const sla=DATA.consumoSla;
   const cli=DATA.consumoClientes;
   const totCli=cli.reduce((a,c)=>a+c[1],0);
+  const fm=DATA.consumoFlotaMolinos;
   const pc=document.getElementById('panel-consumo');
   pc.innerHTML=`
     <div class="eyebrow">Supply Chain</div>
@@ -892,13 +899,41 @@ function renderConsumo(){
     <div class="section-sub">SLA & Efectividad</div>
     ${buildSlaEfecCharts('consumo','Enero → Septiembre 2026')}
 
-    <div class="section-title">🚚 Indicadores operativos | Consumo Masivo — Todos los clientes AMBA</div>
-    <div id="flota-amba-box"><div class="chart-box"><div class="note">Cargando datos en vivo desde Google Sheets…</div></div></div>`;
+    <div class="section-title">🚚 Indicadores operativos | Consumo Masivo — Molinos Río de la Plata</div>
+    <div class="note" style="margin-bottom:10px">Junio → Septiembre 2026 (septiembre parcial)</div>
+    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kcard"><div class="lbl">Pallets / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].palletsViaje.toFixed(1)}</div></div>
+      <div class="kcard"><div class="lbl">Ocupación de bodega</div><div class="val" style="font-size:22px">${fm[fm.length-1].ocupacion.toFixed(1)}%</div></div>
+      <div class="kcard"><div class="lbl">Paradas / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].paradasViaje.toFixed(1)}</div></div>
+      <div class="kcard"><div class="lbl">% 2ª vuelta o más</div><div class="val" style="font-size:22px">${fm[fm.length-1].pct2vueltas.toFixed(1)}%</div></div>
+    </div>
+    <div class="chart-box"><h3>Pallets por viaje</h3><canvas id="flota-pallets"></canvas></div>
+    <div class="chart-box"><h3>Ocupación de Bodega (en pallets)</h3><canvas id="flota-ocup"></canvas></div>
+    <div class="chart-box"><h3>Paradas por viaje</h3><canvas id="flota-paradas"></canvas></div>
+    <div class="chart-box"><h3>% 2ª vuelta o más</h3><canvas id="flota-vuelta"></canvas></div>
+    <div class="chart-box"><h3>Duración de viaje y de jornada</h3><div class="note">Promedio, en horas</div><canvas id="flota-duracion"></canvas></div>
+    <div class="chart-box"><h3>Pallets por parada y Paradas por jornada</h3><canvas id="flota-parada-jornada"></canvas></div>`;
   paintFacVolCharts('consumo',rows);
   paintMargenChart('consumo',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('consumo',sla,false);
-  renderFlotaAmbaBlock();
+  const fmLabels=fm.map(f=>f.mes);
+  mkChart('flota-pallets',{type:'bar',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.palletsViaje),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('flota-ocup',{type:'line',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.ocupacion),borderColor:'#8FBF4C',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  mkChart('flota-paradas',{type:'bar',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.paradasViaje),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v}}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('flota-vuelta',{type:'line',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.pct2vueltas),borderColor:'#C0392B',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  mkChart('flota-duracion',{data:{labels:fmLabels,datasets:[
+      {type:'line',label:'Duración de viaje',data:fm.map(f=>f.duracionViaje),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v+'h',align:'top',offset:6}},
+      {type:'line',label:'Duración de jornada',data:fm.map(f=>f.duracionJornada),borderColor:'#F6A945',tension:.3,datalabels:{formatter:v=>v+'h',align:'bottom',offset:6}}
+    ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'h'}}}}});
+  mkChart('flota-parada-jornada',{data:{labels:fmLabels,datasets:[
+      {type:'bar',label:'Pallets por parada',data:fm.map(f=>f.palletsParada),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v}},
+      {type:'bar',label:'Paradas por jornada',data:fm.map(f=>f.paradasJornada),backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v}}
+    ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 }
 
 // ── CONSUMO MASIVO: bloque Flota AMBA (en vivo, todos los clientes) ──
