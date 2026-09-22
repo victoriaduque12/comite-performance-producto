@@ -806,9 +806,11 @@ function renderPickit(){
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · Agosto 2026</div><div class="val">${fmtARS(li.fac[li.fac.length-1][1])}</div>${varHtml(li.fac[li.fac.length-1][1],li.fac[li.fac.length-2][1])}</div>
       <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · Agosto 2026</div><div class="val">${li.vol[li.vol.length-1][1].toLocaleString()}</div>${varHtml(li.vol[li.vol.length-1][1],li.vol[li.vol.length-2][1])}</div>
     </div>
-    <div class="chart-box"><h3>Evolución de Facturación - Inversa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-li-fac"></canvas></div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Evolución de Facturación - Inversa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-li-fac"></canvas></div>
+      <div class="chart-box"><h3>Volumen Facturado - Inversa PUDO</h3><div class="note">Envíos por mes</div><canvas id="pickit-li-vol"></canvas></div>
+    </div>
     <div class="note-box-info">El incremento de facturación de agosto no refleja un crecimiento orgánico del volumen operativo: se regularizaron 625 equipos correspondientes a junio y julio que habían quedado pendientes por errores de imposición en SAP, incorporándose a la facturación recién una vez corregidos.</div>
-    <div class="chart-box" style="margin-top:10px"><h3>Volumen Facturado - Inversa PUDO</h3><div class="note">Envíos por mes</div><canvas id="pickit-li-vol"></canvas></div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y Performance Punto - Directa PUDO</div>
