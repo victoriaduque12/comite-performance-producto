@@ -1091,9 +1091,9 @@ function renderPostal(){
     <div class="note-box-info">Septiembre todavía tiene 2.868 piezas en curso (sin visita) al momento del corte — los números del mes son parciales y probablemente mejoren a medida que se completen las gestiones.</div>
 
     <div class="section-sub" style="margin-top:14px">Comparación vs. APs sin la funcionalidad activa</div>
-    <div class="cards-row" style="grid-template-columns:repeat(2,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Piezas impuestas · Con POD vs. Sin POD</div><div class="val" style="font-size:18px">Ago ${d.fonoPod.impuestas[1]} vs ${d.fonoPod.sinFuncionalidad.impuestas[0]} · Sep ${d.fonoPod.impuestas[2]} vs ${d.fonoPod.sinFuncionalidad.impuestas[1]}</div></div>
-      <div class="kcard" style="border-top-color:#8FBF4C"><div class="lbl">% Efectividad · Con POD vs. Sin POD</div><div class="val" style="font-size:18px;color:#4D7200">Ago ${d.fonoPod.efectividad[1]}% vs ${d.fonoPod.sinFuncionalidad.efectividad[0]}% · Sep ${d.fonoPod.efectividad[2]}% vs ${d.fonoPod.sinFuncionalidad.efectividad[1]}%</div></div>
+    <div class="two-col">
+      <div class="chart-box"><h3>Piezas impuestas</h3><div class="note">Con POD vs. Sin POD</div><canvas id="postal-fonopod-comp-impuestas"></canvas></div>
+      <div class="chart-box"><h3>% Efectividad</h3><div class="note">Con POD vs. Sin POD</div><canvas id="postal-fonopod-comp-efect"></canvas></div>
     </div>
     <div class="note-box-info">Los APs sin la funcionalidad activa no tienen APs de renovaciones, solo altas — no es una comparación perfectamente equivalente, hay que tenerlo en cuenta al leer estos números.</div>
     <div class="chart-box"><h3>Motivos de No Entrega · Septiembre — Con POD vs. Sin POD</h3><div class="note">Principales motivos, %</div><canvas id="postal-fonopod-motivos-comp"></canvas></div>
@@ -1138,6 +1138,14 @@ function renderPostal(){
     {label:'Septiembre*',data:d.fonoPod.motivos['Septiembre*'],backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v+'%'}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
 
+  mkChart('postal-fonopod-comp-impuestas',{type:'bar',data:{labels:d.fonoPod.sinFuncionalidad.meses,datasets:[
+    {label:'Con POD',data:[d.fonoPod.impuestas[1],d.fonoPod.impuestas[2]],backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
+    {label:'Sin POD',data:d.fonoPod.sinFuncionalidad.impuestas,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+  mkChart('postal-fonopod-comp-efect',{type:'bar',data:{labels:d.fonoPod.sinFuncionalidad.meses,datasets:[
+    {label:'Con POD',data:[d.fonoPod.efectividad[1],d.fonoPod.efectividad[2]],backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v+'%'}},
+    {label:'Sin POD',data:d.fonoPod.sinFuncionalidad.efectividad,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
   mkChart('postal-fonopod-motivos-comp',{type:'bar',data:{labels:d.fonoPod.motivos.labels,datasets:[
     {label:'Con POD (Septiembre)',data:d.fonoPod.motivos['Septiembre*'],backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v+'%'}},
     {label:'Sin POD (Septiembre)',data:d.fonoPod.motivos['Septiembre* sin func.'],backgroundColor:'#C0392B',borderRadius:4,datalabels:{formatter:v=>v+'%'}}
