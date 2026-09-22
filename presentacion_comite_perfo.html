@@ -430,8 +430,8 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   "npsRegion":[["AMBA",362,66.0,5.8,28.2,37.8],["CENTRO",417,73.9,3.6,22.5,51.3],["NORTE",259,73.7,3.1,23.2,50.6],["SUR",40,62.5,5.0,32.5,30.0]],
   "npsSemanal":[["Semana 36",240,42.1],["Semana 37",360,52.8],["Semana 38",419,41.5],["Semana 39",59,49.2]],
   "npsMensual":[["JUNIO",44.1],["JULIO",39.3],["AGOSTO",39.7],["SEPTIEMBRE*",45.8]],
-  "paretoDetractores":[["Transportista no pasó por domicilio",34.6],["Error en domicilio",29.8],["Cliente no estaba en domicilio",18.9],["Sin mensaje",8.3],["Cuidado y seguridad",5.7]],
-  "paretoPromotores":[["Rapidez o puntualidad",31.6],["Cuidado y seguridad",27.6],["Sin mensaje",24.4],["Atención y seguimiento deficiente",7.8],["Llamada previa a la entrega",4.9]]
+  "paretoDetractores":[["Transportista no pasó por domicilio",34.6],["Error en domicilio",29.8],["Cliente no estaba en domicilio",18.9],["Cuidado y seguridad",5.7]],
+  "paretoPromotores":[["Rapidez o puntualidad",31.6],["Cuidado y seguridad",27.6],["Atención y seguimiento deficiente",7.8],["Llamada previa a la entrega",4.9]]
 },
 "pickitMotivosAgosto":[["Solicitada por Cliente",570],["No responde al Llamado",19],["Rechazado",11]],
 "kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
@@ -1112,7 +1112,6 @@ function renderPostal(){
       </table>
     </div>
     <div class="chart-box"><h3>Evolución NPS por mes</h3><div class="note">NPS vía WhatsApp — arrancó en Junio 2026</div><canvas id="postal-nps-mensual"></canvas></div>
-    <div class="chart-box"><h3>Respuestas & Trend NPS | Septiembre</h3><div class="note">Por semana</div><canvas id="postal-nps-trend"></canvas></div>
     <div class="two-col">
       <div class="chart-box"><h3>Top Motivos · Detractores</h3><div class="note">Pareto</div><canvas id="postal-pareto-det"></canvas></div>
       <div class="chart-box"><h3>Top Motivos · Promotores</h3><div class="note">Pareto</div><canvas id="postal-pareto-prom"></canvas></div>
@@ -1153,11 +1152,6 @@ function renderPostal(){
   mkChart('postal-nps-mensual',{type:'line',data:{labels:d.npsMensual.map(m=>m[0]),datasets:[
     {label:'NPS',data:d.npsMensual.map(m=>m[1]),borderColor:'#8FBF4C',backgroundColor:'rgba(143,191,76,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:8,color:'#4D7200',font:{weight:'700'}}}
   ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
-
-  mkChart('postal-nps-trend',{data:{labels:d.npsSemanal.map(s=>s[0]),datasets:[
-    {type:'bar',label:'Respuestas',data:d.npsSemanal.map(s=>s[1]),backgroundColor:'#056571',borderRadius:4,yAxisID:'y',order:2,datalabels:{formatter:cnt,anchor:'center',align:'center',color:'#fff',font:{weight:'700'}}},
-    {type:'line',label:'NPS',data:d.npsSemanal.map(s=>s[2]),borderColor:'#8FBF4C',tension:.3,yAxisID:'y1',order:1,datalabels:{formatter:v=>v+'%',align:'top',offset:8,color:'#4D7200',font:{weight:'700'}}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left'},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
 
   mkChart('postal-pareto-det',{type:'bar',data:{labels:d.paretoDetractores.map(m=>m[0]),datasets:[{data:d.paretoDetractores.map(m=>m[1]),backgroundColor:'#C0392B',borderRadius:4}]},
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
