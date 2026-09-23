@@ -525,10 +525,11 @@ function varHtml(actual,anterior,etiqueta='mes anterior'){
 }
 function buildKpiCards(rows,cliente){
   const suf=cliente?' · '+cliente:'';
-  const ult=rows[rows.length-1];
-  const ant=rows.length>=2?rows[rows.length-2]:null;
-  const pct=ult.venta?(ult.margen/ult.venta*100):0;
-  const pctAnt=ant&&ant.venta?(ant.margen/ant.venta*100):null;
+  const rowsConMargen=rows.filter(r=>r.margen!=null);
+  const ult=rowsConMargen[rowsConMargen.length-1]||rows[rows.length-1];
+  const ant=rowsConMargen.length>=2?rowsConMargen[rowsConMargen.length-2]:null;
+  const pct=(ult.margen!=null && ult.venta)?(ult.margen/ult.venta*100):0;
+  const pctAnt=(ant&&ant.venta)?(ant.margen/ant.venta*100):null;
   return `<div class="cards-row">
     <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta · ${cap(ult.mes)} ${ult.anio}${suf}</div><div class="val">${fmtARS(ult.venta)}</div>${ant?varHtml(ult.venta,ant.venta):''}</div>
     <div class="kcard" style="border-top-color:${ult.margen>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto $${suf}</div><div class="val" style="color:${ult.margen>=0?'#4D7200':'#C0392B'}">${fmtARS(ult.margen)}</div>${ant?varHtml(ult.margen,ant.margen):''}</div>
