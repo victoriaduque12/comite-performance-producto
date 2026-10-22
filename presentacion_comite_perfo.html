@@ -599,8 +599,7 @@ function renderCDD(){
         <div class="sub">${tc.nombre}</div>
       </div>
     </div>
-    <div class="chart-box"><h3>Evolución de Venta</h3><div class="note">ARS por mes · Enero → Septiembre 2026</div><canvas id="cdd-venta"></canvas></div>
-    ${buildMargenChart('cdd','Enero → Agosto 2026')}
+    ${buildMargenChart('cdd','Enero → Septiembre 2026')}
     <div class="note-box-info">Septiembre todavía no tiene costo ni margen cargados en Rentabilidad — se van a completar cuando esté disponible el dato de costeo del mes.</div>
     <div class="two-col">
       <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · unidades por mes</div><canvas id="cdd-vol"></canvas><div id="cdd-vol-var"></div></div>
@@ -640,8 +639,7 @@ function renderCDD(){
         datalabels:{anchor:'center',align:'center',color:'#fff',font:{weight:'700'},display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,formatter:v=>v.toFixed(0)+'%'}}
     ]
   },options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
-  paintMargenChart('cdd',rows.filter(r=>r.margen!=null));
-  mkChart('cdd-venta',{type:'bar',data:{labels:rows.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:rows.map(r=>r.venta),backgroundColor:'#0099A8',borderRadius:4,datalabels:{anchor:'end',align:'top',formatter:v=>fmtARS(v)}}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtARS(v)}}}}});
+  paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('cdd',sla,true,true);
   mkChart('cdd-sla-semanal',{type:'bar',data:{labels:DATA.cddSlaSemanal.map(r=>r[0]),datasets:[{data:DATA.cddSlaSemanal.map(r=>r[1]),backgroundColor:'#0099A8',borderRadius:4}]},
