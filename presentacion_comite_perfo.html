@@ -114,13 +114,11 @@ body{font-family:'Montserrat',sans-serif;background:var(--surface);color:var(--b
       <div class="prod-item hl">Courier Personas (Meli Customs / Cainiao) <span>— CBT+GF</span></div>
 
       <div class="stage-title">Etapa 2 · Lanzan Q3</div>
-      <div class="prod-item hl">Paquetería ecommerce B2C: Redireccionamiento <span>— Última Milla</span></div>
       <div class="prod-item">Courier US-MX <span>— CBT+GF</span></div>
     </div>
     <div>
       <div class="stage-title muted">Etapa 3 · Q4</div>
-      <div class="prod-item">Paquetería ecommerce B2C: Repactado ecommerce <span>— Última Milla</span></div>
-      <div class="prod-item">Service Center MELI <span>— XD</span></div>
+      <div class="prod-item hl">Service Center MELI <span>— XD</span></div>
       <div class="prod-item">Distribución Automotriz <span>— Supply</span></div>
       <div class="prod-item">Carga peligrosa (WHS y Transporte) <span>— Supply</span></div>
       <div class="prod-item">Warehousing <span>— Supply</span></div>
@@ -139,7 +137,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--surface);color:var(--b
     </div>
   </div>
   <div style="max-width:1200px;margin:0 auto;padding:0 24px 24px;">
-    <div class="info-box">Los 7 productos resaltados arriba (Kick Off Comité + Etapa 1 MVP + Redireccionamiento) son los que se presentan en detalle en las próximas solapas</div>
+    <div class="info-box">Los 7 productos resaltados arriba (Kick Off Comité + Etapa 1 MVP + Service Center MELI) son los que se presentan en detalle en las próximas solapas</div>
   </div>
 </div>
 
@@ -645,7 +643,7 @@ function renderCDD(){
     labels:provOrdenadas.map(p=>p.provincia),
     datasets:[
       {label:'SLA',data:provOrdenadas.map(p=>p.sla),
-        backgroundColor:provOrdenadas.map(p=>p.sla>=95?'#8FBF4C':(p.provincia==='Capital Federal'?'#F6A945':'#C0392B')),
+        backgroundColor:provOrdenadas.map(p=>p.sla>=95?'#8FBF4C':'#F6A945'),
         borderRadius:4,
         datalabels:{formatter:(v)=>v.toFixed(1)+'%',anchor:'end',align:'end'}},
       {label:'Share de Volumen',data:provOrdenadas.map(p=>p.share),backgroundColor:'#0099A8',borderRadius:4,
