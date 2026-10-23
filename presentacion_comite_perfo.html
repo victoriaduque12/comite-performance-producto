@@ -436,7 +436,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "pickitMotivosAgosto":[["Solicitada por Cliente",570],["No responde al Llamado",19],["Rechazado",11]],
 "kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
 "consumoClientes":[["MOLINOS RIO DE LA PLATA S.A.",51403077.77],["PROCTER & GAMBLE ARGENTINA S.R.L.",20674790.56],["BAT OPERACIONES S.A.U.",14717770.29],["DEPORSUR S.A.",9617683.3],["DIRECTV ARGENTINA SOCIEDAD ANONIMA",6301692.32],["TOYOTA MHM LTDA",4358496.93],["GRIMBERG DENTALES S.A.",1519982.77],["CACHAY S.A.",-284886.45]],
-"kpisEstabMensual":[["ABRIL",2026,5,4],["MAYO",2026,7,6],["JUNIO",2026,9,10],["JULIO",2026,1,2],["AGOSTO",2026,2,2],["SEPTIEMBRE",2026,1,1]],
+"kpisEstabMensual":[["ABRIL",2026,5,4],["MAYO",2026,7,6],["JUNIO",2026,9,10],["JULIO",2026,1,2],["AGOSTO",2026,2,2],["SEPTIEMBRE",2026,1,1],["OCTUBRE",2026,2,2]],
 "cddTopCliente":{"nombre":"GOBIERNO CIUDAD BS AS","monto":106300000,"periodo":"Total histórico"},
 "cddTicketsCX":{
   "meses":["Junio","Julio","Agosto","Septiembre*"],
@@ -601,12 +601,12 @@ function renderCDD(){
       </div>
     </div>
     ${buildMargenChart('cdd','Enero → Septiembre 2026')}
+    <div class="note-box-info">Tras la volatilidad del primer cuatrimestre, el servicio sostuvo <b>margen positivo entre mayo y julio</b> (25,2%, 36,7% y 22,4%). En <b>agosto el margen fue de -9,4%</b>: la venta cayó 25,9% vs. julio ($19,8M) mientras el costo subió a $21,6M. En <b>septiembre la venta se recupera a $21,7M</b> (+9,7%), con costo y margen todavía pendientes.</div>
     <div class="note-box-info">Septiembre todavía no tiene costo ni margen cargados en Rentabilidad — se van a completar cuando esté disponible el dato de costeo del mes.</div>
     <div class="two-col">
       <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · unidades por mes</div><canvas id="cdd-vol"></canvas><div id="cdd-vol-var"></div></div>
       <div class="chart-box"><h3>Volumen por Cliente — % mensual</h3><div class="note">Enero → Septiembre 2026</div><canvas id="cdd-vol-cliente"></canvas></div>
     </div>
-    <div class="note-box-info">Tras la volatilidad del primer cuatrimestre, el servicio sostuvo <b>margen positivo entre mayo y julio</b> (25,2%, 36,7% y 22,4%). En <b>agosto el margen fue de -9,4%</b>: la venta cayó 25,9% vs. julio ($19,8M) mientras el costo subió a $21,6M. En <b>septiembre la venta se recupera a $21,7M</b> (+9,7%), con costo y margen todavía pendientes.</div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
@@ -619,8 +619,8 @@ function renderCDD(){
 
     <div class="section-title">🛠️ Indicadores de plataforma</div>
     <div class="section-sub">KPIs de estabilidad técnica</div>
-    <div class="chart-box"><h3>Incidentes reportados por mes</h3><div class="note">Abril → Septiembre 2026</div><canvas id="cdd-inc-mes"></canvas></div>
-    <div class="note-box-green">En septiembre se reportó 1 incidente en la plataforma.</div>
+    <div class="chart-box"><h3>Incidentes reportados por mes</h3><div class="note">Abril → Octubre 2026</div><canvas id="cdd-inc-mes"></canvas></div>
+    <div class="note-box-green">En octubre se reportaron 2 incidentes, ambos bloqueantes y resueltos el mismo día: el <b>AP de Medicus no replicaba en SAP</b> (error en la configuración) y <b>6 cartas no estuvieron disponibles para imprimir</b> por un inconveniente de comunicación entre SAP y CDD.</div>
 
     <div class="section-title">🎫 Tickets CX</div>
     <div class="section-sub">Cliente: Gobierno Ciudad BS AS · Junio → Agosto 2026 (agosto parcial, corte 23/08)</div>
