@@ -370,7 +370,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   {"mes":"Agosto","pallets":1836,"ocupacion":77.1,"palletsParada":3.9,"palletsViaje":7.0,"paradasViaje":1.8,"duracionViaje":7.3,"pct2vueltas":2.4,"paradasJornada":2.0,"duracionJornada":7.5},
   {"mes":"Septiembre*","pallets":1041,"ocupacion":83.0,"palletsParada":3.2,"palletsViaje":7.3,"paradasViaje":2.0,"duracionViaje":7.6,"pct2vueltas":0.8,"paradasJornada":2.3,"duracionJornada":7.6}
 ],
-"cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,92.5,25.04,18.2],["SEPTIEMBRE",2026,93.1,23.3,18.2]],
+"cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,93.3,25.04,18.2],["SEPTIEMBRE",2026,94.5,23.3,18.2],["OCTUBRE",2026,92.6,25.5,20.3]],
 "rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
 "pickitSla":[["MARZO",2026,95.8,98.2,94.8,97,1],["ABRIL",2026,96.9,97.4,95.2,97,0.3],["MAYO",2026,97,97.5,96.2,96.4,0.9],["JUNIO",2026,98.5,98.2,96.4,97.2,0.8],["JULIO",2026,94.9,98.8,96.4,97.1,0.9],["AGOSTO",2026,99.2,99.1,93.0,94.1,1.3],["SEPTIEMBRE",2026,99.4,99.9,92.1,93.4,0.3]],
 "pickitRedireccionamiento":{
@@ -450,17 +450,18 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   ]
 },
 "cddSlaProvincia":[
-  {"provincia":"Rio Negro","share":1.15,"sla":100.0},
-  {"provincia":"Santa Fé","share":0.23,"sla":100.0},
-  {"provincia":"Chubut","share":20.34,"sla":96.6},
-  {"provincia":"Buenos Aires","share":15.98,"sla":95.7},
-  {"provincia":"Capital Federal","share":60.57,"sla":91.5},
-  {"provincia":"Jujuy","share":0.34,"sla":100.0},
-  {"provincia":"Entre Rios","share":0.23,"sla":100.0},
-  {"provincia":"Misiones","share":0.23,"sla":100.0},
-  {"provincia":"Neuquen","share":0.23,"sla":100.0},
-  {"provincia":"Salta","share":0.23,"sla":100.0},
-  {"provincia":"Córdoba","share":0.11,"sla":100.0}
+  {"provincia":"Capital Federal","share":60.48,"sla":94.1},
+  {"provincia":"Chubut","share":19.89,"sla":92.4},
+  {"provincia":"Buenos Aires","share":17.05,"sla":89.3},
+  {"provincia":"Santa Fé","share":1.01,"sla":93.8},
+  {"provincia":"Rio Negro","share":0.69,"sla":81.8},
+  {"provincia":"Córdoba","share":0.19,"sla":100.0},
+  {"provincia":"La Pampa","share":0.13,"sla":50.0},
+  {"provincia":"Catamarca","share":0.06,"sla":100.0},
+  {"provincia":"Entre Rios","share":0.06,"sla":100.0},
+  {"provincia":"Jujuy","share":0.06,"sla":100.0},
+  {"provincia":"Salta","share":0.06,"sla":100.0},
+  {"provincia":"San Juan","share":0.06,"sla":100.0}
 ],
 "rashIssues":{"total":15,"bugs":10,"mejoras":5,"resueltos":15,"abiertos":0,"mttr_prom":2.0,
   "porSemana":[["08/06",3],["15/06",3],["22/06",2],["29/06",3],["06/07",1],["13/07",1],["20/07",1],["17/08",1]]},
@@ -609,15 +610,12 @@ function renderCDD(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
-    ${buildSlaEfecCharts('cdd','Enero → Septiembre 2026',true)}
-    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA | Desglose por semana en septiembre</div>
-    <div class="chart-box"><h3>SLA · Detalle semanal Septiembre 2026</h3><div class="note">Corte parcial</div><canvas id="cdd-sla-semanal"></canvas></div>
-    <div class="note-box-info">La caída en la semana del 1 al 6 (89,4%) se debe a un problema puntual con los transportistas en la operación de Última Milla AMBA — según Control Operativo, prácticamente todos los desvíos de esa semana fueron por "No visitado". Mirando solo esa semana aislada el impacto es claro, pero a partir de la semana siguiente el SLA ya volvió a estar bien encaminado.</div>
-    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Septiembre 2026</div>
+    ${buildSlaEfecCharts('cdd','Enero → Octubre 2026 (octubre parcial)',true)}
+    <div class="note-box-info">En <b>octubre se suma el cliente Medicus</b>. Durante el mes hubo incidencias que impactaron el SLA: el <b>AP de Medicus no se replicaba en SAP</b>, lo que demoró algunas cartas (regularizado el mismo día), y <b>problemas de comunicación entre sistemas</b> demoraron la disponibilidad de cartas para impresión — se identificaron al menos <b>6 piezas con potencial impacto en el SLA</b>, regularizadas el 14/10.</div>
+    <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Octubre 2026</div>
     <div class="chart-box"><h3>SLA y Share de Volumen por Provincia</h3><div class="note">Ordenado por Share de Volumen de mayor a menor · línea punteada = Target SLA 95%</div>
       <canvas id="cdd-sla-share-provincia" style="max-height:380px"></canvas>
     </div>
-    <div class="note-box" id="cdd-provincia-insight"></div>
 
     <div class="section-title">🛠️ Indicadores de plataforma</div>
     <div class="section-sub">KPIs de estabilidad técnica</div>
@@ -642,9 +640,6 @@ function renderCDD(){
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('cdd',sla,true,true);
-  mkChart('cdd-sla-semanal',{type:'bar',data:{labels:DATA.cddSlaSemanal.map(r=>r[0]),datasets:[{data:DATA.cddSlaSemanal.map(r=>r[1]),backgroundColor:'#0099A8',borderRadius:4}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:50,max:100,ticks:{callback:v=>v+'%'}}}}});
-
   const provOrdenadas=DATA.cddSlaProvincia.slice().sort((a,b)=>b.share-a.share);
   mkChart('cdd-sla-share-provincia',{type:'bar',data:{
     labels:provOrdenadas.map(p=>p.provincia),
@@ -665,7 +660,6 @@ function renderCDD(){
     targetLine:{value:95,label:'Target SLA 95%'}},
     scales:{x:{min:0,max:105,ticks:{callback:v=>v+'%'}}}}});
 
-  document.getElementById('cdd-provincia-insight').innerHTML='El desvío del SLA en CABA está centralizado en la primera semana de agosto, donde el principal motivo fue "No visitado". Desde la operación ya se abordó a los choferes y se sumó al área de transporte para poder apalancar el mensaje a los transportistas.';
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('cdd-inc-mes',{type:'bar',data:{labels:incLabels,datasets:[{label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
