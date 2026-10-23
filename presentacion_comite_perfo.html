@@ -588,6 +588,15 @@ function renderCDD(){
     <div class="bigtitle">Carta Documento Digital</div>
     <div class="subdate">Cartas documento emitidas digitalmente y distribuidas físicamente</div>
 
+    <div class="section-title">👥 Clientes</div>
+    <div class="section-sub">Clientes del servicio y fecha de incorporación</div>
+    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Desde octubre 2025</div><div class="val" style="font-size:19px">Gobierno de la Ciudad</div><div class="sub">Cementerios y Talleres</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Desde mayo 2026</div><div class="val" style="font-size:19px">Banco Chubut</div></div>
+      <div class="kcard" style="border-top-color:#8FBF4C"><div class="lbl">Desde octubre 2026</div><div class="val" style="font-size:19px">Medicus</div><div class="sub">Nuevo cliente</div></div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">En curso</div><div class="val" style="font-size:19px">Liliana SRL</div><div class="sub">En proceso de incorporación</div></div>
+    </div>
+
     <div class="section-title">📊 Indicadores de negocio</div>
     <div class="section-sub">Venta, margen, volumen y facturación</div>
     ${buildKpiCards(rows)}
@@ -619,12 +628,7 @@ function renderCDD(){
     <div class="section-sub">KPIs de estabilidad técnica</div>
     <div class="chart-box"><h3>Incidentes reportados por mes</h3><div class="note">Abril → Octubre 2026</div><canvas id="cdd-inc-mes"></canvas></div>
     <div class="note-box-green">En octubre se reportaron 2 incidentes, ambos bloqueantes y resueltos el mismo día: el <b>AP de Medicus no replicaba en SAP</b> (error en la configuración) y <b>6 cartas no estuvieron disponibles para imprimir</b> por un inconveniente de comunicación entre SAP y CDD.</div>
-
-    <div class="section-title">🎫 Tickets CX</div>
-    <div class="section-sub">Cliente: Gobierno Ciudad BS AS · Junio → Agosto 2026 (agosto parcial, corte 23/08)</div>
-    <div class="chart-box"><h3>Tickets creados</h3><div class="note">Por mes</div><canvas id="cdd-tickets-creados"></canvas></div>
-    <div class="chart-box"><h3>Volumen por motivo de contacto</h3><div class="note">Top 3 motivos, por mes</div><canvas id="cdd-tickets-motivos"></canvas></div>
-    <div class="info-box">En septiembre ingresaron 4 tickets por demora en la digitalización del acuse. De esos, 2 correspondían a demoras reales — uno por demora en la rendición hacia ADDOC y otro por demora de ADDOC en la digitalización — y los otros 2 estaban dentro de plazo, se avisó al cliente al respecto.</div>`;
+`;
   paintFacVolCharts('cdd',rows);
   mkChart('cdd-vol-cliente',{type:'bar',data:{
     labels:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep'],
@@ -661,14 +665,6 @@ function renderCDD(){
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('cdd-inc-mes',{type:'bar',data:{labels:incLabels,datasets:[{label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-
-  const tcx=DATA.cddTicketsCX;
-  mkChart('cdd-tickets-creados',{type:'bar',data:{labels:tcx.meses,datasets:[{data:tcx.ticketsCreados,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
-    options:{responsive:true,plugins:{legend:{display:false}}}});
-  const tcxColors=['#056571','#C0392B','#F6A945'];
-  mkChart('cdd-tickets-motivos',{type:'bar',data:{labels:tcx.meses,datasets:tcx.motivos.map((m,i)=>({
-    label:m.nombre,data:m.valores,backgroundColor:tcxColors[i],borderRadius:4,datalabels:{formatter:cnt}
-  }))},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 }
 
 // ── RASH ──
