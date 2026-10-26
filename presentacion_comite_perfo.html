@@ -374,6 +374,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 "serviceCenter":{"targets": {"entregaExitosa": 95.0, "domiciliosVisitados": 99.5}, "costoRuta": 138600, "quincenas": [{"periodo": "202609Q2", "label": "Sep Q2", "estado": "Cerrada", "rutas": 6, "diasOperados": 1, "rutasPorDia": 6.0, "despachados": 482, "entregados": 480, "paquetesPorRuta": 80.3, "entregaExitosa": 99.59, "domiciliosVisitados": 99.79, "noVisitados": 1, "rutasNoVisitadoMas10": 0, "horasRuta": 5.38, "dpph": 14.9, "km": 77.4}, {"periodo": "202610Q1", "label": "Oct Q1", "estado": "Cerrada", "rutas": 148, "diasOperados": 12, "rutasPorDia": 12.3, "despachados": 14633, "entregados": 14000, "paquetesPorRuta": 98.9, "entregaExitosa": 95.67, "domiciliosVisitados": 96.62, "noVisitados": 495, "rutasNoVisitadoMas10": 9, "horasRuta": 5.69, "dpph": 16.7, "km": 72.6}, {"periodo": "202610Q2", "label": "Oct Q2*", "estado": "Parcial al 22/10", "rutas": 142, "diasOperados": 6, "rutasPorDia": 23.7, "despachados": 11943, "entregados": 11817, "paquetesPorRuta": 84.1, "entregaExitosa": 98.94, "domiciliosVisitados": 99.47, "noVisitados": 63, "rutasNoVisitadoMas10": 1, "horasRuta": 5.24, "dpph": 15.9, "km": 87.0}], "margen": [{"periodo": "202609Q2", "label": "Sep Q2", "ventaBruta": 1265542.22, "penalidades": 0, "venta": 1265542.22, "costo": 831600, "margen": 433942.22, "margenPct": 34.3, "margenPctSinPen": 34.3, "rutasFacturadas": 6, "rutasOperadas": 6}, {"periodo": "202610Q1", "label": "Oct Q1", "ventaBruta": 31660497.43, "penalidades": 1953564.58, "venta": 29706932.85, "costo": 20512800, "margen": 9194132.85, "margenPct": 30.9, "margenPctSinPen": 35.2, "rutasFacturadas": 146, "rutasOperadas": 148}]},
 "cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,93.3,25.04,18.2],["SEPTIEMBRE",2026,94.5,23.3,18.2],["OCTUBRE",2026,92.6,25.5,20.3]],
 "rashSla":[["JUNIO",2026,94.8,93.3,80.6],["JULIO",2026,96.2,96.9,91.6],["AGOSTO",2026,100,100,80]],
+"pickitMotivosOctubre":[["No responde al llamado",35.0],["Rechazado",32.5],["Siniestrado – Por extravío (Pickit)",12.5]],
 "pickitSla":[["MARZO",2026,95.8,98.2,94.8,97,1],["ABRIL",2026,96.9,97.4,95.2,97,0.3],["MAYO",2026,97,97.5,96.2,96.4,0.9],["JUNIO",2026,98.5,98.2,96.4,97.2,0.8],["JULIO",2026,94.9,98.8,96.4,97.1,0.9],["AGOSTO",2026,99.2,99.1,93.0,94.1,1.3],["SEPTIEMBRE",2026,98,98.7,98.5,97.7,0.9],["OCTUBRE",2026,98.9,99.1,98.5,94.4,0.5]],
 "consumoSla":[["ENERO",2026,81.2,98.9,96.4,71.8],["FEBRERO",2026,90.3,99.2,96.8,88.8],["MARZO",2026,80.1,99.7,96.8,93.2],["ABRIL",2026,82.6,99.5,97.3,97.5],["MAYO",2026,84.3,97.4,95.8,94.5],["JUNIO",2026,91.4,93.3,91.9,94.6],["JULIO",2026,87.6,91.6,87.6,96.0],["AGOSTO",2026,71.9,95.8,86.7,93.3],["SEPTIEMBRE",2026,74.8,94.6,87.7,97.4],["OCTUBRE",2026,74.7,91.7,84.4,91.7]],
 "courierSla":[
@@ -797,6 +798,8 @@ function renderPickit(){
       <div class="chart-box"><h3>Evolución de Efectividad - Directa PUDO</h3><div class="note">Marzo → Octubre 2026 (octubre parcial)</div><canvas id="pickit-efec"></canvas></div>
     </div>
     <div class="chart-box"><h3>Performance Punto - Directa PUDO</h3><div class="note">Efectividad en punto (tasa de retiro) y Vencidos en punto</div><canvas id="pickit-pp"></canvas></div>
+    <div class="chart-box"><h3>Motivos de No Entrega en el Punto - Directa PUDO</h3><div class="note">Top 3 motivos · % sobre el total de no entregas · Octubre 2026 (parcial)</div><canvas id="pickit-motivos-oct"></canvas></div>
+    <div class="info-box">Hoy Pickit solo nos envía dos motivos de no entrega: <b>No responde al llamado</b> y <b>Rechazado</b> (en curso el mapeo de todos los motivos). El <b>67,5%</b> de las no entregas corresponde a inconvenientes con el punto: que está cerrado, inactivo o rechaza el paquete.</div>
 
     <div class="section-sub" style="margin-top:14px">SLA y Efectividad - Inversa PUDO</div>
     <div class="chart-box"><h3>Evolución de SLA - Inversa PUDO</h3><div class="note">Junio → Octubre 2026 (octubre parcial)</div><canvas id="pickit-li-sla"></canvas></div>
@@ -822,6 +825,9 @@ function renderPickit(){
   document.getElementById('pickit-vol-var').innerHTML=vAnt?varHtml(vUlt.volumen,vAnt.volumen):'';
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('pickit',sla,{sla:98,efectividad:99});
+  mkChart('pickit-motivos-oct',{type:'bar',data:{labels:DATA.pickitMotivosOctubre.map(m=>m[0]),datasets:[
+    {data:DATA.pickitMotivosOctubre.map(m=>m[1]),backgroundColor:['#0099A8','#F6A945','#C0392B'],borderRadius:4,datalabels:{anchor:'end',align:'right',formatter:v=>v.toFixed(1)+'%'}}
+  ]},options:{responsive:true,indexAxis:'y',layout:{padding:{right:36}},plugins:{legend:{display:false}},scales:{x:{min:0,max:50,ticks:{callback:v=>v+'%'}}}}});
   mkChart('pickit-pp',{data:{labels,datasets:[
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#0099A8',tension:.3},
     {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
