@@ -369,7 +369,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   {"mes":"Julio","pallets":1861,"ocupacion":70.9,"palletsParada":4.5,"palletsViaje":6.8,"paradasViaje":1.8,"duracionViaje":5.9,"pct2vueltas":2.4,"paradasJornada":1.8,"duracionJornada":6.3},
   {"mes":"Agosto","pallets":1836,"ocupacion":77.1,"palletsParada":3.9,"palletsViaje":7.0,"paradasViaje":1.8,"duracionViaje":7.3,"pct2vueltas":2.4,"paradasJornada":2.0,"duracionJornada":7.5},
   {"mes":"Septiembre","pallets":1530,"ocupacion":71.2,"palletsParada":4.0,"palletsViaje":6.0,"paradasViaje":1.6,"duracionViaje":7.3,"pct2vueltas":0.4,"paradasJornada":1.6,"duracionJornada":7.0},
-  {"mes":"Octubre*","pallets":865,"ocupacion":94.2,"palletsParada":4.0,"palletsViaje":6.0,"paradasViaje":1.4,"duracionViaje":7.9,"pct2vueltas":0.0,"paradasJornada":1.4,"duracionJornada":8.0}
+  {"mes":"Octubre*","pallets":865,"ocupacion":94.2,"palletsParada":4.0,"palletsViaje":6.0,"paradasViaje":1.4,"duracionViaje":7.9,"pct2vueltas":0.0,"paradasJornada":1.4,"duracionJornada":7.9}
 ],
 "serviceCenter":{"targets": {"entregaExitosa": 95.0, "domiciliosVisitados": 99.5}, "costoRuta": 138600, "quincenas": [{"periodo": "202609Q2", "label": "Sep Q2", "estado": "Cerrada", "rutas": 6, "diasOperados": 1, "rutasPorDia": 6.0, "despachados": 482, "entregados": 480, "paquetesPorRuta": 80.3, "entregaExitosa": 99.59, "domiciliosVisitados": 99.79, "noVisitados": 1, "rutasNoVisitadoMas10": 0, "horasRuta": 5.38, "dpph": 14.9, "km": 77.4}, {"periodo": "202610Q1", "label": "Oct Q1", "estado": "Cerrada", "rutas": 148, "diasOperados": 12, "rutasPorDia": 12.3, "despachados": 14633, "entregados": 14000, "paquetesPorRuta": 98.9, "entregaExitosa": 95.67, "domiciliosVisitados": 96.62, "noVisitados": 495, "rutasNoVisitadoMas10": 9, "horasRuta": 5.69, "dpph": 16.7, "km": 72.6}, {"periodo": "202610Q2", "label": "Oct Q2*", "estado": "Parcial al 22/10", "rutas": 142, "diasOperados": 6, "rutasPorDia": 23.7, "despachados": 11943, "entregados": 11817, "paquetesPorRuta": 84.1, "entregaExitosa": 98.94, "domiciliosVisitados": 99.47, "noVisitados": 63, "rutasNoVisitadoMas10": 1, "horasRuta": 5.24, "dpph": 15.9, "km": 87.0}], "margen": [{"periodo": "202609Q2", "label": "Sep Q2", "ventaBruta": 1265542.22, "penalidades": 0, "venta": 1265542.22, "costo": 831600, "margen": 433942.22, "margenPct": 34.3, "margenPctSinPen": 34.3, "rutasFacturadas": 6, "rutasOperadas": 6}, {"periodo": "202610Q1", "label": "Oct Q1", "ventaBruta": 31660497.43, "penalidades": 1953564.58, "venta": 29706932.85, "costo": 20512800, "margen": 9194132.85, "margenPct": 30.9, "margenPctSinPen": 35.2, "rutasFacturadas": 146, "rutasOperadas": 148}]},
 "cddSla":[["OCTUBRE",2025,56.5,32.1,19.8],["NOVIEMBRE",2025,78.5,31.1,23.9],["DICIEMBRE",2025,51.6,33.8,22.3],["ENERO",2026,74.6,30.1,22.7],["FEBRERO",2026,36.6,24.5,18.3],["MARZO",2026,21.7,23.6,18.8],["ABRIL",2026,36.9,26.2,21.6],["MAYO",2026,64.9,33.1,26.2],["JUNIO",2026,78.7,27.44,22.41],["JULIO",2026,66.6,27.26,21.16],["AGOSTO",2026,93.3,25.04,18.2],["SEPTIEMBRE",2026,94.5,23.3,18.2],["OCTUBRE",2026,92.6,25.5,20.3]],
@@ -862,13 +862,14 @@ function renderConsumo(){
     ${buildSlaEfecCharts('consumo','Enero → Octubre 2026 (octubre parcial)')}
 
     <div class="section-title">🚚 Indicadores operativos | Consumo Masivo — Molinos Río de la Plata</div>
-    <div class="note" style="margin-bottom:10px">Junio → Octubre 2026 (octubre parcial)</div>
+    <div class="section-sub">Octubre 2026 (parcial)</div>
     <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
       <div class="kcard"><div class="lbl">Pallets / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].palletsViaje.toFixed(1)}</div></div>
       <div class="kcard"><div class="lbl">Ocupación de bodega</div><div class="val" style="font-size:22px">${fm[fm.length-1].ocupacion.toFixed(1)}%</div></div>
       <div class="kcard"><div class="lbl">Paradas / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].paradasViaje.toFixed(1)}</div></div>
       <div class="kcard"><div class="lbl">% 2ª vuelta o más</div><div class="val" style="font-size:22px">${fm[fm.length-1].pct2vueltas.toFixed(1)}%</div></div>
     </div>
+    <div class="note" style="margin:4px 0 10px">Evolución mensual · Junio → Octubre 2026 (octubre parcial)</div>
     <div class="chart-box"><h3>Pallets por viaje</h3><canvas id="flota-pallets"></canvas></div>
     <div class="chart-box"><h3>Ocupación de Bodega (en pallets)</h3><canvas id="flota-ocup"></canvas></div>
     <div class="chart-box"><h3>Paradas por viaje</h3><canvas id="flota-paradas"></canvas></div>
@@ -888,10 +889,11 @@ function renderConsumo(){
     options:{responsive:true,plugins:{legend:{display:false}}}});
   mkChart('flota-vuelta',{type:'line',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.pct2vueltas),borderColor:'#C0392B',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  const lblDur=(color)=>({clip:false,color,formatter:v=>v.toFixed(1)+'h',backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4},align:ctx=>autoLabelPos(ctx).align,offset:ctx=>autoLabelPos(ctx).offset});
   mkChart('flota-duracion',{data:{labels:fmLabels,datasets:[
-      {type:'line',label:'Duración de viaje',data:fm.map(f=>f.duracionViaje),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v+'h',align:'top',offset:6}},
-      {type:'line',label:'Duración de jornada',data:fm.map(f=>f.duracionJornada),borderColor:'#F6A945',tension:.3,datalabels:{formatter:v=>v+'h',align:'bottom',offset:6}}
-    ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toFixed(1)+'h'}}}}});
+      {type:'line',label:'Duración de viaje',data:fm.map(f=>f.duracionViaje),borderColor:'#0099A8',tension:.3,datalabels:lblDur('#0099A8')},
+      {type:'line',label:'Duración de jornada',data:fm.map(f=>f.duracionJornada),borderColor:'#F6A945',tension:.3,datalabels:lblDur('#B87A00')}
+    ]},options:{responsive:true,layout:{padding:{top:10,bottom:6}},plugins:{legend:{position:'bottom'}},scales:{x:{offset:true},y:{min:5,max:9,ticks:{stepSize:0.5,callback:v=>v.toFixed(1)+'h'}}}}});
   mkChart('flota-parada-jornada',{data:{labels:fmLabels,datasets:[
       {type:'bar',label:'Pallets por parada',data:fm.map(f=>f.palletsParada),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v}},
       {type:'bar',label:'Paradas por jornada',data:fm.map(f=>f.paradasJornada),backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v}}
