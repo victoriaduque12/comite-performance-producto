@@ -393,7 +393,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
   "efectImpuestas":[60.6,59.0,61.8,65.1,65.3,65.1,30.0],
   "diasPrimeraVisita":[4.06,3.51,3.85,3.81,4.39,4.09,3.88],
   "slaPrimeraVisita":[90.0,94.3,91.8,86.5,83.5,90.8,58.6],
-  "desvios":{"regiones":[["AMBA",11765,6516],["Norte",3516,270],["Centro",12945,582],["Sur",1073,34]],"sinRegion":[5,5],"total":[29304,7407],"ambaDelay":2398,"ambaSinVisitaVencida":4118},
+  "desvios":{"regiones":[["AMBA",11765,6516],["Norte",3516,270],["Centro",12945,582],["Sur",1073,34]],"sinRegion":[5,5],"total":[29304,7407],"diasSobreSla":[["AMBA",4.1],["Norte",2.7],["Centro",2.3],["Sur",3.0]],"ambaDelay":2398,"ambaSinVisitaVencida":4118},
   "fonoPodFecha":"13/08/2026",
   "fonoPod":{
     "mesesEfect":["Julio","Agosto","Septiembre","Octubre*"],
@@ -1113,6 +1113,10 @@ function renderPostal(){
     <div class="two-col">
       <div class="chart-box"><h3>% de casos fuera de SLA por región</h3><div class="note">Casos fuera de SLA sobre casos considerados</div><canvas id="postal-desvio-pct"></canvas></div>
       <div class="chart-box"><h3>Peso en los casos vs. peso en los desvíos</h3><div class="note">% del total de casos considerados vs. % del total de casos fuera de SLA</div><canvas id="postal-desvio-peso"></canvas></div>
+    </div>
+    <div class="section-sub" style="margin-top:6px">Atraso de los casos Delay · promedio de días hábiles sobre su fecha de vencimiento (solo casos con primera visita registrada)</div>
+    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
+      ${dv.diasSobreSla.map(r=>`<div class="kcard" style="border-top-color:${r[0]==='AMBA'?'#F6A945':'var(--teal)'}"><div class="lbl">${r[0]}</div><div class="val" style="${r[0]==='AMBA'?'color:#C77A0A':''}">${r[1].toFixed(1).replace('.',',')} días</div>${r[0]==='AMBA'?'<div class="sub">El mayor atraso entre las regiones</div>':''}</div>`).join('')}
     </div>
     <div class="note-box-info">Al sumar las piezas sin visita cuyo vencimiento ya pasó, <b>AMBA concentra el principal desvío</b>: <b>${dv.regiones[0][2].toLocaleString('es-AR')} piezas fuera de SLA sobre ${dv.regiones[0][1].toLocaleString('es-AR')} consideradas (${(dv.regiones[0][2]/dv.regiones[0][1]*100).toFixed(1).replace('.',',')}%)</b>. El desvío se compone de ${dv.ambaDelay.toLocaleString('es-AR')} Delay registrados y ${dv.ambaSinVisitaVencida.toLocaleString('es-AR')} piezas aún sin visita vencidas.</div>
 
