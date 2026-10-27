@@ -1096,22 +1096,23 @@ function renderPostal(){
     <div class="eyebrow">Última Milla</div>
     <div class="bigtitle">Postal a Paquetería</div>
     <div class="subdate">Proyecto modo MVP con Banco Macro</div>
-    <div class="note-box-info">Arrancamos en <b>abril 2026</b> con <b>2 AP</b>: TC Amex Renovación y TC Master Renovación.<br>En <b>junio</b> sumamos <b>3 AP</b> más: TC Amex, TC Amex Platinum y TC Visa Signature.<br>En <b>agosto</b> sumamos <b>2 AP</b> más: TC Visa Platinum y TC Master.<br>En <b>septiembre</b> sumamos <b>4 AP</b> más: el 1/9 Débito SMSV (unif.) y TC Visa SMSV (unif.), y el 23/9 TC Master Black y TC Visa Alta.<br>En <b>octubre</b> sumamos <b>2 AP</b> más (9/10): TC Visa Renovación y Onboarding (unif.), llegando a <b>13 AP activos</b>. La migración del último AP, prevista para la semana del 19/10, <b>quedó frenada</b>.</div>
+    <div class="note-box-info">Arrancamos en <b>abril 2026</b> con <b>2 AP</b>: TC Amex Renovación y TC Master Renovación.<br>En <b>junio</b> sumamos <b>3 AP</b> más: TC Amex, TC Amex Platinum y TC Visa Signature.<br>En <b>agosto</b> sumamos <b>2 AP</b> más: TC Visa Platinum y TC Master.<br>En <b>septiembre</b> sumamos <b>4 AP</b> más: el 1/9 Débito SMSV (unif.) y TC Visa SMSV (unif.), y el 23/9 TC Master Black y TC Visa Alta.<br>En <b>octubre</b> sumamos <b>2 AP</b> más (9/10): TC Visa Renovación y Onboarding (unif.), llegando a <b>13 AP activos</b>.<br><b>Pendiente migrar:</b> 1 AP.</div>
 
     <div class="section-title">📊 Volumen y Efectividad</div>
     <div class="section-sub">Piezas impuestas y entregadas · Abril → Octubre 2026 (octubre parcial, corte 26/10)</div>
     <div class="chart-box"><h3>Piezas impuestas vs. Entregadas</h3><div class="note">Por mes</div><canvas id="postal-piezas"></canvas></div>
-    <div class="note-box-info">El volumen de octubre (39.194 piezas al 26/10) ya es <b>2,1 veces el de septiembre</b>. Los <b>4 APs incorporados desde el 23/9</b> (TC Visa Renovación, Onboarding, TC Visa Alta y TC Master Black) concentran el <b>68%</b> del volumen del mes: 26.841 piezas.</div>
+    <div class="note-box-info">El volumen de octubre (39.194 piezas al 26/10) ya es <b>2,1 veces el de septiembre</b>. Los <b>4 APs incorporados desde el 23/9</b> concentran el <b>68%</b> del volumen del mes: 26.841 piezas.</div>
     <div class="chart-box"><h3>Efectividad</h3><div class="note">% Efect / Entregable, por mes</div><canvas id="postal-efec"></canvas></div>
     <div class="info-box">
-      <b>% Efect / Entregable</b> = Entregado / (Entregado + No responde). No incluye las piezas en curso (sin visita) ni lo no entregable — piezas con motivos de no entrega no atribuibles a desvíos logísticos (ej. error en domicilio, error en titular).
+      <b>% Efect / Entregable</b> = Entregado / (Entregado + No responde). No incluye lo no entregable — piezas con motivos de no entrega no atribuibles a desvíos logísticos (ej. error en domicilio, error en titular).
     </div>
     <div class="note-box-info">Octubre (corte 26/10) todavía tiene <b>19.828 piezas en curso sin visita</b> (51% de las impuestas): las entregadas son parciales y la efectividad se calcula sobre las piezas ya gestionadas.</div>
     <div class="two-col">
       <div class="chart-box"><h3>Días hábiles hasta 1ª visita</h3><div class="note">Promedio total, por mes</div><canvas id="postal-dias"></canvas></div>
       <div class="chart-box"><h3>SLA primera visita</h3><div class="note">% de piezas con primera visita dentro del plazo acordado · Abril → Octubre 2026 (octubre parcial)</div><canvas id="postal-sla1v"></canvas></div>
     </div>
-    <div class="note-box-info">En términos generales venimos cumpliendo los plazos propuestos de primera visita (AMBA 4 días, Centro 6, Norte 7 y Sur 9): el promedio total bajó de <b>4,39 en agosto a 3,88 en octubre</b> (parcial). <b>Centro, Norte y Sur cumplen con holgura</b> (en octubre 3,53, 4,33 y 4,47). <b>AMBA es la región para mirar más de cerca</b>: promedió 4,59 en agosto, 3,91 en septiembre y 4,24 en octubre contra un plazo de 4 días. El <b>SLA de primera visita cayó a 49,7% en octubre</b> (90,8% en septiembre): en AMBA se activó volumen no previsto de otro cliente que superó la capacidad operativa, y por eso se frenó la migración del último AP prevista para la semana del 19/10.</div>
+    <div class="note-box-info">En términos generales venimos cumpliendo los plazos propuestos de primera visita (AMBA 4 días, Centro 6, Norte 7 y Sur 9). <b>Centro, Norte y Sur cumplen con holgura.</b><br><b>AMBA es la región para mirar más de cerca</b>: promedió 4,59 en agosto, 3,91 en septiembre y 4,24 en octubre contra un plazo propuesto de 4 días.</div>
+    <div class="note-box-info">El <b>SLA de primera visita cayó a 49,7% en octubre</b>: en AMBA se activó volumen no previsto de otro cliente que superó la capacidad operativa, y por eso se frenó la migración del último AP prevista para la semana del 19/10.</div>
 
     <div class="section-title">📱 MVP Teléfono en POD</div>
     <div class="section-sub">El ${d.fonoPodFecha} se sumó la funcionalidad de teléfono en POD en 4 APs (2 de alta y 2 de renovación) — comparativa Julio vs. Agosto vs. Septiembre sobre esos mismos APs</div>
