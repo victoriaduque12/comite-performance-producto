@@ -1106,11 +1106,6 @@ function renderPostal(){
 
     <div class="section-sub" style="margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">Dónde están los desvíos de primera visita</div>
     <div class="note" style="margin:0 0 10px;font-size:12px;color:var(--gray)">Análisis de cumplimiento · imposición 15/9 → 23/10 · solo piezas con vencimiento anterior al 27/10 (incluye las sin visita ya vencidas) · fuera de SLA = Delay + sin visita vencida. A diferencia del gráfico de SLA, no cuenta las piezas que todavía están dentro del plazo</div>
-    <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Casos fuera de SLA</div><div class="val">${dv.total[1].toLocaleString('es-AR')}</div><div class="sub">${(dv.total[1]/dv.total[0]*100).toFixed(1).replace('.',',')}% de ${dv.total[0].toLocaleString('es-AR')} casos considerados</div></div>
-      <div class="kcard" style="border-top-color:#F6A945"><div class="lbl">AMBA fuera de SLA</div><div class="val" style="color:#C77A0A">${(dv.regiones[0][2]/dv.regiones[0][1]*100).toFixed(1).replace('.',',')}%</div><div class="sub">${dv.regiones[0][2].toLocaleString('es-AR')} de ${dv.regiones[0][1].toLocaleString('es-AR')} casos · resto de las regiones: 4% a 8%</div></div>
-      <div class="kcard" style="border-top-color:#F6A945"><div class="lbl">Peso de AMBA en los desvíos</div><div class="val" style="color:#C77A0A">${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0).replace('.',',')}%</div><div class="sub">AMBA es el ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0).replace('.',',')}% de los casos considerados</div></div>
-    </div>
     <div class="two-col">
       <div class="chart-box"><h3>% de casos fuera de SLA por región</h3><div class="note">Casos fuera de SLA sobre casos considerados</div><canvas id="postal-desvio-pct"></canvas></div>
       <div class="chart-box"><h3>AMBA: ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0).replace('.',',')}% de las piezas, ${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0).replace('.',',')}% de los desvíos</h3><div class="note">De cada 100 piezas analizadas y de cada 100 desvíos (casos fuera de SLA), cuántos son de AMBA y cuántos del resto de las regiones</div><canvas id="postal-desvio-peso"></canvas></div>
