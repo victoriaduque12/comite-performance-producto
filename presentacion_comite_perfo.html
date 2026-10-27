@@ -401,8 +401,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
       "meses":["Septiembre","Octubre*"],
       "efectContactadas":[86.9,84.6],
       "efectNoContactadas":[82.2,81.0],
-      "pctContactadas":[8.4,10.4],
-      "canales":{"labels":["Sin contacto","Teléfono","WhatsApp","WhatsApp y teléfono"],"Septiembre":[82.2,83.8,90.9,85.2],"Octubre*":[81.0,82.4,88.2,81.3]}
+      "pctContactadas":[8.4,10.4]
     },
     "motivosOct":{"labels":["No responde","Error domicilio","Titular Desconocido","Se Mudó"],"con":[37,40,8,6],"sin":[45,31,9,6]}
   },
@@ -411,13 +410,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
     {"rango":"10/08 → 17/08","piezas":3523,"entregadas":2220,"efectEntregable":83.8,"efectImpuestas":63.0,"noResponde":428}
   ],
   "motivosJulio":[["No responde",41],["Error domicilio",34],["Titular Desconocido",10],["Se mudó",8],["Rechazado",2],["Zona Peligrosa",2],["Solicitada",1],["Fallecido",1]],
-  "motivosAgosto":[["No responde",45],["Error domicilio",31],["Titular Desconocido",9],["Se mudó",9],["Rechazado",2],["Solicitada",2],["Zona Peligrosa",1],["No Visitado",1],["Fallecido",1]],
-  "nps":{"respuestas":1078,"promotores":70.8,"detractores":25.0,"pasivos":4.2,"nps":45.8},
-  "npsRegion":[["AMBA",362,66.0,5.8,28.2,37.8],["CENTRO",417,73.9,3.6,22.5,51.3],["NORTE",259,73.7,3.1,23.2,50.6],["SUR",40,62.5,5.0,32.5,30.0]],
-  "npsSemanal":[["Semana 36",240,42.1],["Semana 37",360,52.8],["Semana 38",419,41.5],["Semana 39",59,49.2]],
-  "npsMensual":[["JUNIO",44.1],["JULIO",39.3],["AGOSTO",39.7],["SEPTIEMBRE*",45.8]],
-  "paretoDetractores":[["Transportista no pasó por domicilio",34.6],["Error en domicilio",29.8],["Cliente no estaba en domicilio",18.9],["Cuidado y seguridad",5.7]],
-  "paretoPromotores":[["Rapidez o puntualidad",31.6],["Cuidado y seguridad",27.6],["Atención y seguimiento deficiente",7.8],["Llamada previa a la entrega",4.9]]
+  "motivosAgosto":[["No responde",45],["Error domicilio",31],["Titular Desconocido",9],["Se mudó",9],["Rechazado",2],["Solicitada",2],["Zona Peligrosa",1],["No Visitado",1],["Fallecido",1]]
 },
 "pickitMotivosAgosto":[["Solicitada por Cliente",570],["No responde al Llamado",19],["Rechazado",11]],
 "kpisEstab":{"total":24,"corregidos":24,"abiertos":0,"mttr_prom":7.7},
@@ -1115,33 +1108,16 @@ function renderPostal(){
     <div class="section-sub" style="margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">Efecto del contacto con el destinatario</div>
     <div class="two-col">
       <div class="chart-box"><h3>Efectividad: contactadas vs. no contactadas</h3><div class="note">Piezas contactadas por el transportista (WhatsApp y/o teléfono) · 1ª visita: 9/9 → 30/9 y 1/10 → 26/10</div><canvas id="postal-fonopod-contacto"></canvas></div>
-      <div class="chart-box"><h3>Efectividad por canal de contacto</h3><div class="note">% de efectividad según cómo se contactó la pieza</div><canvas id="postal-fonopod-canal"></canvas></div>
+      <div style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+        <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Septiembre · contacto vs. sin contacto</div><div class="val" style="color:#4D7200">+${(d.fonoPod.contacto.efectContactadas[0]-d.fonoPod.contacto.efectNoContactadas[0]).toFixed(1).replace('.',',')} pp</div><div class="sub">${d.fonoPod.contacto.efectContactadas[0].toFixed(1).replace('.',',')}% con contacto vs. ${d.fonoPod.contacto.efectNoContactadas[0].toFixed(1).replace('.',',')}% sin contacto</div></div>
+        <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Octubre* · contacto vs. sin contacto</div><div class="val" style="color:#4D7200">+${(d.fonoPod.contacto.efectContactadas[1]-d.fonoPod.contacto.efectNoContactadas[1]).toFixed(1).replace('.',',')} pp</div><div class="sub">${d.fonoPod.contacto.efectContactadas[1].toFixed(1).replace('.',',')}% con contacto vs. ${d.fonoPod.contacto.efectNoContactadas[1].toFixed(1).replace('.',',')}% sin contacto</div></div>
+      </div>
     </div>
-    <div class="note-box-info">Las piezas contactadas por el transportista tuvieron mayor efectividad que las no contactadas: <b>86,9% vs. 82,2% en septiembre (+4,7 pp)</b> y <b>84,6% vs. 81,0% en octubre (+3,6 pp)</b>. <b>WhatsApp es el canal más efectivo</b> (90,9% y 88,2%). El contacto alcanza al <b>8,4% de las piezas en septiembre y al 10,4% en octubre</b>.</div>
+    <div class="note-box-info">Las piezas contactadas por el transportista tuvieron mayor efectividad que las no contactadas en ambos meses. El contacto alcanza al <b>8,4% de las piezas en septiembre y al 10,4% en octubre</b>.</div>
 
     <div class="section-sub" style="margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">Motivos de no entrega · Octubre — APs con teléfono en POD vs. sin teléfono en POD</div>
     <div class="chart-box"><h3>Principales motivos de No Entrega · Octubre*</h3><div class="note">% sobre el total de no entregas · fecha de vencimiento 1/10 → 30/10 · APs sin la funcionalidad: ~20 mil piezas; con la funcionalidad: ~11,6 mil</div><canvas id="postal-fonopod-motivos"></canvas></div>
-    <div class="note-box-info">En los APs con teléfono en POD, <b>No responde</b> pesa menos en las no entregas (<b>37% vs. 45%</b> en los APs sin la funcionalidad) y <b>Error domicilio</b> pasa a ser el primer motivo (<b>40% vs. 31%</b>).</div>
-
-    <div class="section-title">💬 NPS | Encuestas de Satisfacción Clientes</div>
-    <div class="section-sub">Detalle Septiembre 2026</div>
-    <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${d.nps.respuestas}</div><div class="lbl">Respuestas</div></div>
-      <div class="kcard" style="border-top-color:#8FBF4C"><div class="val" style="color:#4D7200">${d.nps.promotores}%</div><div class="lbl">Promotores</div></div>
-      <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="color:#C0392B">${d.nps.detractores}%</div><div class="lbl">Detractores</div></div>
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="val">${d.nps.nps}%</div><div class="lbl">NPS</div></div>
-    </div>
-    <div class="chart-box"><h3>NPS por Región</h3><div class="note">Respuestas, Promotores, Pasivos, Detractores y NPS</div>
-      <table style="width:100%;font-size:12.5px;border-collapse:collapse">
-        <thead><tr style="text-align:left;color:var(--gray)"><th style="padding:4px 0">Región</th><th>Respuestas</th><th>Promotores</th><th>Pasivos</th><th>Detractores</th><th>NPS</th></tr></thead>
-        <tbody>${d.npsRegion.map(r=>`<tr style="border-top:1px solid #eef2f3"><td style="padding:5px 0;font-weight:600">${r[0]}</td><td>${r[1]}</td><td>${r[2]}%</td><td>${r[3]}%</td><td>${r[4]}%</td><td style="font-weight:700;color:var(--teal)">${r[5]}%</td></tr>`).join('')}</tbody>
-      </table>
-    </div>
-    <div class="chart-box"><h3>Evolución NPS por mes</h3><div class="note">NPS vía WhatsApp — arrancó en Junio 2026</div><canvas id="postal-nps-mensual"></canvas></div>
-    <div class="two-col">
-      <div class="chart-box"><h3>Top Motivos · Detractores</h3><div class="note">Pareto</div><canvas id="postal-pareto-det"></canvas></div>
-      <div class="chart-box"><h3>Top Motivos · Promotores</h3><div class="note">Pareto</div><canvas id="postal-pareto-prom"></canvas></div>
-    </div>`;
+    <div class="note-box-info">En los APs con teléfono en POD, <b>No responde</b> pesa menos en las no entregas (<b>37% vs. 45%</b> en los APs sin la funcionalidad) y <b>Error domicilio</b> pasa a ser el primer motivo (<b>40% vs. 31%</b>).</div>`;
 
   mkChart('postal-piezas',{type:'bar',data:{labels:d.meses,datasets:[
     {label:'Piezas impuestas',data:d.piezasImpuestas,backgroundColor:'#056571',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
@@ -1171,19 +1147,7 @@ function renderPostal(){
     {label:'Contactadas',data:d.fonoPod.contacto.efectContactadas,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}},
     {label:'No contactadas',data:d.fonoPod.contacto.efectNoContactadas,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:60,max:100,ticks:{callback:v=>v+'%'}}}}});
-  mkChart('postal-fonopod-canal',{type:'bar',data:{labels:d.fonoPod.contacto.canales.labels,datasets:[
-    {label:'Septiembre',data:d.fonoPod.contacto.canales['Septiembre'],backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}},
-    {label:'Octubre*',data:d.fonoPod.contacto.canales['Octubre*'],backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:60,max:100,ticks:{callback:v=>v+'%'}}}}});
 
-  mkChart('postal-nps-mensual',{type:'line',data:{labels:d.npsMensual.map(m=>m[0]),datasets:[
-    {label:'NPS',data:d.npsMensual.map(m=>m[1]),borderColor:'#8FBF4C',backgroundColor:'rgba(143,191,76,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:8,color:'#4D7200',font:{weight:'700'}}}
-  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
-
-  mkChart('postal-pareto-det',{type:'bar',data:{labels:d.paretoDetractores.map(m=>m[0]),datasets:[{data:d.paretoDetractores.map(m=>m[1]),backgroundColor:'#C0392B',borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
-  mkChart('postal-pareto-prom',{type:'bar',data:{labels:d.paretoPromotores.map(m=>m[0]),datasets:[{data:d.paretoPromotores.map(m=>m[1]),backgroundColor:'#8FBF4C',borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{formatter:v=>v+'%'}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
 }
 </script>
 </body>
