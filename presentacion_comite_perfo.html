@@ -1115,7 +1115,8 @@ function renderPostal(){
       <div class="chart-box"><h3>% de casos fuera de SLA por región</h3><div class="note">Casos fuera de SLA sobre casos considerados</div><canvas id="postal-desvio-pct"></canvas></div>
       <div class="chart-box"><h3>AMBA: ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0)}% de las piezas, ${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0)}% de los desvíos</h3><div class="note">De cada 100 piezas analizadas y de cada 100 desvíos (casos fuera de SLA), cuántos son de AMBA y cuántos del resto de las regiones</div><canvas id="postal-desvio-peso"></canvas></div>
     </div>
-    <div class="section-sub" style="margin-top:6px">Atraso de los casos Delay · promedio de días hábiles sobre su fecha de vencimiento (solo casos con primera visita registrada)</div>
+    <div class="section-sub" style="margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">Atraso de los casos Delay</div>
+    <div class="note" style="margin:0 0 10px;font-size:12px;color:var(--gray)">Promedio de días hábiles sobre su fecha de vencimiento (solo casos con primera visita registrada)</div>
     <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
       ${dv.diasSobreSla.map(r=>`<div class="kcard" style="border-top-color:${r[0]==='AMBA'?'#F6A945':'var(--teal)'}"><div class="lbl">${r[0]}</div><div class="val" style="${r[0]==='AMBA'?'color:#C77A0A':''}">${r[1].toFixed(1).replace('.',',')} días</div>${r[0]==='AMBA'?'<div class="sub">El mayor atraso entre las regiones</div>':''}</div>`).join('')}
     </div>
@@ -1133,7 +1134,7 @@ function renderPostal(){
         <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Octubre* · contacto vs. sin contacto</div><div class="val" style="color:#4D7200">+${(d.fonoPod.contacto.efectContactadas[1]-d.fonoPod.contacto.efectNoContactadas[1]).toFixed(1).replace('.',',')} pp</div><div class="sub">${d.fonoPod.contacto.efectContactadas[1].toFixed(1).replace('.',',')}% con contacto vs. ${d.fonoPod.contacto.efectNoContactadas[1].toFixed(1).replace('.',',')}% sin contacto</div></div>
       </div>
     </div>
-    <div class="note-box-info">Las piezas contactadas por el transportista tuvieron mayor efectividad que las no contactadas en ambos meses. El contacto alcanza al <b>8,4% de las piezas en septiembre y al 10,4% en octubre</b>.</div>
+    <div class="note-box-info">Las piezas contactadas por el transportista tuvieron mayor efectividad que las no contactadas en ambos meses. El contacto alcanza al <b>8,4% de las piezas en septiembre y al 10,4% en octubre</b>. Se reforzó con los transportistas el uso de la funcionalidad.</div>
 
     <div class="section-sub" style="margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">Motivos de no entrega · Octubre — APs con teléfono en POD vs. sin teléfono en POD</div>
     <div class="chart-box"><h3>Principales motivos de No Entrega · Octubre*</h3><div class="note">% sobre el total de no entregas · fecha de vencimiento 1/10 → 30/10 · APs sin la funcionalidad: ~20 mil piezas; con la funcionalidad: ~11,6 mil</div><canvas id="postal-fonopod-motivos"></canvas></div>
