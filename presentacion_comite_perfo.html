@@ -1112,7 +1112,7 @@ function renderPostal(){
     </div>
     <div class="two-col">
       <div class="chart-box"><h3>% de casos fuera de SLA por región</h3><div class="note">Casos fuera de SLA sobre casos considerados</div><canvas id="postal-desvio-pct"></canvas></div>
-      <div class="chart-box"><h3>Peso en los casos vs. peso en los desvíos</h3><div class="note">% del total de casos considerados vs. % del total de casos fuera de SLA</div><canvas id="postal-desvio-peso"></canvas></div>
+      <div class="chart-box"><h3>AMBA: ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0)}% de las piezas, ${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0)}% de los desvíos</h3><div class="note">Cómo se reparten las piezas analizadas y los casos fuera de SLA entre AMBA y el resto de las regiones</div><canvas id="postal-desvio-peso"></canvas></div>
     </div>
     <div class="section-sub" style="margin-top:6px">Atraso de los casos Delay · promedio de días hábiles sobre su fecha de vencimiento (solo casos con primera visita registrada)</div>
     <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
@@ -1151,10 +1151,11 @@ function renderPostal(){
   const dvTotC=dv.total[0], dvTotF=dv.total[1];
   mkChart('postal-desvio-pct',{type:'bar',data:{labels:dvReg.map(r=>r[0]),datasets:[{data:dvReg.map(r=>+(r[2]/r[1]*100).toFixed(1)),backgroundColor:dvReg.map(r=>r[0]==='AMBA'?'#F6A945':'#0099A8'),borderRadius:4,datalabels:{anchor:'end',align:'right',formatter:v=>v.toFixed(1).replace('.',',')+'%'}}]},
     options:{responsive:true,indexAxis:'y',layout:{padding:{right:40}},plugins:{legend:{display:false}},scales:{x:{min:0,max:70,ticks:{callback:v=>v+'%'}}}}});
-  mkChart('postal-desvio-peso',{type:'bar',data:{labels:dvReg.map(r=>r[0]),datasets:[
-    {label:'% de los casos considerados',data:dvReg.map(r=>+(r[1]/dvTotC*100).toFixed(1)),backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%'}},
-    {label:'% de los casos fuera de SLA',data:dvReg.map(r=>+(r[2]/dvTotF*100).toFixed(1)),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  const dvAmbaC=dvReg[0][1]/dvTotC*100, dvAmbaF=dvReg[0][2]/dvTotF*100;
+  mkChart('postal-desvio-peso',{type:'bar',data:{labels:['Piezas analizadas','Casos fuera de SLA'],datasets:[
+    {label:'AMBA',data:[+dvAmbaC.toFixed(1),+dvAmbaF.toFixed(1)],backgroundColor:'#F6A945',borderRadius:4,datalabels:{color:'#fff',font:{weight:'700',size:12},formatter:v=>v.toFixed(1).replace('.',',')+'%'}},
+    {label:'Resto de las regiones',data:[+(100-dvAmbaC).toFixed(1),+(100-dvAmbaF).toFixed(1)],backgroundColor:'#0099A8',borderRadius:4,datalabels:{color:'#fff',font:{weight:'700',size:12},formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
+  ]},options:{responsive:true,indexAxis:'y',plugins:{legend:{position:'bottom'},datalabels:{anchor:'center',align:'center'}},scales:{x:{stacked:true,min:0,max:100,ticks:{callback:v=>v+'%'}},y:{stacked:true}}}});
   mkChart('postal-sla1v',{type:'line',data:{labels:d.meses.map(m=>m.slice(0,3)+(m.endsWith('*')?'*':'')),datasets:[
     {label:'SLA primera visita',data:d.slaPrimeraVisita,borderColor:'#0099A8',backgroundColor:'#0099A8',tension:.3,pointRadius:4,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(1)+'%'}}
   ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{offset:true},y:{min:30,max:100,ticks:{callback:v=>v+'%'}}}}});
