@@ -263,14 +263,14 @@ function flotaComputeStats(rowsRaw){
 }
 let flotaAmbaCache=null, flotaAmbaLoading=false;
 function cap(m){return m?m.charAt(0)+m.slice(1).toLowerCase():'';}
+function fd(v){return (v==null)?'':String(v).replace('.',',');}
 function fmtARS(n){
-  const v=Math.abs(n);
-  let s;
-  if(v>=1e9) s='$'+(n/1e9).toFixed(1)+'MM';
-  else if(v>=1e6) s='$'+(n/1e6).toFixed(1)+'M';
-  else if(v>=1e3) s='$'+(n/1e3).toFixed(0)+'K';
-  else s='$'+Math.round(n);
-  return s;
+  const v=Math.abs(n), sg=n<0?'-':'';
+  const L=(x,d)=>x.toLocaleString('es-AR',{minimumFractionDigits:d,maximumFractionDigits:d});
+  if(v>=1e9) return sg+'$'+L(v/1e6,0)+'M';
+  if(v>=1e6) return sg+'$'+L(v/1e6,1)+'M';
+  if(v>=1e3) return sg+'$'+L(v/1e3,0)+'K';
+  return sg+'$'+L(Math.round(v),0);
 }
 function slaColor(v){ if(v==null) return '#ccc'; return v>=95?'#4D7200':v>=80?'#A06800':'#C0392B'; }
 function adopColor(v){ if(v==null) return '#ccc'; return v>=50?'#0099A8':'#F6A945'; }
@@ -305,17 +305,18 @@ function paintSlaEfecCharts(idPrefix,sla,target,soloSla){
   if(target===true){ slaTarget=95; }
   else if(target && typeof target==='object'){ slaTarget=target.sla; efecTarget=target.efectividad; }
   if(slaTarget!=null){
-    slaDs.push({type:'line',label:'Target '+slaTarget+'%',data:labels.map(()=>slaTarget),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
+    slaDs.push({type:'line',label:'Target '+fd(slaTarget)+'%',data:labels.map(()=>slaTarget),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
   }
   if(efecTarget!=null){
-    efecDs.push({type:'line',label:'Target '+efecTarget+'%',data:labels.map(()=>efecTarget),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
+    efecDs.push({type:'line',label:'Target '+fd(efecTarget)+'%',data:labels.map(()=>efecTarget),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
   }
   const sharedMin=pctMin(sla,[2,3,4]);
-  mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
-  if(!soloSla) mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>v+'%'}}}}});
+  mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>fd(v)+'%'}}}}});
+  if(!soloSla) mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>fd(v)+'%'}}}}});
 }
 Chart.register(ChartDataLabels);
 Chart.defaults.font.family="'Montserrat',sans-serif";
+Chart.defaults.locale='es-AR';
 const targetLinePlugin={
   id:'targetLine',
   afterDraw(chart){
@@ -350,7 +351,7 @@ Chart.defaults.set('plugins.datalabels',{
   font:{size:9,weight:'600',family:"'Montserrat',sans-serif"},
   formatter:v=>{
     if(typeof v!=='number') return v;
-    return Math.abs(v)<=100 ? (Number.isInteger(v)?v:v.toFixed(1))+'%' : fmtARS(v);
+    return Math.abs(v)<=100 ? (Number.isInteger(v)?v:v.toFixed(1).replace('.',','))+'%' : fmtARS(v);
   }
 });
 
@@ -506,7 +507,7 @@ function varHtml(actual,anterior,etiqueta='mes anterior'){
   if(anterior==null||anterior===0) return '';
   const p=(actual-anterior)/Math.abs(anterior)*100;
   const col=p>=0?'#4D7200':'#C0392B';
-  return `<div style="font-size:11px;font-weight:700;color:${col};margin-top:4px">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}% vs. ${etiqueta}</div>`;
+  return `<div style="font-size:11px;font-weight:700;color:${col};margin-top:4px">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1).replace('.',',')}% vs. ${etiqueta}</div>`;
 }
 function buildKpiCards(rows,cliente){
   const suf=cliente?' · '+cliente:'';
@@ -518,7 +519,7 @@ function buildKpiCards(rows,cliente){
   return `<div class="cards-row">
     <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta · ${cap(ult.mes)} ${ult.anio}${suf}</div><div class="val">${fmtARS(ult.venta)}</div>${ant?varHtml(ult.venta,ant.venta):''}</div>
     <div class="kcard" style="border-top-color:${ult.margen>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto $${suf}</div><div class="val" style="color:${ult.margen>=0?'#4D7200':'#C0392B'}">${fmtARS(ult.margen)}</div>${ant?varHtml(ult.margen,ant.margen):''}</div>
-    <div class="kcard" style="border-top-color:${pct>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto %${suf}</div><div class="val" style="color:${pct>=0?'#4D7200':'#C0392B'}">${pct.toFixed(1)}%</div>${(ant&&pctAnt!=null)?varHtml(pct,pctAnt):''}</div>
+    <div class="kcard" style="border-top-color:${pct>=0?'#4D7200':'#C0392B'}"><div class="lbl">Margen Bruto %${suf}</div><div class="val" style="color:${pct>=0?'#4D7200':'#C0392B'}">${pct.toFixed(1).replace('.',',')}%</div>${(ant&&pctAnt!=null)?varHtml(pct,pctAnt):''}</div>
   </div>`;
 }
 function buildFacVolCharts(idPrefix,rows,volLabel,cliente){
@@ -534,7 +535,7 @@ function paintFacVolCharts(idPrefix,rows){
   const labels=rows.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2));
   mkChart(idPrefix+'-fac',{type:'bar',data:{labels,datasets:[{data:rows.map(r=>r.venta),backgroundColor:'#0099A8',borderRadius:4}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtARS(v)}}}}});
-  mkChart(idPrefix+'-vol',{type:'line',data:{labels,datasets:[{data:rows.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
+  mkChart(idPrefix+'-vol',{type:'line',data:{labels,datasets:[{data:rows.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString('es-AR')}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
 }
 function buildMargenChart(idPrefix,periodo,cliente){
@@ -549,12 +550,12 @@ function paintMargenChart(idPrefix,rows,opts){
     {type:'bar',label:'Venta',data:rows.map(r=>r.venta),backgroundColor:'#056571',order:2,yAxisID:'y',datalabels:{color:'#fff',anchor:'center',align:'center',font:{size:10,weight:'700',family:"'Montserrat',sans-serif"}}},
     {type:'bar',label:'Costo',data:rows.map(r=>r.costo),backgroundColor:'#c9d3d6',order:2,yAxisID:'y',datalabels:{color:'#056571',anchor:'center',align:'center',font:{size:10,weight:'700',family:"'Montserrat',sans-serif"}}},
     {type:'line',label:'Margen %',data:margenPcts,borderColor:lineColor,backgroundColor:lineColor,borderWidth:2.5,tension:.35,yAxisID:'y1',order:1,pointRadius:4,
-      datalabels:Object.assign({color:lineColor,align:'top',offset:6,formatter:v=>(Number.isInteger(v)?v:v.toFixed(1))+'%'},(opts&&opts.labelBg)?{backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4}}:{})}
+      datalabels:Object.assign({color:lineColor,align:'top',offset:6,formatter:v=>(Number.isInteger(v)?v:v.toFixed(1).replace('.',','))+'%'},(opts&&opts.labelBg)?{backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4}}:{})}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},
     scales:{
       y:{position:'left',ticks:{callback:v=>fmtARS(v)},title:{display:true,text:'ARS'}},
       y1:{position:'right',grid:{drawOnChartArea:false},ticks:{
-        callback:v=>v.toFixed(2)+'%',
+        callback:v=>v.toFixed(2).replace('.',',')+'%',
         color:ctx=>{const v=ctx.tick&&ctx.tick.value;if(v==null)return '#6b7680';return v>=0?'#4D7200':'#C0392B';},
         font:ctx=>({weight:'bold'})
       },title:{display:true,text:'Margen %'}}
@@ -620,11 +621,11 @@ function renderCDD(){
     labels:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep'],
     datasets:[
       {label:'Gobierno Ciudad Bs. As.',data:[100,100,100,100,96.9,79.6,75.7,60.0,63.8],backgroundColor:'#0099A8',
-        datalabels:{anchor:'center',align:'center',color:'#fff',font:{weight:'700',family:"'Montserrat',sans-serif"},formatter:v=>v.toFixed(0)+'%'}},
+        datalabels:{anchor:'center',align:'center',color:'#fff',font:{weight:'700',family:"'Montserrat',sans-serif"},formatter:v=>v.toFixed(0).replace('.',',')+'%'}},
       {label:'Banco Chubut',data:[0,0,0,0,3.1,20.4,24.3,40.0,36.2],backgroundColor:'#F6A945',
-        datalabels:{anchor:'center',align:'center',color:'#fff',font:{weight:'700',family:"'Montserrat',sans-serif"},display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,formatter:v=>v.toFixed(0)+'%'}}
+        datalabels:{anchor:'center',align:'center',color:'#fff',font:{weight:'700',family:"'Montserrat',sans-serif"},display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,formatter:v=>v.toFixed(0).replace('.',',')+'%'}}
     ]
-  },options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+  },options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('cdd',sla,true,true);
@@ -635,9 +636,9 @@ function renderCDD(){
       {label:'SLA',data:provOrdenadas.map(p=>p.sla),
         backgroundColor:provOrdenadas.map(p=>p.sla>=95?'#8FBF4C':'#F6A945'),
         borderRadius:4,
-        datalabels:{formatter:(v)=>v.toFixed(1)+'%',anchor:'end',align:'end'}},
+        datalabels:{formatter:(v)=>v.toFixed(1).replace('.',',')+'%',anchor:'end',align:'end'}},
       {label:'Share de Volumen',data:provOrdenadas.map(p=>p.share),backgroundColor:'#0099A8',borderRadius:4,
-        datalabels:{formatter:v=>v.toFixed(1)+'%',anchor:'end',align:'end'}}
+        datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%',anchor:'end',align:'end'}}
     ]
   },options:{responsive:true,indexAxis:'y',plugins:{
     legend:{position:'bottom',labels:{generateLabels:()=>[
@@ -646,7 +647,7 @@ function renderCDD(){
       {text:'Share de Volumen',fillStyle:'#0099A8',strokeStyle:'#0099A8'}
     ]}},
     targetLine:{value:95,label:'Target SLA 95%'}},
-    scales:{x:{min:0,max:105,ticks:{callback:v=>v+'%'}}}}});
+    scales:{x:{min:0,max:105,ticks:{callback:v=>fd(v)+'%'}}}}});
 
   const incLabels=km.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   mkChart('cdd-inc-mes',{type:'bar',data:{labels:incLabels,datasets:[{label:'Reportados',data:km.map(r=>r[2]),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}}]},
@@ -680,19 +681,19 @@ function renderRash(){
     <div class="section-sub">Altas y registros pendientes — corte manual al ${a.fechaCorte}</div>
     <div class="chart-box"><h3>Evolución de altas y registros pendientes</h3><div class="note">Junio → Octubre (parcial) · Registro pendiente: iniciaron el onboarding pero no lo terminaron (estado al ${a.fechaCorte})</div><canvas id="rash-altas-mes"></canvas></div>
     <div class="cards-row" style="grid-template-columns:repeat(2,1fr)">
-      <div class="kcard" style="border-top-color:#C0392B"><div class="lbl">Activos con envíos</div><div class="val" style="color:#C0392B">${a.segConEnvios}</div><div class="sub">Realizaron al menos 1 envío · ${a.tasaActivacion}% de los usuarios activos</div></div>
-      <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Usuarios recurrentes</div><div class="val" style="color:#4D7200">${a.segRecurrentes}</div><div class="sub">Realizaron más de un envío · ${a.pctRecurrentes}% de los que enviaron al menos una vez</div></div>
+      <div class="kcard" style="border-top-color:#C0392B"><div class="lbl">Activos con envíos</div><div class="val" style="color:#C0392B">${a.segConEnvios}</div><div class="sub">Realizaron al menos 1 envío · ${fd(a.tasaActivacion)}% de los usuarios activos</div></div>
+      <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Usuarios recurrentes</div><div class="val" style="color:#4D7200">${a.segRecurrentes}</div><div class="sub">Realizaron más de un envío · ${fd(a.pctRecurrentes)}% de los que enviaron al menos una vez</div></div>
     </div>
 
-    <div class="note-box" style="margin-top:12px">Principal oportunidad en la activación: de los ${a.altasTotales} usuarios activos, solo <b>${a.segConEnvios} (${a.tasaActivacion}%)</b> realizó al menos un envío y <b>${a.segRecurrentes}</b> volvieron a enviar. El foco está puesto en reducir las fricciones entre el alta y la creación del primer envío.</div>
+    <div class="note-box" style="margin-top:12px">Principal oportunidad en la activación: de los ${a.altasTotales} usuarios activos, solo <b>${a.segConEnvios} (${fd(a.tasaActivacion)}%)</b> realizó al menos un envío y <b>${a.segRecurrentes}</b> volvieron a enviar. El foco está puesto en reducir las fricciones entre el alta y la creación del primer envío.</div>
 
     <div class="section-title" style="margin-top:22px">MIX USUARIOS</div>
     <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
-      <div class="kcard" style="border-top-color:var(--teal)"><div class="val" style="font-size:26px">${a.b2cPct}%</div><div class="lbl">B2C (personas)</div></div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:26px;color:var(--orange)">${a.b2bPct}%</div><div class="lbl">B2B (empresas) — foco estratégico del producto</div></div>
-      <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="font-size:26px;color:#C0392B">${a.foraAmbaCount} <span style="font-size:15px;font-weight:600">(${a.foraAmbaPct}%)</span></div><div class="lbl">Origen fuera de AMBA</div></div>
+      <div class="kcard" style="border-top-color:var(--teal)"><div class="val" style="font-size:26px">${fd(a.b2cPct)}%</div><div class="lbl">B2C (personas)</div></div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:26px;color:var(--orange)">${fd(a.b2bPct)}%</div><div class="lbl">B2B (empresas) — foco estratégico del producto</div></div>
+      <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="font-size:26px;color:#C0392B">${a.foraAmbaCount} <span style="font-size:15px;font-weight:600">(${fd(a.foraAmbaPct)}%)</span></div><div class="lbl">Origen fuera de AMBA</div></div>
     </div>
-    <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${a.ambaPct}%) tienen origen en AMBA, ${a.foraAmbaCount} (${a.foraAmbaPct}%) están fuera de AMBA. Los principales orígenes fuera de AMBA son: <b>Córdoba</b>, <b>Rosario</b>, <b>Bahía Blanca</b> y <b>Salta</b>.</div>
+    <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${fd(a.ambaPct)}%) tienen origen en AMBA, ${a.foraAmbaCount} (${fd(a.foraAmbaPct)}%) están fuera de AMBA. Los principales orígenes fuera de AMBA son: <b>Córdoba</b>, <b>Rosario</b>, <b>Bahía Blanca</b> y <b>Salta</b>.</div>
     <div class="note-box-info" style="margin-top:8px">A partir del 6/10 se implementó el evolutivo 1 y, con él, la expansión de origen a Córdoba, Tucumán, Bahía Blanca, Mar del Plata, Rosario y Santa Fe.</div>`;
   paintFacVolCharts('rash',rows);
   paintMargenChart('rash',rows);
@@ -705,8 +706,8 @@ function renderRash(){
     label:n,data:DATA.rashFlujos.map(m=>(m.flujos.find(f=>f[0]===n)||[n,0])[1]),backgroundColor:flujosColoresPorNombre[n],
     datalabels:{anchor:'center',align:'center',color:'#fff',font:{size:11,weight:'700',family:"'Montserrat',sans-serif"},
       display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,
-      formatter:v=>(Number.isInteger(v)?v:v.toFixed(1))+'%'}
-  }))},options:{responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+      formatter:v=>(Number.isInteger(v)?v:v.toFixed(1).replace('.',','))+'%'}
+  }))},options:{responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
   mkChart('rash-altas-mes',{type:'bar',data:{labels:a.altasMesLabels,datasets:[
     {label:'Altas (onboarding completo)',data:a.altasMesData,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:cnt}},
     {label:'Registro pendiente',data:a.pendMesData,backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:cnt}}
@@ -739,7 +740,7 @@ function renderPickit(){
     <div class="section-sub">Facturación y volumen · Entrega directa PUDO · Cliente: Adidas</div>
     <div class="cards-row" style="grid-template-columns:1fr 1fr">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(ultFac.mes)} ${ultFac.anio}</div><div class="val">${fmtARS(ultFac.venta)}</div>${facAnt?varHtml(ultFac.venta,facAnt.venta):''}</div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(ultVol.mes)} ${ultVol.anio}</div><div class="val">${ultVol.volumen.toLocaleString()}</div>${volAnt?varHtml(ultVol.volumen,volAnt.volumen):''}</div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(ultVol.mes)} ${ultVol.anio}</div><div class="val">${ultVol.volumen.toLocaleString('es-AR')}</div>${volAnt?varHtml(ultVol.volumen,volAnt.volumen):''}</div>
     </div>
     <div class="two-col">
       <div class="chart-box"><h3>Evolución de Facturación - Directa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-fac"></canvas></div>
@@ -749,7 +750,7 @@ function renderPickit(){
     <div class="section-sub" style="margin-top:18px">Facturación y volumen · Logística Inversa PUDO · Cliente: Adidas · ${cap(li.fac[0][0])} → ${cap(li.fac[li.fac.length-1][0])} 2026</div>
     <div class="cards-row" style="grid-template-columns:1fr 1fr">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Facturación · ${cap(li.fac[li.fac.length-1][0])} 2026</div><div class="val">${fmtARS(li.fac[li.fac.length-1][1])}</div>${varHtml(li.fac[li.fac.length-1][1],li.fac[li.fac.length-2][1])}</div>
-      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(li.vol[li.vol.length-1][0])} 2026</div><div class="val">${li.vol[li.vol.length-1][1].toLocaleString()}</div>${varHtml(li.vol[li.vol.length-1][1],li.vol[li.vol.length-2][1])}</div>
+      <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Volumen · ${cap(li.vol[li.vol.length-1][0])} 2026</div><div class="val">${li.vol[li.vol.length-1][1].toLocaleString('es-AR')}</div>${varHtml(li.vol[li.vol.length-1][1],li.vol[li.vol.length-2][1])}</div>
     </div>
     <div class="two-col">
       <div class="chart-box"><h3>Evolución de Facturación - Inversa PUDO</h3><div class="note">ARS por mes</div><canvas id="pickit-li-fac"></canvas></div>
@@ -781,23 +782,23 @@ function renderPickit(){
     backgroundColor:li.fac.map(([m])=>m==='AGOSTO'?'#F6A945':'#0099A8'),borderRadius:4,
     datalabels:{anchor:'end',align:'top',formatter:v=>fmtARS(v)}}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtARS(v)}}}}});
-  mkChart('pickit-li-vol',{type:'line',data:{labels:li.vol.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{data:li.vol.map(([,v])=>v),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
+  mkChart('pickit-li-vol',{type:'line',data:{labels:li.vol.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{data:li.vol.map(([,v])=>v),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString('es-AR')}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('pickit-li-sla',{type:'line',data:{labels:li.sla.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{label:'SLA',data:li.sla.map(([,v])=>v),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v.toFixed(1)+'%'}}]},
-    options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
-  mkChart('pickit-vol',{type:'line',data:{labels:volRowsConfirmados.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsConfirmados.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString()}}]},
+  mkChart('pickit-li-sla',{type:'line',data:{labels:li.sla.map(([m])=>MS[MO.indexOf(m)]+" '26"),datasets:[{label:'SLA',data:li.sla.map(([,v])=>v),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%'}}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
+  mkChart('pickit-vol',{type:'line',data:{labels:volRowsConfirmados.map(r=>MS[MO.indexOf(r.mes)]+" '"+String(r.anio).slice(-2)),datasets:[{data:volRowsConfirmados.map(r=>r.volumen),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:3,datalabels:{formatter:v=>Math.round(v).toLocaleString('es-AR')}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
   const vUlt=volRowsConfirmados[volRowsConfirmados.length-1], vAnt=volRowsConfirmados[volRowsConfirmados.length-2];
   document.getElementById('pickit-vol-var').innerHTML=vAnt?varHtml(vUlt.volumen,vAnt.volumen):'';
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('pickit',sla,{sla:98,efectividad:99});
   mkChart('pickit-motivos-oct',{type:'bar',data:{labels:DATA.pickitMotivosOctubre.map(m=>m[0]),datasets:[
-    {data:DATA.pickitMotivosOctubre.map(m=>m[1]),backgroundColor:['#0099A8','#F6A945','#C0392B'],borderRadius:4,datalabels:{anchor:'end',align:'right',formatter:v=>v.toFixed(1)+'%'}}
-  ]},options:{responsive:true,indexAxis:'y',layout:{padding:{right:36}},plugins:{legend:{display:false}},scales:{x:{min:0,max:50,ticks:{callback:v=>v+'%'}}}}});
+    {data:DATA.pickitMotivosOctubre.map(m=>m[1]),backgroundColor:['#0099A8','#F6A945','#C0392B'],borderRadius:4,datalabels:{anchor:'end',align:'right',formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
+  ]},options:{responsive:true,indexAxis:'y',layout:{padding:{right:36}},plugins:{legend:{display:false}},scales:{x:{min:0,max:50,ticks:{callback:v=>fd(v)+'%'}}}}});
   mkChart('pickit-pp',{data:{labels,datasets:[
     {type:'line',label:'Efectividad en punto (retiro)',data:sla.map(r=>r[5]),borderColor:'#0099A8',tension:.3},
     {type:'line',label:'Vencidos en punto',data:sla.map(r=>r[6]),borderColor:'#E05A5A',tension:.3}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[5,6]),max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:pctMin(sla,[5,6]),max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
 }
 
 // ── CONSUMO MASIVO ──
@@ -830,10 +831,10 @@ function renderConsumo(){
     <div class="section-title">🚚 Indicadores operativos | Consumo Masivo — Molinos Río de la Plata</div>
     <div class="section-sub">Octubre 2026 (parcial)</div>
     <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
-      <div class="kcard"><div class="lbl">Pallets / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].palletsViaje.toFixed(1)}</div></div>
-      <div class="kcard"><div class="lbl">Ocupación de bodega</div><div class="val" style="font-size:22px">${fm[fm.length-1].ocupacion.toFixed(1)}%</div></div>
-      <div class="kcard"><div class="lbl">Paradas / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].paradasViaje.toFixed(1)}</div></div>
-      <div class="kcard"><div class="lbl">% 2ª vuelta o más</div><div class="val" style="font-size:22px">${fm[fm.length-1].pct2vueltas.toFixed(1)}%</div></div>
+      <div class="kcard"><div class="lbl">Pallets / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].palletsViaje.toFixed(1).replace('.',',')}</div></div>
+      <div class="kcard"><div class="lbl">Ocupación de bodega</div><div class="val" style="font-size:22px">${fm[fm.length-1].ocupacion.toFixed(1).replace('.',',')}%</div></div>
+      <div class="kcard"><div class="lbl">Paradas / viaje</div><div class="val" style="font-size:22px">${fm[fm.length-1].paradasViaje.toFixed(1).replace('.',',')}</div></div>
+      <div class="kcard"><div class="lbl">% 2ª vuelta o más</div><div class="val" style="font-size:22px">${fm[fm.length-1].pct2vueltas.toFixed(1).replace('.',',')}%</div></div>
     </div>
     <div class="note" style="margin:4px 0 10px">Evolución mensual · Junio → Octubre 2026 (octubre parcial)</div>
     <div class="chart-box"><h3>Pallets por viaje</h3><canvas id="flota-pallets"></canvas></div>
@@ -847,22 +848,22 @@ function renderConsumo(){
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
   paintSlaEfecCharts('consumo',sla,false);
   const fmLabels=fm.map(f=>f.mes);
-  mkChart('flota-pallets',{type:'bar',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.palletsViaje),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v}}]},
+  mkChart('flota-pallets',{type:'bar',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.palletsViaje),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>fd(v)}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('flota-ocup',{type:'line',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.ocupacion),borderColor:'#8FBF4C',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
-  mkChart('flota-paradas',{type:'bar',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.paradasViaje),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v}}]},
+  mkChart('flota-ocup',{type:'line',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.ocupacion),borderColor:'#8FBF4C',tension:.3,datalabels:{formatter:v=>fd(v)+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fd(v)+'%'}}}}});
+  mkChart('flota-paradas',{type:'bar',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.paradasViaje),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>fd(v)}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('flota-vuelta',{type:'line',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.pct2vueltas),borderColor:'#C0392B',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
-  const lblDur=(color)=>({clip:false,color,formatter:v=>v.toFixed(1)+'h',backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4},align:ctx=>autoLabelPos(ctx).align,offset:ctx=>autoLabelPos(ctx).offset});
+  mkChart('flota-vuelta',{type:'line',data:{labels:fmLabels,datasets:[{data:fm.map(f=>f.pct2vueltas),borderColor:'#C0392B',tension:.3,datalabels:{formatter:v=>fd(v)+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fd(v)+'%'}}}}});
+  const lblDur=(color)=>({clip:false,color,formatter:v=>v.toFixed(1).replace('.',',')+'h',backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4},align:ctx=>autoLabelPos(ctx).align,offset:ctx=>autoLabelPos(ctx).offset});
   mkChart('flota-duracion',{data:{labels:fmLabels,datasets:[
       {type:'line',label:'Duración de viaje',data:fm.map(f=>f.duracionViaje),borderColor:'#0099A8',tension:.3,datalabels:lblDur('#0099A8')},
       {type:'line',label:'Duración de jornada',data:fm.map(f=>f.duracionJornada),borderColor:'#F6A945',tension:.3,datalabels:lblDur('#B87A00')}
-    ]},options:{responsive:true,layout:{padding:{top:10,bottom:6}},plugins:{legend:{position:'bottom'}},scales:{x:{offset:true},y:{min:5,max:9,ticks:{stepSize:0.5,callback:v=>v.toFixed(1)+'h'}}}}});
+    ]},options:{responsive:true,layout:{padding:{top:10,bottom:6}},plugins:{legend:{position:'bottom'}},scales:{x:{offset:true},y:{min:5,max:9,ticks:{stepSize:0.5,callback:v=>v.toFixed(1).replace('.',',')+'h'}}}}});
   mkChart('flota-parada-jornada',{data:{labels:fmLabels,datasets:[
-      {type:'bar',label:'Pallets por parada',data:fm.map(f=>f.palletsParada),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v}},
-      {type:'bar',label:'Paradas por jornada',data:fm.map(f=>f.paradasJornada),backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v}}
+      {type:'bar',label:'Pallets por parada',data:fm.map(f=>f.palletsParada),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>fd(v)}},
+      {type:'bar',label:'Paradas por jornada',data:fm.map(f=>f.paradasJornada),backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>fd(v)}}
     ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 }
 
@@ -913,10 +914,10 @@ async function renderFlotaAmbaBlock(){
   boxNow.innerHTML=`
     <div class="note" style="margin-bottom:10px">${rows.length} viajes "Última Milla" cargados en centros AMBA · Período: ${mesLabels[0]} → ${mesLabels[mesLabels.length-1]} (hasta 18/08/2026)</div>
     <div class="cards-row" style="grid-template-columns:repeat(5,1fr)">
-      <div class="kcard"><div class="lbl">Pallets / viaje</div><div class="val" style="font-size:22px">${periodo.pallets_viaje!=null?periodo.pallets_viaje.toFixed(2):'—'}</div></div>
-      <div class="kcard"><div class="lbl">Ocupación pallets</div><div class="val" style="font-size:22px">${periodo.ocupacion!=null?periodo.ocupacion.toFixed(1)+'%':'—'}</div></div>
-      <div class="kcard"><div class="lbl">Paradas / viaje</div><div class="val" style="font-size:22px">${periodo.paradas_viaje!=null?periodo.paradas_viaje.toFixed(2):'—'}</div></div>
-      <div class="kcard"><div class="lbl">% 2ª vuelta o más</div><div class="val" style="font-size:22px">${periodo.pct_vuelta2!=null?periodo.pct_vuelta2.toFixed(1)+'%':'—'}</div></div>
+      <div class="kcard"><div class="lbl">Pallets / viaje</div><div class="val" style="font-size:22px">${periodo.pallets_viaje!=null?periodo.pallets_viaje.toFixed(2).replace('.',','):'—'}</div></div>
+      <div class="kcard"><div class="lbl">Ocupación pallets</div><div class="val" style="font-size:22px">${periodo.ocupacion!=null?periodo.ocupacion.toFixed(1).replace('.',',')+'%':'—'}</div></div>
+      <div class="kcard"><div class="lbl">Paradas / viaje</div><div class="val" style="font-size:22px">${periodo.paradas_viaje!=null?periodo.paradas_viaje.toFixed(2).replace('.',','):'—'}</div></div>
+      <div class="kcard"><div class="lbl">% 2ª vuelta o más</div><div class="val" style="font-size:22px">${periodo.pct_vuelta2!=null?periodo.pct_vuelta2.toFixed(1).replace('.',',')+'%':'—'}</div></div>
       <div class="kcard"><div class="lbl">Duración promedio</div><div class="val" style="font-size:18px">${flotaFmtMin(periodo.dur_prom)}</div></div>
     </div>
     <div class="note" style="margin:6px 0 14px">"Ocupación pallets" = pallets totales / capacidad total del período.</div>
@@ -925,14 +926,14 @@ async function renderFlotaAmbaBlock(){
     <div class="chart-box"><h3>Paradas por viaje</h3><canvas id="flota-paradas"></canvas></div>
     <div class="chart-box"><h3>% 2ª vuelta o más</h3><div class="note">Sobre viajes Última Milla</div><canvas id="flota-vuelta"></canvas></div>
     <div class="chart-box"><h3>Duración del viaje</h3><div class="note">Promedio, mín y máx (horas)</div><canvas id="flota-duracion"></canvas></div>`;
-  mkChart('flota-pallets',{type:'bar',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.pallets_viaje!=null?+s.pallets_viaje.toFixed(2):null),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v}}]},
+  mkChart('flota-pallets',{type:'bar',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.pallets_viaje!=null?+s.pallets_viaje.toFixed(2):null),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>fd(v)}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('flota-ocup',{type:'line',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.ocupacion!=null?+s.ocupacion.toFixed(1):null),borderColor:'#8FBF4C',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
-  mkChart('flota-paradas',{type:'bar',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.paradas_viaje!=null?+s.paradas_viaje.toFixed(2):null),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v}}]},
+  mkChart('flota-ocup',{type:'line',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.ocupacion!=null?+s.ocupacion.toFixed(1):null),borderColor:'#8FBF4C',tension:.3,datalabels:{formatter:v=>fd(v)+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fd(v)+'%'}}}}});
+  mkChart('flota-paradas',{type:'bar',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.paradas_viaje!=null?+s.paradas_viaje.toFixed(2):null),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>fd(v)}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('flota-vuelta',{type:'line',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.pct_vuelta2!=null?+s.pct_vuelta2.toFixed(1):null),borderColor:'#C0392B',tension:.3,datalabels:{formatter:v=>v+'%',align:'top',offset:6}}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  mkChart('flota-vuelta',{type:'line',data:{labels:mesLabels,datasets:[{data:stats.map(s=>s.pct_vuelta2!=null?+s.pct_vuelta2.toFixed(1):null),borderColor:'#C0392B',tension:.3,datalabels:{formatter:v=>fd(v)+'%',align:'top',offset:6}}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fd(v)+'%'}}}}});
   mkChart('flota-duracion',{data:{labels:mesLabels,datasets:[
       {type:'line',label:'Promedio',data:stats.map(s=>s.dur_prom!=null?+(s.dur_prom/60).toFixed(2):null),borderColor:'#0099A8',tension:.3,datalabels:{formatter:v=>v+'h',align:'top',offset:6}},
       {type:'line',label:'Mín',data:stats.map(s=>s.dur_min!=null?+(s.dur_min/60).toFixed(2):null),borderColor:'#8FBF4C',borderDash:[4,3],tension:.3,datalabels:{display:false}},
@@ -957,7 +958,7 @@ function renderServiceCenter(){
     <div class="cards-row" style="grid-template-columns:repeat(4,1fr)">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Venta neta</div><div class="val">${fmtARS(uM.venta)}</div><div class="sub">${uM.label} · neta de penalidades</div></div>
       <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Margen Bruto $</div><div class="val" style="color:#4D7200">${fmtARS(uM.margen)}</div></div>
-      <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Margen Bruto %</div><div class="val" style="color:#4D7200">${uM.margenPct.toFixed(1)}%</div><div class="sub">${uM.margenPctSinPen.toFixed(1)}% sin penalidades</div></div>
+      <div class="kcard" style="border-top-color:#4D7200"><div class="lbl">Margen Bruto %</div><div class="val" style="color:#4D7200">${uM.margenPct.toFixed(1).replace('.',',')}%</div><div class="sub">${uM.margenPctSinPen.toFixed(1).replace('.',',')}% sin penalidades</div></div>
       <div class="kcard" style="border-top-color:var(--orange)"><div class="lbl">Rutas facturadas</div><div class="val">${uM.rutasFacturadas}</div><div class="sub">${uM.rutasOperadas} operadas</div></div>
     </div>
     <div class="two-col">
@@ -970,7 +971,7 @@ function renderServiceCenter(){
     <div class="section-sub">Cumplimiento de targets MELI por quincena · Oct q2* parcial (al 22/10)</div>
     <div class="two-col">
       <div class="chart-box"><h3>Entrega exitosa</h3><div class="note">% de paquetes entregados sobre despachados · target ${tg.entregaExitosa}%</div><canvas id="sc-entrega"></canvas></div>
-      <div class="chart-box"><h3>Domicilios visitados</h3><div class="note">% de paquetes visitados · target ${tg.domiciliosVisitados}%</div><canvas id="sc-visitados"></canvas></div>
+      <div class="chart-box"><h3>Domicilios visitados</h3><div class="note">% de paquetes visitados · target ${fd(tg.domiciliosVisitados)}%</div><canvas id="sc-visitados"></canvas></div>
     </div>
     <div class="two-col">
       <div class="chart-box"><h3>Rutas por día</h3><div class="note">Promedio de rutas operadas por día</div><canvas id="sc-rutas"></canvas></div>
@@ -987,26 +988,26 @@ function renderServiceCenter(){
   mkChart('sc-margen',{data:{labels:mLabels,datasets:[
     {type:'bar',label:'Venta neta',data:m.map(x=>x.venta),backgroundColor:'#056571',order:2,yAxisID:'y',datalabels:{color:'#fff',anchor:'center',align:'center',font:{size:10,weight:'700',family:"'Montserrat',sans-serif"},formatter:v=>fmtARS(v)}},
     {type:'bar',label:'Costo',data:m.map(x=>x.costo),backgroundColor:'#c9d3d6',order:2,yAxisID:'y',datalabels:{color:'#056571',anchor:'center',align:'center',font:{size:10,weight:'700',family:"'Montserrat',sans-serif"},formatter:v=>fmtARS(v)}},
-    {type:'line',label:'Margen %',data:m.map(x=>x.margenPct),borderColor:'#8FBF4C',backgroundColor:'#8FBF4C',borderWidth:2.5,tension:.35,yAxisID:'y1',order:1,pointRadius:4,datalabels:{color:'#4D7200',align:'top',offset:6,backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4},formatter:v=>v.toFixed(1)+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left',ticks:{callback:v=>fmtARS(v)}},y1:{position:'right',min:0,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+    {type:'line',label:'Margen %',data:m.map(x=>x.margenPct),borderColor:'#8FBF4C',backgroundColor:'#8FBF4C',borderWidth:2.5,tension:.35,yAxisID:'y1',order:1,pointRadius:4,datalabels:{color:'#4D7200',align:'top',offset:6,backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4},formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left',ticks:{callback:v=>fmtARS(v)}},y1:{position:'right',min:0,grid:{drawOnChartArea:false},ticks:{callback:v=>fd(v)+'%'}}}}});
   mkChart('sc-margen-pen',{type:'bar',data:{labels:mLabels,datasets:[
-    {label:'Con penalidades',data:m.map(x=>x.margenPct),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}},
-    {label:'Sin penalidades',data:m.map(x=>x.margenPctSinPen),backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,ticks:{callback:v=>v+'%'}}}}});
+    {label:'Con penalidades',data:m.map(x=>x.margenPct),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%'}},
+    {label:'Sin penalidades',data:m.map(x=>x.margenPctSinPen),backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,ticks:{callback:v=>fd(v)+'%'}}}}});
 
   // Operativos
   const qLabels=q.map(x=>x.label);
-  const targetDs=(v)=>({type:'line',label:'Target '+v+'%',data:qLabels.map(()=>v),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
+  const targetDs=(v)=>({type:'line',label:'Target '+fd(v)+'%',data:qLabels.map(()=>v),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
   mkChart('sc-entrega',{data:{labels:qLabels,datasets:[
-    {type:'line',label:'Entrega exitosa',data:q.map(x=>x.entregaExitosa),borderColor:'#0099A8',backgroundColor:'#0099A8',tension:.3,pointRadius:4,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(1)+'%'}},
+    {type:'line',label:'Entrega exitosa',data:q.map(x=>x.entregaExitosa),borderColor:'#0099A8',backgroundColor:'#0099A8',tension:.3,pointRadius:4,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(1).replace('.',',')+'%'}},
     targetDs(tg.entregaExitosa)
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:90,max:100,ticks:{callback:v=>v+'%'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:90,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
   mkChart('sc-visitados',{data:{labels:qLabels,datasets:[
-    {type:'line',label:'Domicilios visitados',data:q.map(x=>x.domiciliosVisitados),borderColor:'#F6A945',backgroundColor:'#F6A945',tension:.3,pointRadius:4,datalabels:{align:'bottom',offset:6,formatter:v=>v.toFixed(2)+'%'}},
+    {type:'line',label:'Domicilios visitados',data:q.map(x=>x.domiciliosVisitados),borderColor:'#F6A945',backgroundColor:'#F6A945',tension:.3,pointRadius:4,datalabels:{align:'bottom',offset:6,formatter:v=>v.toFixed(2).replace('.',',')+'%'}},
     targetDs(tg.domiciliosVisitados)
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:90,max:100,ticks:{callback:v=>v+'%'}}}}});
-  mkChart('sc-rutas',{type:'bar',data:{labels:qLabels,datasets:[{data:q.map(x=>x.rutasPorDia),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)}}]},options:{responsive:true,plugins:{legend:{display:false}}}});
-  mkChart('sc-dpph',{type:'bar',data:{labels:qLabels,datasets:[{data:q.map(x=>x.dpph),backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)}}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:90,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
+  mkChart('sc-rutas',{type:'bar',data:{labels:qLabels,datasets:[{data:q.map(x=>x.rutasPorDia),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')}}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+  mkChart('sc-dpph',{type:'bar',data:{labels:qLabels,datasets:[{data:q.map(x=>x.dpph),backgroundColor:'#8FBF4C',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')}}]},options:{responsive:true,plugins:{legend:{display:false}}}});
 }
 
 // Posiciona las etiquetas de un gráfico de líneas sin que se solapen: ordena las series en cada mes
@@ -1062,19 +1063,19 @@ function renderCourier(){
     {label:'SLA 24 hs',data:sla.map(r=>r.sla24),borderColor:'#C0392B',tension:.3,spanGaps:true,datalabels:lblSla('#C0392B')}
   ]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:10,bottom:6}},plugins:{legend:{position:'bottom',labels:{padding:18}}},scales:{x:{offset:true},y:{min:-22,max:114,ticks:{stepSize:20,callback:v=>(v<0||v>100)?'':v+'%'},grid:{color:ctx=>(ctx.tick&&(ctx.tick.value<0||ctx.tick.value>100))?'rgba(0,0,0,0)':'rgba(0,0,0,.1)'}}}}});
   mkChart('courier-vol',{type:'bar',data:{labels,datasets:[
-    {label:'Arribados',data:sla.map(r=>r.arribados),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
-  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
+    {label:'Arribados',data:sla.map(r=>r.arribados),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString('es-AR')}}
+  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toLocaleString('es-AR')}}}}});
   mkChart('courier-azul-unid',{type:'bar',data:{labels,datasets:[
-    {label:'Canal Azul',data:sla.map(r=>r.azul),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
-    {label:'Faltantes',data:sla.map(r=>r.faltantes),backgroundColor:'#C0392B',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
-    {label:'Sobrantes',data:sla.map(r=>r.sobrantes),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
-  const lblPct=(color)=>({clip:false,formatter:v=>v.toFixed(2)+'%',color,backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4},align:ctx=>autoLabelPos(ctx).align,offset:ctx=>autoLabelPos(ctx).offset});
+    {label:'Canal Azul',data:sla.map(r=>r.azul),backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString('es-AR')}},
+    {label:'Faltantes',data:sla.map(r=>r.faltantes),backgroundColor:'#C0392B',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString('es-AR')}},
+    {label:'Sobrantes',data:sla.map(r=>r.sobrantes),backgroundColor:'#F6A945',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString('es-AR')}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toLocaleString('es-AR')}}}}});
+  const lblPct=(color)=>({clip:false,formatter:v=>v.toFixed(2).replace('.',',')+'%',color,backgroundColor:'rgba(255,255,255,.92)',borderRadius:3,padding:{top:2,bottom:1,left:4,right:4},align:ctx=>autoLabelPos(ctx).align,offset:ctx=>autoLabelPos(ctx).offset});
   mkChart('courier-azul-pct',{type:'line',data:{labels,datasets:[
     {label:'% Canal Azul',data:sla.map(r=>r.pctAzul),borderColor:'#0099A8',tension:.3,spanGaps:true,datalabels:lblPct('#0099A8')},
     {label:'% Faltantes',data:sla.map(r=>r.pctFaltantes),borderColor:'#C0392B',tension:.3,spanGaps:true,datalabels:lblPct('#C0392B')},
     {label:'% Sobrantes',data:sla.map(r=>r.pctSobrantes),borderColor:'#F6A945',tension:.3,spanGaps:true,datalabels:lblPct('#B87A00')}
-  ]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:10,bottom:6}},plugins:{legend:{position:'bottom',labels:{padding:18}}},scales:{x:{offset:true},y:{min:-0.4,max:1.6,ticks:{stepSize:0.2,callback:v=>(v<-0.001||v>1.41)?'':v.toFixed(1)+'%'},grid:{color:ctx=>(ctx.tick&&(ctx.tick.value<-0.001||ctx.tick.value>1.41))?'rgba(0,0,0,0)':'rgba(0,0,0,.1)'}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:10,bottom:6}},plugins:{legend:{position:'bottom',labels:{padding:18}}},scales:{x:{offset:true},y:{min:-0.4,max:1.6,ticks:{stepSize:0.2,callback:v=>(v<-0.001||v>1.41)?'':v.toFixed(1).replace('.',',')+'%'},grid:{color:ctx=>(ctx.tick&&(ctx.tick.value<-0.001||ctx.tick.value>1.41))?'rgba(0,0,0,0)':'rgba(0,0,0,.1)'}}}}});
 }
 
 // ── POSTAL A PAQUETERÍA (Banco Macro MVP) ──
@@ -1109,11 +1110,11 @@ function renderPostal(){
     <div class="cards-row" style="grid-template-columns:repeat(3,1fr)">
       <div class="kcard" style="border-top-color:var(--teal)"><div class="lbl">Casos fuera de SLA</div><div class="val">${dv.total[1].toLocaleString('es-AR')}</div><div class="sub">${(dv.total[1]/dv.total[0]*100).toFixed(1).replace('.',',')}% de ${dv.total[0].toLocaleString('es-AR')} casos considerados</div></div>
       <div class="kcard" style="border-top-color:#F6A945"><div class="lbl">AMBA fuera de SLA</div><div class="val" style="color:#C77A0A">${(dv.regiones[0][2]/dv.regiones[0][1]*100).toFixed(1).replace('.',',')}%</div><div class="sub">${dv.regiones[0][2].toLocaleString('es-AR')} de ${dv.regiones[0][1].toLocaleString('es-AR')} casos · resto de las regiones: 4% a 8%</div></div>
-      <div class="kcard" style="border-top-color:#F6A945"><div class="lbl">Peso de AMBA en los desvíos</div><div class="val" style="color:#C77A0A">${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0)}%</div><div class="sub">AMBA es el ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0)}% de los casos considerados</div></div>
+      <div class="kcard" style="border-top-color:#F6A945"><div class="lbl">Peso de AMBA en los desvíos</div><div class="val" style="color:#C77A0A">${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0).replace('.',',')}%</div><div class="sub">AMBA es el ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0).replace('.',',')}% de los casos considerados</div></div>
     </div>
     <div class="two-col">
       <div class="chart-box"><h3>% de casos fuera de SLA por región</h3><div class="note">Casos fuera de SLA sobre casos considerados</div><canvas id="postal-desvio-pct"></canvas></div>
-      <div class="chart-box"><h3>AMBA: ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0)}% de las piezas, ${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0)}% de los desvíos</h3><div class="note">De cada 100 piezas analizadas y de cada 100 desvíos (casos fuera de SLA), cuántos son de AMBA y cuántos del resto de las regiones</div><canvas id="postal-desvio-peso"></canvas></div>
+      <div class="chart-box"><h3>AMBA: ${(dv.regiones[0][1]/dv.total[0]*100).toFixed(0).replace('.',',')}% de las piezas, ${(dv.regiones[0][2]/dv.total[1]*100).toFixed(0).replace('.',',')}% de los desvíos</h3><div class="note">De cada 100 piezas analizadas y de cada 100 desvíos (casos fuera de SLA), cuántos son de AMBA y cuántos del resto de las regiones</div><canvas id="postal-desvio-peso"></canvas></div>
     </div>
     <div class="section-sub" style="margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">Atraso de los casos Delay</div>
     <div class="note" style="margin:0 0 10px;font-size:12px;color:var(--gray)">Promedio de días hábiles sobre su fecha de vencimiento (solo casos con primera visita registrada)</div>
@@ -1141,42 +1142,42 @@ function renderPostal(){
     <div class="note-box-info">En los APs con teléfono en POD, <b>No responde</b> pesa menos en las no entregas (<b>37% vs. 45%</b> en los APs sin la funcionalidad) y <b>Error domicilio</b> pasa a ser el primer motivo (<b>40% vs. 31%</b>).</div>`;
 
   mkChart('postal-piezas',{type:'bar',data:{labels:d.meses,datasets:[
-    {label:'Piezas impuestas',data:d.piezasImpuestas,backgroundColor:'#056571',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}},
-    {label:'Entregadas',data:d.entregadas,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString()}}
+    {label:'Piezas impuestas',data:d.piezasImpuestas,backgroundColor:'#056571',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString('es-AR')}},
+    {label:'Entregadas',data:d.entregadas,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toLocaleString('es-AR')}}
   ]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
 
   mkChart('postal-efec',{type:'line',data:{labels:d.meses,datasets:[
-    {label:'% Efect / Entregable',data:d.efectEntregable,borderColor:'#F6A945',tension:.3,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(1)+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:40,max:100,ticks:{callback:v=>v+'%'}}}}});
+    {label:'% Efect / Entregable',data:d.efectEntregable,borderColor:'#F6A945',tension:.3,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:40,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
 
   const dvReg=dv.regiones;
   const dvTotC=dv.total[0], dvTotF=dv.total[1];
   mkChart('postal-desvio-pct',{type:'bar',data:{labels:dvReg.map(r=>r[0]),datasets:[{data:dvReg.map(r=>+(r[2]/r[1]*100).toFixed(1)),backgroundColor:dvReg.map(r=>r[0]==='AMBA'?'#F6A945':'#0099A8'),borderRadius:4,datalabels:{anchor:'end',align:'right',formatter:v=>v.toFixed(1).replace('.',',')+'%'}}]},
-    options:{responsive:true,indexAxis:'y',layout:{padding:{right:40}},plugins:{legend:{display:false}},scales:{x:{min:0,max:70,ticks:{callback:v=>v+'%'}}}}});
+    options:{responsive:true,indexAxis:'y',layout:{padding:{right:40}},plugins:{legend:{display:false}},scales:{x:{min:0,max:70,ticks:{callback:v=>fd(v)+'%'}}}}});
   const dvAmbaC=dvReg[0][1]/dvTotC*100, dvAmbaF=dvReg[0][2]/dvTotF*100;
   mkChart('postal-desvio-peso',{type:'bar',data:{labels:['Total de piezas ('+dvTotC.toLocaleString('es-AR')+')','Total de desvíos ('+dvTotF.toLocaleString('es-AR')+')'],datasets:[
     {label:'AMBA',data:[+dvAmbaC.toFixed(1),+dvAmbaF.toFixed(1)],backgroundColor:'#F6A945',borderRadius:4,datalabels:{color:'#fff',font:{weight:'700',size:12,family:"'Montserrat',sans-serif"},formatter:v=>v.toFixed(1).replace('.',',')+'%'}},
     {label:'Resto de las regiones',data:[+(100-dvAmbaC).toFixed(1),+(100-dvAmbaF).toFixed(1)],backgroundColor:'#0099A8',borderRadius:4,datalabels:{color:'#fff',font:{weight:'700',size:12,family:"'Montserrat',sans-serif"},formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
-  ]},options:{responsive:true,indexAxis:'y',plugins:{legend:{position:'bottom'},datalabels:{anchor:'center',align:'center'}},scales:{x:{stacked:true,min:0,max:100,ticks:{callback:v=>v+'%'}},y:{stacked:true}}}});
+  ]},options:{responsive:true,indexAxis:'y',plugins:{legend:{position:'bottom'},datalabels:{anchor:'center',align:'center'}},scales:{x:{stacked:true,min:0,max:100,ticks:{callback:v=>fd(v)+'%'}},y:{stacked:true}}}});
   mkChart('postal-sla1v',{type:'line',data:{labels:d.meses.map(m=>m.slice(0,3)+(m.endsWith('*')?'*':'')),datasets:[
-    {label:'SLA primera visita',data:d.slaPrimeraVisita,borderColor:'#0099A8',backgroundColor:'#0099A8',tension:.3,pointRadius:4,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(1)+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{offset:true},y:{min:30,max:100,ticks:{callback:v=>v+'%'}}}}});
+    {label:'SLA primera visita',data:d.slaPrimeraVisita,borderColor:'#0099A8',backgroundColor:'#0099A8',tension:.3,pointRadius:4,datalabels:{align:'top',offset:6,formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{offset:true},y:{min:30,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
   mkChart('postal-dias',{type:'line',data:{labels:d.meses.map(m=>m.slice(0,3)+(m.endsWith('*')?'*':'')),datasets:[
-    {label:'Días hábiles',data:d.diasPrimeraVisita,borderColor:'#0099A8',backgroundColor:'rgba(0,153,168,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v.toFixed(2)}}
+    {label:'Días hábiles',data:d.diasPrimeraVisita,borderColor:'#0099A8',backgroundColor:'rgba(0,153,168,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v.toFixed(2).replace('.',',')}}
   ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{offset:true}}}});
 
   mkChart('postal-fonopod-efect',{type:'line',data:{labels:d.fonoPod.mesesEfect,datasets:[
-    {data:d.fonoPod.efectividad5,borderColor:'#8FBF4C',backgroundColor:'rgba(143,191,76,.12)',fill:true,tension:.3,datalabels:{formatter:v=>v+'%',color:'#4D7200',font:{weight:'700',family:"'Montserrat',sans-serif"}}}
-  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{offset:true},y:{min:70,max:90,ticks:{callback:v=>v+'%'}}}}});
+    {data:d.fonoPod.efectividad5,borderColor:'#8FBF4C',backgroundColor:'rgba(143,191,76,.12)',fill:true,tension:.3,datalabels:{formatter:v=>fd(v)+'%',color:'#4D7200',font:{weight:'700',family:"'Montserrat',sans-serif"}}}
+  ]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{offset:true},y:{min:70,max:90,ticks:{callback:v=>fd(v)+'%'}}}}});
 
   mkChart('postal-fonopod-motivos',{type:'bar',data:{labels:d.fonoPod.motivosOct.labels,datasets:[
-    {label:'Con teléfono en POD (5 APs)',data:d.fonoPod.motivosOct.con,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v+'%'}},
-    {label:'Sin teléfono en POD (resto de los APs)',data:d.fonoPod.motivosOct.sin,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,ticks:{callback:v=>v+'%'}}}}});
+    {label:'Con teléfono en POD (5 APs)',data:d.fonoPod.motivosOct.con,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>fd(v)+'%'}},
+    {label:'Sin teléfono en POD (resto de los APs)',data:d.fonoPod.motivosOct.sin,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>fd(v)+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:0,ticks:{callback:v=>fd(v)+'%'}}}}});
   mkChart('postal-fonopod-contacto',{type:'bar',data:{labels:d.fonoPod.contacto.meses,datasets:[
-    {label:'Contactadas',data:d.fonoPod.contacto.efectContactadas,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}},
-    {label:'No contactadas',data:d.fonoPod.contacto.efectNoContactadas,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1)+'%'}}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:60,max:100,ticks:{callback:v=>v+'%'}}}}});
+    {label:'Contactadas',data:d.fonoPod.contacto.efectContactadas,backgroundColor:'#0099A8',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%'}},
+    {label:'No contactadas',data:d.fonoPod.contacto.efectNoContactadas,backgroundColor:'#8a97a0',borderRadius:4,datalabels:{formatter:v=>v.toFixed(1).replace('.',',')+'%'}}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:60,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
 
 }
 </script>
