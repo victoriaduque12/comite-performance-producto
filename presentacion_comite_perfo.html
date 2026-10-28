@@ -447,25 +447,7 @@ const DATA = {"margen":[{"producto":"Carta Documento Digital","anio":2026,"mes":
 ],
 "rashIssues":{"total":15,"bugs":10,"mejoras":5,"resueltos":15,"abiertos":0,"mttr_prom":2.0,
   "porSemana":[["08/06",3],["15/06",3],["22/06",2],["29/06",3],["06/07",1],["13/07",1],["20/07",1],["17/08",1]]},
-"rashAdopcion":{
-  "fechaCorte":"23/10/2026","altasTotales":736,"altasDesde":"01/06/2026",
-  "altasUltSemana":42,"altasUltSemanaRango":"12/10 al 18/10","variacionSemanal":-6.7,
-  "altasEnCurso":38,"altasEnCursoRango":"19/10 al 23/10 (parcial)",
-  "altasLabels":["01/06","08/06","15/06","22/06","29/06","06/07","13/07","20/07","27/07","03/08","10/08","17/08","24/08","31/08","07/09","14/09","21/09","28/09","05/10","12/10","19/10*"],
-  "altasSemana":[4,2,30,39,29,31,39,41,34,34,54,38,31,41,31,46,54,33,45,42,38],
-  "altasAcum":[4,6,36,75,104,135,174,215,249,283,337,375,406,447,478,524,578,611,656,698,736],
-  "altasMesLabels":["Junio","Julio","Agosto","Septiembre","Octubre*"],"altasMesData":[84,165,166,182,139],
-  "pendMesData":[67,122,89,90,90],
-  "tasaFinalizacion":61.5,"tasaFinalizacionDetalle":"736 Activos / 1197 (Activos+Pendientes)",
-  "tasaActivacion":3.5,"tasaActivacionDetalle":"26 con ≥1 envío / 736 Activos",
-  "zombies":710,"zombiesPct":96.5,
-  "pctRecurrentes":42.3,"pctRecurrentesDetalle":"11 de los 26 activados",
-  "enviosPromedio":13.54,
-  "b2bPct":27.7,"b2cPct":72.3,"b2bCount":204,"b2cCount":532,
-  "segConEnvios":26,"segSinEnvios":710,"segSinOnboarding":461,
-  "altasEnPendiente":461,"segRecurrentes":11,
-  "foraAmbaCount":480,"foraAmbaPct":65.2,"ambaCount":253,"ambaPct":34.4,"sinClasificarGeo":3
-},
+"rashAdopcion":{"fechaCorte":"28/10/2026","altasTotales":761,"altasDesde":"01/06/2026","altasUltSemana":44,"altasUltSemanaRango":"19/10 al 25/10","variacionSemanal":4.8,"altasEnCurso":19,"altasEnCursoRango":"26/10 al 28/10 (parcial)","altasLabels":["01/06","08/06","15/06","22/06","29/06","06/07","13/07","20/07","27/07","03/08","10/08","17/08","24/08","31/08","07/09","14/09","21/09","28/09","05/10","12/10","19/10","26/10*"],"altasSemana":[4,2,30,39,29,31,39,41,34,34,54,38,31,41,31,46,54,33,45,42,44,19],"altasAcum":[4,6,36,75,104,135,174,215,249,283,337,375,406,447,478,524,578,611,656,698,742,761],"altasMesLabels":["Junio","Julio","Agosto","Septiembre","Octubre*"],"altasMesData":[84,165,166,182,164],"pendMesData":[67,122,89,90,103],"tasaFinalizacion":61.6,"tasaFinalizacionDetalle":"761 Activos / 1235 (Activos+Pendientes)","tasaActivacion":3.8,"tasaActivacionDetalle":"29 con ≥1 envío / 761 Activos","zombies":732,"zombiesPct":96.2,"pctRecurrentes":41.4,"pctRecurrentesDetalle":"12 de los 29 activados","enviosPromedio":12.97,"b2bPct":27.5,"b2cPct":72.5,"b2bCount":209,"b2cCount":552,"segConEnvios":29,"segSinEnvios":732,"segSinOnboarding":474,"altasEnPendiente":474,"segRecurrentes":12,"foraAmbaCount":459,"foraAmbaPct":60.3,"ambaCount":299,"ambaPct":39.3,"sinClasificarGeo":3},
 "rashFlujos":[
   {"mes":"Junio","flujos":[["Colecta domicilio – Entrega a Domicilio",98.53],["Colecta en punto – Entrega Domicilio",0.74],["Colecta en punto – Entrega en punto",0.74]]},
   {"mes":"Julio","flujos":[["Colecta domicilio – Entrega a Domicilio",78.36],["Colecta en punto – Entrega Domicilio",19.4],["Colecta en punto – Entrega en punto",2.24]]},
@@ -693,7 +675,7 @@ function renderRash(){
       <div class="kcard" style="border-top-color:var(--orange)"><div class="val" style="font-size:26px;color:var(--orange)">${fd(a.b2bPct)}%</div><div class="lbl">B2B (empresas) — foco estratégico del producto</div></div>
       <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="font-size:26px;color:#C0392B">${a.foraAmbaCount} <span style="font-size:15px;font-weight:600">(${fd(a.foraAmbaPct)}%)</span></div><div class="lbl">Origen fuera de AMBA</div></div>
     </div>
-    <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${fd(a.ambaPct)}%) tienen origen en AMBA, ${a.foraAmbaCount} (${fd(a.foraAmbaPct)}%) están fuera de AMBA. Los principales orígenes fuera de AMBA son: <b>Córdoba</b>, <b>Rosario</b>, <b>Bahía Blanca</b> y <b>Salta</b>.</div>
+    <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${fd(a.ambaPct)}%) tienen origen en AMBA, ${a.foraAmbaCount} (${fd(a.foraAmbaPct)}%) están fuera de AMBA. Los principales orígenes fuera de AMBA son: <b>Córdoba</b>, <b>Rosario</b>, <b>Bahía Blanca</b> y <b>Tucumán</b>.</div>
     <div class="note-box-info" style="margin-top:8px">A partir del 6/10 se implementó el evolutivo 1 y, con él, la expansión de origen a Córdoba, Tucumán, Bahía Blanca, Mar del Plata, Rosario y Santa Fe.</div>`;
   paintFacVolCharts('rash',rows);
   paintMargenChart('rash',rows);
