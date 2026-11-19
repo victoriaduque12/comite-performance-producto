@@ -311,8 +311,8 @@ function paintSlaEfecCharts(idPrefix,sla,target,soloSla){
     efecDs.push({type:'line',label:'Target '+fd(efecTarget)+'%',data:labels.map(()=>efecTarget),borderColor:'#8a97a0',borderDash:[6,4],borderWidth:1.5,pointRadius:0,datalabels:{display:false}});
   }
   const sharedMin=pctMin(sla,[2,3,4]);
-  mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>fd(v)+'%'}}}}});
-  if(!soloSla) mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>fd(v)+'%'}}}}});
+  mkChart(idPrefix+'-sla',{data:{labels,datasets:slaDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{offset:idPrefix==='cdd'},y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>fd(v)+'%'}}}}});
+  if(!soloSla) mkChart(idPrefix+'-efec',{data:{labels,datasets:efecDs},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{offset:idPrefix==='cdd'},y:{min:sharedMin,max:100,ticks:{stepSize:10,callback:v=>fd(v)+'%'}}}}});
 }
 Chart.register(ChartDataLabels);
 Chart.defaults.font.family="'Montserrat',sans-serif";
@@ -574,8 +574,7 @@ function renderCDD(){
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="section-sub">SLA, Efectividad y motivos de no entrega</div>
-    ${buildSlaEfecCharts('cdd','Enero → Noviembre 2026 (noviembre parcial)',true)}
-    <div class="note-box-info">En <b>octubre se suma el cliente Medicus</b>. Durante el mes hubo incidencias que impactaron el SLA: el <b>AP de Medicus no se replicaba en SAP</b>, lo que demoró algunas cartas (regularizado el mismo día), y <b>problemas de comunicación entre sistemas</b> demoraron la disponibilidad de cartas para impresión — se identificaron al menos <b>6 piezas con potencial impacto en el SLA</b>, regularizadas el 14/10.</div>
+    ${buildSlaEfecCharts('cdd','Enero → Noviembre 2026 (noviembre parcial)')}
     <div class="note-box-info">En <b>noviembre (parcial) la efectividad sube a 46,3%</b>, con <b>33,7% en primera vuelta</b>: son los <b>valores más altos registrados</b> desde que se mide el servicio (octubre 2025).</div>
     <div class="section-sub" style="font-weight:600;color:var(--navy);margin-top:10px">SLA por Provincia | Noviembre 2026 (parcial)</div>
     <div class="chart-box"><h3>SLA y Share de Volumen por Provincia</h3><div class="note">Ordenado por Share de Volumen de mayor a menor · línea punteada = Target SLA 95%</div>
@@ -602,7 +601,7 @@ function renderCDD(){
   },options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>fd(v)+'%'}}}}});
   paintMargenChart('cdd',rows);
   const labels=sla.map(([m,y])=>MS[MO.indexOf(m)]+" '"+String(y).slice(-2));
-  paintSlaEfecCharts('cdd',sla,true,true);
+  paintSlaEfecCharts('cdd',sla,true,false);
   const provOrdenadas=DATA.cddSlaProvincia.slice().sort((a,b)=>b.share-a.share);
   mkChart('cdd-sla-share-provincia',{type:'bar',data:{
     labels:provOrdenadas.map(p=>p.provincia),
