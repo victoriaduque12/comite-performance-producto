@@ -555,7 +555,6 @@ function renderRash(){
     ${buildKpiCards(rows)}
     ${buildMargenChart('rash','Junio → Octubre 2026')}
     <div class="note-box-info">Octubre todavía no tiene costo ni margen cargados en Rentabilidad — se van a completar cuando esté disponible el dato de costeo del mes.</div>
-    <div class="chart-box"><h3>Evolución de Volumen</h3><div class="note">Volumen facturado · Envíos por mes</div><canvas id="rash-vol"></canvas><div id="rash-vol-var"></div></div>
 
     <div class="section-title">⚙️ Indicadores operativos</div>
     <div class="chart-box"><h3>Volumen (evolutivo por mes)</h3><div class="note">Solicitudes por mes · noviembre parcial</div><canvas id="rash-vol-operativo"></canvas></div>
@@ -579,7 +578,6 @@ function renderRash(){
       <div class="kcard" style="border-top-color:#C0392B"><div class="val" style="font-size:26px;color:#C0392B">${a.foraAmbaCount} <span style="font-size:15px;font-weight:600">(${fd(a.foraAmbaPct)}%)</span></div><div class="lbl">Origen fuera de AMBA</div></div>
     </div>
     <div class="note-box-info" style="margin-top:8px">Sobre los ${a.altasTotales} usuarios que completaron onboarding: ${a.ambaCount} (${fd(a.ambaPct)}%) tienen origen en AMBA, ${a.foraAmbaCount} (${fd(a.foraAmbaPct)}%) están fuera de AMBA. Los principales orígenes fuera de AMBA son: <b>Córdoba</b>, <b>Rosario</b>, <b>Bahía Blanca</b> y <b>Tucumán</b>.</div>`;
-  paintFacVolCharts('rash',rows);
   paintMargenChart('rash',rows);
   mkChart('rash-vol-operativo',{type:'line',data:{labels:DATA.rashVolumenOperativo.map(r=>r[0]),datasets:[{data:DATA.rashVolumenOperativo.map(r=>r[1]),borderColor:'#F6A945',backgroundColor:'rgba(246,169,69,.15)',fill:true,tension:.35,pointRadius:4,datalabels:{formatter:cnt}}]},
     options:{responsive:true,plugins:{legend:{display:false}}}});
